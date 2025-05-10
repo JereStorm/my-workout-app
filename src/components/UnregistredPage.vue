@@ -1,6 +1,13 @@
 <template>
-    <div class="vh-100 w-100 d-flex align-items-center justify-content-center">
-        <h1 class="title-primary">{{ displayedText }}</h1>
+    <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
+        <h2>
+            CaliTask
+            <span>CaliTask</span>
+            <span>CaliTask</span>
+            <span>Train Smart</span>
+        </h2>
+
+
 
         <transition name="fade-slide-nav" appear>
             <nav class="auth-links">
@@ -14,52 +21,81 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
 
-const titles = [
-    'My Workout App',
-    'Build Your Strength',
-    'Track Your Progress',
-    'Train Smart with CaliStorm'
-];
+// const titles = [
+//     'My Workout App',
+//     'Construi tu fuerza',
+//     'Registra tu progreso',
+//     'Entrena inteligente'
+// ];
 
-const displayedText = ref('');
-let titleIndex = 0;
-let charIndex = 0;
-let direction = 1; // 1: escribiendo, -1: borrando
-
-const typeEffect = () => {
-    const currentTitle = titles[titleIndex];
-    displayedText.value = currentTitle.slice(0, charIndex);
-
-    if (direction === 1) {
-        if (charIndex < currentTitle.length) {
-            charIndex++;
-        } else {
-            direction = -1;
-            setTimeout(typeEffect, 1200); // pausa al terminar de escribir
-            return;
-        }
-    } else {
-        if (charIndex > 0) {
-            charIndex--;
-        } else {
-            direction = 1;
-            titleIndex = (titleIndex + 1) % titles.length;
-        }
-    }
-
-    setTimeout(typeEffect, 100); // velocidad de escritura/borrado
-};
-
-onMounted(() => {
-    typeEffect();
-});
 </script>
 
 
 
 <style>
+.title-container h2 {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    font-family: consolas;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5em;
+    color: transparent;
+    text-transform: uppercase;
+}
+
+.title-container h2 span:nth-child(1) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #000;
+    transition: 0.5s ease;
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    overflow: hidden;
+}
+
+.title-container h2:hover span:nth-child(1) {
+    transform: translateY(-18px);
+}
+
+.title-container h2 span:nth-child(2) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #000;
+    transition: 0.5s;
+    clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+    overflow: hidden;
+}
+
+.title-container h2:hover span:nth-child(2) {
+    transform: translateY(18px);
+}
+
+.title-container h2 span:nth-child(3) {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%) scaleY(0);
+    width: 91%;
+    color: #000;
+    background: aqua;
+    font-size: 0.25em;
+    font-weight: 500;
+    letter-spacing: 0.7em;
+    text-align: center;
+    padding-left: 20px;
+    margin-left: 5px;
+    transition: 0.5s;
+}
+
+.title-container h2:hover span:nth-child(3) {
+    transform: translateY(-50%) scaleY(1);
+}
+
 .auth-links .btn {
     backdrop-filter: blur(12px);
     color: azure;
@@ -101,30 +137,15 @@ onMounted(() => {
     color: #101010;
 }
 
-.title-primary {
-    font-size: 4rem;
-    font-weight: 800;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    margin-bottom: 100px;
-    color: #ffffff;
-    text-shadow:
-        0 0 5px rgba(0, 255, 255, 0.3),
-        0 0 10px rgba(0, 255, 255, 0.4),
-        0 0 20px rgba(0, 255, 255, 0.5);
-    letter-spacing: 2px;
-    transition: text-shadow 0.3s ease;
-    animation: pulse-glow 4s infinite ease-in-out;
-    backdrop-filter: blur(2px);
-    height: 50%;
+.title-wrapper {
+    transform: translateY(-10%);
 }
 
-.title-primary::after {
-    content: '|';
-    animation: blink 1s infinite;
-    margin-left: 5px;
-    font-weight: bold;
+.title-word {
+    display: block;
+    line-height: 1.2;
 }
+
 
 /* Animación de flotación continua */
 @keyframes float {
@@ -180,6 +201,12 @@ onMounted(() => {
 
     50% {
         opacity: 0;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .title-container h2 {
+        font-size: 8em;
     }
 }
 </style>

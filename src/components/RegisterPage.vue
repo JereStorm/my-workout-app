@@ -133,7 +133,7 @@ main {
 /* Estilos del formulario */
 .form-register {
     max-width: 400px;
-    width: 100%;
+    width: 92%;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -151,7 +151,9 @@ main {
 }
 
 @media only screen and (min-width: 768px) {
-
+    .form-register {
+        width: 100%;
+    }
 
     main {
         margin-top: 100px;

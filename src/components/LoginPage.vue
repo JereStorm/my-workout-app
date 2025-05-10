@@ -113,7 +113,7 @@ main {
 
 .form-login {
     max-width: 400px;
-    width: 100%;
+    width: 92%;
     background: rgba(255, 255, 255, 0.1);
     /* Fondo semi-transparente */
     backdrop-filter: blur(12px);
@@ -144,12 +144,6 @@ main {
     transform: translateX(-60vh);
 }
 
-/* Estilos del formulario */
-.form-login {
-    max-width: 400px;
-    width: 100%;
-}
-
 .form-login .btn-login {
     border: 1px solid #484848;
     background-color: #282828;
@@ -162,6 +156,9 @@ main {
 
 @media only screen and (min-width: 768px) {
 
+    .form-login {
+        width: 100%;
+    }
 
     main {
         margin-top: 100px;

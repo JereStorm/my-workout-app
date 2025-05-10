@@ -21,7 +21,7 @@
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Bloques ({{
                                     routine.bloques.length }})</h6>
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Series ({{ totalSeries(routine)
-                                    }})</h6>
+                                }})</h6>
                             </div>
 
                             <div class="text-center font-weight-medium  my-2">
@@ -193,8 +193,8 @@ const renderDifficulty = (dificultad) => {
 
 <style scoped>
 .my-workouts {
-    padding: 20px;
-    padding-right: 0px;
+    padding: 10px;
+    padding-top: 100px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -307,6 +307,7 @@ const renderDifficulty = (dificultad) => {
 
 @media only screen and (min-width: 768px) {
     .my-workouts {
+        padding-top: 30px;
         padding-left: 160px;
         margin-top: 20px;
         width: 100%;

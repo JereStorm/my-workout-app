@@ -42,10 +42,12 @@
         </transition>
 
         <!-- 🔹 Botón para abrir sidebar (solo mobile) -->
-        <header v-if="isMobile" class="bg-dark heather p-2 w-100 text-start">
+        <header v-if="isMobile" class="text-end heather p-2 w-100 nav-mobile">
+            <!-- <h1 class="mb-0">C a l i<span> T a s k</span></h1> -->
             <button class="btn btn-outline-info" @click.stop="toggleSidebar">
                 <i class="bi bi-list"></i>
             </button>
+
         </header>
 
 
@@ -146,7 +148,7 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 10;
+    z-index: 20;
 }
 
 .profileNickname {
@@ -192,10 +194,20 @@ onUnmounted(() => {
     opacity: 0;
 }
 
-.heather {
-    width: 100%;
+.nav-mobile {
+    position: fixed;
+    top: 0px;
+    z-index: 10;
 }
 
+.heather {
+    width: 100%;
+    background-color: #151515;
+}
+
+.heather span {
+    color: #00ffff;
+}
 
 .btn-outline-info {
     border-color: #00ffff;
