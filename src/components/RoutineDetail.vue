@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="d-flex flex-column">
-                            <span>Esfuerzo</span> <span v-if="ejercicio.esfuerzo != 0">{{ ejercicio.esfuerzo }}
+                            <span>Esfuerzo</span> <span v-if="ejercicio.esfuerzo">{{ ejercicio.esfuerzo }}
                                 RIR</span>
                             <span v-else>-</span>
                         </div>

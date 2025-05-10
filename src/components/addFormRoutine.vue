@@ -71,11 +71,13 @@
                         </div>
                         <div class="col-md-3 text-center">
                             <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}" class="form-label">Esfuerzo</label>
-                            <select v-model="ejercicio.esfuerzo" class="form-select bg-dark text-info  input-rir"
+                            <select v-model="ejercicio.esfuerzo" class="form-select bg-dark text-info input-rir"
                                 :id="'esfuerzo-' + index + '-' + ejercicioIndex">
-                                <option value="1"> RIR 1</option>
-                                <option value="2"> RIR 2</option>
-                                <option value="3"> RIR 3</option>
+
+                                <option value="">-</option> <!-- Opción vacía -->
+                                <option value="1">RIR 1</option>
+                                <option value="2">RIR 2</option>
+                                <option value="3">RIR 3</option>
                             </select>
                         </div>
                     </div>

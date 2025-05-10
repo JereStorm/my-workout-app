@@ -203,6 +203,7 @@ onUnmounted(() => {
 .heather {
     width: 100%;
     background-color: #151515;
+    border-bottom: 1px solid #555555;
 }
 
 .heather span {
