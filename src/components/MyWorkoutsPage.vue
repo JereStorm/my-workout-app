@@ -156,10 +156,9 @@ const handleRoutineAdded = async (rutina) => {
             const docRef = await profileStore.createRutinaFirebase(rutina); // ahora devolvemos el docRef
             const newId = docRef.id;
             rutina.id = newId;
+            //opcional expandir la rutina al completarse la edicion / agregado
+            mostrarRutina(rutina.id)
         }
-        //opcional expandir la rutina al completarse la edicion / agregado
-        mostrarRutina(rutina.id)
-
     } catch (error) {
         console.error('Error al guardar la rutina:', error);
         // Aquí podrías mostrar un mensaje de error al usuario
@@ -325,8 +324,8 @@ const renderDifficulty = (dificultad) => {
 
     .routine-resumen li {
         min-width: 350px;
-        width: 40%;
-        max-width: 400px;
+        width: 45%;
+        max-width: 500px;
         font-size: 18px;
     }
 
@@ -338,6 +337,11 @@ const renderDifficulty = (dificultad) => {
 
     .routines-container {
         width: 80%;
+    }
+
+    .edit-resume-container {
+        font-size: 20px;
+        gap: 10px;
     }
 
 }

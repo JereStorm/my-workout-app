@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { db } from '../firebaseConfig'; // Asegúrate de que la ruta sea correcta
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
@@ -65,23 +65,32 @@ export const useProfileStore = defineStore('profile', {
         },
         async updateRutina(rutinaEditada) {
             try {
-                // Actualizar en Firebase
+                if (!rutinaEditada.id) {
+                    throw new Error('La rutina no tiene un ID válido.');
+                }
+
                 const rutinaRef = doc(db, 'routines', rutinaEditada.id);
+
+                // Verificá si el documento existe antes de actualizar
+                const rutinaSnap = await getDoc(rutinaRef);
+                if (!rutinaSnap.exists()) {
+                    throw new Error(`La rutina con ID ${rutinaEditada.id} no existe en Firebase.`);
+                }
+
                 const rutinaParaFirebase = { ...rutinaEditada };
-                delete rutinaParaFirebase.id; // No queremos sobrescribir el ID del doc
+                delete rutinaParaFirebase.id;
 
                 await updateDoc(rutinaRef, rutinaParaFirebase);
                 console.log('Rutina actualizada en Firebase:', rutinaEditada.id);
 
-                // Actualizar en el estado local
                 const index = this.profile.routines.findIndex(
                     (rutina) => rutina.id === rutinaEditada.id
                 );
 
                 if (index !== -1) {
-                    this.profile.routines.splice(index, 1, rutinaEditada);
+                    // this.profile.routines.splice(index, 1, rutinaEditada);
                     console.log('Rutina actualizada en estado local:', rutinaEditada);
-                    // await this.getRutinas();
+                    await this.getRutinas();
                 } else {
                     console.warn(`No se encontró la rutina con ID: ${rutinaEditada.id}`);
                 }
@@ -99,7 +108,10 @@ export const useProfileStore = defineStore('profile', {
                 };
 
                 const docRef = await addDoc(collection(db, 'routines'), newRoutine);
-                this.profile.routines.unshift({ ...newRoutine, id: docRef.id });
+
+                const serverRoutine = { ...newRoutine, id: docRef.id };
+                // console.log("Server Routine: ", serverRoutine)
+                this.profile.routines.unshift(serverRoutine);
                 return docRef; //Devolvemos el ref para que lo uses en copiar
             } catch (error) {
                 console.error('Error al crear rutina en Firebase:', error);
