@@ -21,7 +21,7 @@
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Bloques ({{
                                     routine.bloques.length }})</h6>
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Series ({{ totalSeries(routine)
-                                }})</h6>
+                                    }})</h6>
                             </div>
 
                             <div class="text-center font-weight-medium  my-2">
@@ -75,6 +75,8 @@ import { ref, onMounted, computed, nextTick } from 'vue';
 import { useProfileStore } from '@/stores/profile'; // Ajusta la ruta a tu store
 import AddFormRoutine from '@/components/addFormRoutine.vue'; // Ajusta la ruta si es necesario
 import RoutineDetail from '@/components/RoutineDetail.vue';
+import { cloneDeep } from 'lodash-es';
+
 
 const profileStore = useProfileStore();
 const showAddRoutineForm = ref(false);
@@ -120,7 +122,7 @@ const eliminarRutina = (rutinaId) => {
 };
 
 const editarRutina = (rutina) => {
-    rutinaSeleccionada.value = rutina;
+    rutinaSeleccionada.value = cloneDeep(rutina);
     showMainContent.value = false;
 };
 

@@ -121,6 +121,7 @@
 
 <!-- AddFormRoutine.vue -->
 <script setup>
+import { cloneDeep } from 'lodash-es';
 import { reactive, watch, defineEmits, defineProps } from 'vue';
 
 const props = defineProps({
@@ -144,7 +145,7 @@ const nuevaRutina = reactive({
 
 watch(() => props.rutinaParaEditar, (nuevaRutinaEditada) => {
     if (nuevaRutinaEditada) {
-        Object.assign(nuevaRutina, structuredClone(props.rutinaParaEditar));
+        Object.assign(nuevaRutina, cloneDeep(props.rutinaParaEditar));
     }
 }, { immediate: true });
 
