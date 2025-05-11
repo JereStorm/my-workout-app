@@ -22,6 +22,7 @@ const profileStore = useProfileStore();
 const { profile } = storeToRefs(profileStore); // 🌟 Hacemos `user` reactivo en el componente
 
 onMounted(() => {
+    console.log(profile)
     if (profile) {
         console.log("Onmounted: profile", profile)
     }

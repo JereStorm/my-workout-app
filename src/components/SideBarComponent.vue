@@ -25,6 +25,13 @@
                         </router-link>
                     </li>
                     <hr />
+                    <li class="nav-item">
+                        <router-link to="/dashboard/my-profile"
+                            class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
+                            <i class="bi bi-plus-circle"></i> Mi perfil
+                        </router-link>
+                    </li>
+                    <hr />
                     <li class="nav-item d-flex justify-content-center">
                         <button
                             class="nav-link d-flex flex-column justify-content-center align-items-center text-light px-1"

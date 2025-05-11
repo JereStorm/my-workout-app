@@ -7,7 +7,7 @@ import RegisterPage from "@/components/RegisterPage.vue";
 import DashboardPage from "@/components/DashboardPage.vue";
 import UnregistredPage from "@/components/UnregistredPage.vue";
 import MyWorkoutsPage from "@/components/MyWorkoutsPage.vue";
-import RoutineDetail from "@/components/RoutineDetail.vue";
+import ProfilePage from "@/components/ProfilePage.vue";
 
 const routes = [
     { path: "/register", component: RegisterPage },
@@ -18,20 +18,19 @@ const routes = [
         children: [
             {
                 path: "",
-                redirect: "/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
+                redirect: "/dashboard/my-profile", // Redirige /dashboard a /dashboard/my-workouts
             },
             {
-                path: 'my-workouts',
+                path: '/dashboard/my-workouts',
                 component: MyWorkoutsPage
             },
-            {
-                path: 'routine-detail',
-                component: RoutineDetail
-            },
+
+            { path: '/dashboard/my-profile', component: ProfilePage },
 
         ],
         meta: { requiresAuth: true },
     },
+
     { path: "/unregistred", component: UnregistredPage },
     { path: "/:pathMatch(.*)*", component: UnregistredPage }, // Captura rutas no definidas
 ];

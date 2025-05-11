@@ -1,11 +1,8 @@
 <template>
     <div class="add-routine-form">
-        <h2 class="text-center mb-4">
+        <!-- <h2 class="text-center mb-4">
             {{ props.rutinaParaEditar ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
-        </h2>
-
-
-
+        </h2> -->
         <form @submit.prevent="guardarRutina" class="bg-dark p-4">
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">Nombre</label>
@@ -89,8 +86,7 @@
 
                 </div>
                 <div class="btns-set-bloque mb-2">
-                    <button type="button" @click="agregarEjercicio(index)"
-                        class="btn w-50 px-1 btn-outline-success mt-2">Agregar
+                    <button type="button" @click="agregarEjercicio(index)" class="btn w-50 px-1 btn-info mt-2">Agregar
                         Ejercicio</button>
                     <button v-if="index > 0" type="button" @click="eliminarBloque(index)"
                         class="btn w-50 btn-sm btn-outline-danger mt-2">
@@ -99,7 +95,7 @@
                 </div>
             </div>
             <div class="text-center d-flex flex-column align-items-center">
-                <button type="button" @click="agregarBloque" class="btn btn-outline-info w-50">
+                <button type="button" @click="agregarBloque" class="btn btn-info w-50">
                     <i class="bi bi-plus-circle me-2"></i> Agregar Bloque
                 </button>
             </div>
@@ -112,7 +108,7 @@
                     {{ 'Guardar rutina' }}
                 </button>
 
-                <button type="button" @click="handleCancelar" class="btn btn-danger mt-3">
+                <button type="button" @click="handleCancelar" class="btn btn-outline-danger mt-3">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </button>
             </div>
@@ -165,7 +161,6 @@ const resetFormulario = () => {
         }]
     });
 };
-
 
 const handleCancelar = () => {
     emit('close');
