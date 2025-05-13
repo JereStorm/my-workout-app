@@ -18,7 +18,7 @@ export const useUserStore = defineStore("user", {
                     profileStore.setProfile({
                         id: user.uid,
                         email: user.email,
-                        nickName: user.email, // o podrías cargar desde BD si ya existe
+                        nickname: "", // o podrías cargar desde BD si ya existe
                         routines: [],
                     });
                     console.log("Sesión iniciada. Usuario:", this.user);

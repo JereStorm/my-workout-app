@@ -1,12 +1,13 @@
 <template>
     <div class="w-100">
-        <SideBarComponent></SideBarComponent>
-        <div class="container-dashboard">
-            <router-view></router-view>
-        </div>
+        <SideBarComponent />
+        <transition name="route-fade" mode="out-in"
+            class="w-100 h-100 d-flex justify-content-center align-items-center">
+            <router-view />
+        </transition>
     </div>
-
 </template>
+
 
 <script setup>
 import { useProfileStore } from '@/stores/profile';
@@ -51,5 +52,20 @@ onMounted(() => {
     font-size: 3.5rem;
     margin-bottom: 50px;
     text-align: center;
+}
+
+.route-fade-enter-active,
+.route-fade-leave-active {
+    transition: all 0.6s ease;
+}
+
+.route-fade-enter-from {
+    opacity: 0;
+    transform: translateY(-50px);
+}
+
+.route-fade-leave-to {
+    opacity: 0;
+    transform: translateY(50px);
 }
 </style>

@@ -6,8 +6,8 @@ export const useProfileStore = defineStore('profile', {
     state: () => ({
         profile: {
             id: null,
-            nickName: '',
             email: '',
+            nickname: '',
             routines: [],
             // ... otras propiedades del perfil
         },
@@ -18,9 +18,12 @@ export const useProfileStore = defineStore('profile', {
             if (this.profile.routines === undefined) {
                 this.profile.routines = [];
             }
+
+            console.log(this.profile)
         },
-        updateNickname(nickName) {
-            this.profile = { ...this.profile, nickName: nickName };
+        updateNickname(nickname) {
+            this.profile = { ...this.profile, nickname };
+            console.log("UNick:", this.profile)
         },
         async getRutinas() {
             try {
@@ -121,7 +124,7 @@ export const useProfileStore = defineStore('profile', {
 
     },
     getters: {
-        getNickname: (state) => state.profile.nickName,
+        getNickname: (state) => state.profile.nickname,
         getUserRoutines: (state) => state.profile.routines,
     }
 });

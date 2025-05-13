@@ -6,12 +6,13 @@
                 class="sidebar-profile flex-column flex-shrink-0 px-1 text-bg-dark"
                 :class="{ 'mobile-mode': isMobile }">
                 <div class="d-flex flex-column align-items-center">
-                    <router-link to="/dashboard" class="h3 mb-1 text-light ">
+                    <router-link v-if="!isMobile && !profile.nickname" to="/dashboard" class="h3 mb-1 text-light ">
                         <i class="bi bi-house"></i>
                     </router-link>
-                    <div class="text-center font-weight-medium">
-                        <p class="ellipsis my-0" :title="profileNickname">
-                            <span class="profileNickname">{{ profileNickname || "Usuario" }} </span>
+                    <div class="username-container text-center font-weight-medium">
+                        <p class="ellipsis my-0" :title="profile.nickname">
+                            <span class="h5"> {{ profile.nickname ||
+                                "Usuario" }} </span>
                         </p>
                     </div>
 
@@ -21,14 +22,14 @@
                     <li class="nav-item">
                         <router-link to="/dashboard/my-workouts"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
-                            <i class="bi bi-plus-circle"></i> Mis Rutinas
+                            <i class="bi bi-clipboard-check"></i> Mis Rutinas
                         </router-link>
                     </li>
                     <hr />
                     <li class="nav-item">
                         <router-link to="/dashboard/my-profile"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
-                            <i class="bi bi-plus-circle"></i> Mi perfil
+                            <i class="bi bi-person-circle"></i> Mi perfil
                         </router-link>
                     </li>
                     <hr />
@@ -49,8 +50,11 @@
         </transition>
 
         <!-- 🔹 Botón para abrir sidebar (solo mobile) -->
-        <header v-if="isMobile" class="text-end heather p-2 w-100 nav-mobile">
+        <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
             <!-- <h1 class="mb-0">C a l i<span> T a s k</span></h1> -->
+            <router-link to="/dashboard" class="h2 mb-0 text-light ">
+                <i class="bi bi-house"></i>
+            </router-link>
             <button class="btn btn-outline-info" @click.stop="toggleSidebar">
                 <i class="bi bi-list"></i>
             </button>
@@ -64,18 +68,18 @@
 <script setup>
 import { useProfileStore } from '@/stores/profile';
 import { useUserStore } from '@/stores/user';
-// import { storeToRefs } from 'pinia';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
-const profileNickname = ref('');
 const isSidebarVisible = ref(false);
 const isMobile = ref(window.innerWidth < 768); // <768px se considera mobile
 
 const profileStore = useProfileStore();
 const userStore = useUserStore();
-// const { profile } = storeToRefs(profileStore);
+const { profile } = storeToRefs(profileStore);
 
 const logout = () => userStore.logout();
+
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
 };
@@ -95,8 +99,6 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
-    profileNickname.value = profileStore.profile.email;
-
     window.addEventListener('resize', handleResize);
     document.addEventListener('click', handleClickOutside);
 });
@@ -155,6 +157,7 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
+    margin-top: 55px;
     z-index: 20;
 }
 
@@ -205,6 +208,9 @@ onUnmounted(() => {
     position: fixed;
     top: 0px;
     z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .heather {
@@ -221,13 +227,19 @@ onUnmounted(() => {
     border-color: #00ffff;
 }
 
-
+.username-container {
+    width: 90%;
+}
 
 /* Solo se fija si NO es mobile */
 @media (min-width: 768px) {
     .sidebar-profile {
         position: fixed;
         top: 0;
+    }
+
+    .profileNickname {
+        font-size: 16px;
     }
 }
 </style>

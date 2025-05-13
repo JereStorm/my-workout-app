@@ -18,14 +18,16 @@ const routes = [
         children: [
             {
                 path: "",
-                redirect: "/dashboard/my-profile", // Redirige /dashboard a /dashboard/my-workouts
+                redirect: "/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
             },
             {
                 path: '/dashboard/my-workouts',
                 component: MyWorkoutsPage
             },
-
-            { path: '/dashboard/my-profile', component: ProfilePage },
+            {
+                path: '/dashboard/my-profile',
+                component: ProfilePage
+            },
 
         ],
         meta: { requiresAuth: true },

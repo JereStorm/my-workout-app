@@ -1,9 +1,9 @@
 <template>
     <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
         <h2>
-            CaliTask
-            <span>CaliTask</span>
-            <span>CaliTask</span>
+            my workout app
+            <span>my workout app</span>
+            <span>my workout app</span>
             <span>Train Smart</span>
         </h2>
 
