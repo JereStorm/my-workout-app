@@ -6,7 +6,7 @@
                 class="sidebar-profile flex-column flex-shrink-0 px-1 text-bg-dark"
                 :class="{ 'mobile-mode': isMobile }">
                 <div class="d-flex flex-column align-items-center">
-                    <router-link v-if="!isMobile && !profile.nickname" to="/dashboard" class="h3 mb-1 text-light ">
+                    <router-link v-if="!isMobile" to="/dashboard" class="h3 mb-1 text-light ">
                         <i class="bi bi-house"></i>
                     </router-link>
                     <div class="username-container text-center font-weight-medium">

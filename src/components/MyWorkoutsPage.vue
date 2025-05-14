@@ -7,21 +7,21 @@
         <transition name="slide-fade" @after-leave="showAddRoutineForm = true">
             <div v-show="showMainContent" class="routines-container">
                 <div class="text-center mb-5">
-                    <button @click="openAddRoutineForm" class="btn btn-outline-danger px-5">Agregar rutina</button>
+                    <button @click="openAddRoutineForm" class="btn btn-outline-danger px-5" id="add-routine">Agregar
+                        rutina</button>
                 </div>
                 <div v-show="localRoutines.length > 0">
                     <transition-group name="fade-item" tag="ul" class="routine-resumen"
                         :class="{ 'column-layout': rutinasMostradas.size > 0 }">
                         <li v-for="routine in localRoutines" :key="routine.id"
-                            :ref="el => routineRefs.set(routine.id, el)" class="mb-1"
-                            :class="{ 'expanded': rutinasMostradas.has(routine.id) }"
-                            @click="mostrarRutina(routine.id)">
+                            :ref="el => routineRefs.set(routine.id, el)" class="mb-1 routine-card"
+                            :class="{ 'expanded': rutinasMostradas.has(routine.id) }">
                             <!-- Bloques (esquina superior izquierda) -->
                             <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
-                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Bloques ({{
-                                    routine.bloques.length }})</h6>
-                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">Series ({{ totalSeries(routine)
-                                }})</h6>
+                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{
+                                    routine.bloques.length }} Bloques</h6>
+                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{ totalSeries(routine)
+                                    }} Series</h6>
                             </div>
 
                             <div class="text-center font-weight-medium  my-2">
@@ -45,7 +45,33 @@
 
                                 </h6>
 
-                                <div class="edit-resume-container">
+                                <div v-if="isMobile && !rutinasMostradas.has(routine.id)"
+                                    class="dropdown-menu-container" @click.stop>
+                                    <span
+                                        @click.stop="cardMenuAbierto = cardMenuAbierto === routine.id ? null : routine.id">
+                                        <i class="bi bi-gear-fill"></i>
+                                    </span>
+                                    <transition name="fade-item">
+                                        <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
+                                            <li @click="mostrarRutina(routine.id)">
+                                                <i class="bi bi-arrows-angle-expand"></i>
+                                            </li>
+                                            <li @click.stop="editarRutina(routine)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </li>
+                                            <li @click.stop="eliminarRutina(routine.id)">
+                                                <i class="bi bi-trash3"></i>
+                                            </li>
+                                            <li @click.stop="copiarRutina(routine)">
+                                                <i class="bi bi-copy"></i>
+                                            </li>
+                                        </ul>
+                                    </transition>
+                                </div>
+                                <div v-else class="edit-resume-container">
+                                    <span @click="mostrarRutina(routine.id)">
+                                        <i class="bi bi-arrows-angle-expand"></i>
+                                    </span>
                                     <span @click.stop="editarRutina(routine)">
                                         <i class="bi bi-pencil-square"></i>
                                     </span>
@@ -56,6 +82,7 @@
                                         <i class="bi bi-copy"></i>
                                     </span>
                                 </div>
+
                             </div>
                         </li>
 
@@ -71,23 +98,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import { useProfileStore } from '@/stores/profile'; // Ajusta la ruta a tu store
 import AddFormRoutine from '@/components/addFormRoutine.vue'; // Ajusta la ruta si es necesario
 import RoutineDetail from '@/components/RoutineDetail.vue';
 import { cloneDeep } from 'lodash-es';
 
-
+const cardMenuAbierto = ref(null); // id de la rutina cuyo menú está abierto
 const profileStore = useProfileStore();
 const showAddRoutineForm = ref(false);
 const showMainContent = ref(true);
 const isLoading = ref(true);
+const isMobile = ref(window.innerWidth < 768); // <768px se considera mobile
 
 // Usamos un computed para reaccionar a los cambios en el store
 const localRoutines = computed(() => profileStore.getUserRoutines);
 const routineRefs = ref(new Map());
 const rutinasMostradas = ref(new Set());
 const rutinaSeleccionada = ref(null);
+
+const handleClickOutside = (e) => {
+    const menuElement = document.querySelector('.dropdown-menu-container');
+    if (cardMenuAbierto.value !== null && !menuElement?.contains(e.target)) {
+        cardMenuAbierto.value = null;
+    }
+};
+
+import { watch } from 'vue';
+
+watch(cardMenuAbierto, (nuevoValor) => {
+    if (nuevoValor !== null) {
+        window.addEventListener('click', handleClickOutside);
+    } else {
+        window.removeEventListener('click', handleClickOutside);
+    }
+});
+
+
+const cerrarMenu = (e) => {
+    if (!e.target.closest('.dropdown-menu-container')) {
+        cardMenuAbierto.value = null;
+    }
+};
 
 onMounted(async () => {
     isLoading.value = true;
@@ -201,6 +253,10 @@ const renderDifficulty = (dificultad) => {
     align-items: center;
 }
 
+#add-routine {
+    width: 100%;
+}
+
 .routines-container {
     width: 90%;
 }
@@ -221,7 +277,7 @@ const renderDifficulty = (dificultad) => {
     align-items: center;
 }
 
-.routine-resumen li {
+.routine-resumen .routine-card {
     position: relative;
     border: 1px solid lightgray;
     padding: 20px 10px;
@@ -232,22 +288,22 @@ const renderDifficulty = (dificultad) => {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.routine-resumen li h3 {
+.routine-resumen .routine-card h3 {
     margin: 20px 5px;
 }
 
-.routine-resumen li.expanded {
+.routine-resumen .routine-card .expanded {
     width: 100%;
 }
 
-.routine-resumen li:hover {
+.routine-resumen .routine-card:hover {
     border-color: #aaa;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
     background-color: #202020;
 }
 
-.routine-resumen li:active {
+.routine-resumen .routine-card:active {
     transform: scale(0.98);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
@@ -323,14 +379,14 @@ const renderDifficulty = (dificultad) => {
         flex-wrap: wrap;
     }
 
-    .routine-resumen li {
+    .routine-resumen .routine-card {
         min-width: 350px;
         width: 45%;
         max-width: 500px;
         font-size: 18px;
     }
 
-    .routine-resumen li.expanded {
+    .routine-resumen .routine-card.expanded {
         width: 100%;
         /* o el valor que te guste más visualmente */
         max-width: 600px;
@@ -343,6 +399,10 @@ const renderDifficulty = (dificultad) => {
     .edit-resume-container {
         font-size: 20px;
         gap: 10px;
+    }
+
+    #add-routine {
+        width: auto;
     }
 
 }
@@ -382,5 +442,53 @@ const renderDifficulty = (dificultad) => {
 .fade-item-leave-to {
     opacity: 0;
     transform: translateY(-10px);
+}
+
+.dropdown-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropdown-menu-container>span {
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.dropdown-menu-container>span:hover {
+    color: aqua;
+}
+
+.mini-menu {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background-color: #1f1f1f;
+    border: 1px solid #555;
+    border-radius: 6px;
+    list-style: none;
+    padding: 8px 0;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.mini-menu li {
+    padding: 6px 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    border: 0px;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.mini-menu li:hover {
+    background-color: #333;
+    color: aqua;
 }
 </style>

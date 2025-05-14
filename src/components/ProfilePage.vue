@@ -1,6 +1,6 @@
 <template>
     <div class="contenedor">
-        <h1>Mi Perfil</h1>
+        <h1>Mi Perfil <i class="bi bi-person-circle"></i></h1>
 
         <div class="info-container">
             <div class="w-100 mb-4 justify-content-center d-flex align-items-end gap-3">
