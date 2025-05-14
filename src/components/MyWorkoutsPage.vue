@@ -283,7 +283,6 @@ const renderDifficulty = (dificultad) => {
     padding: 20px 10px;
     border-radius: 8px;
     width: 100%;
-    cursor: pointer;
     transition: all 0.45s ease-in-out;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -397,8 +396,8 @@ const renderDifficulty = (dificultad) => {
     }
 
     .edit-resume-container {
-        font-size: 20px;
-        gap: 10px;
+        font-size: 18px;
+        gap: 5px;
     }
 
     #add-routine {

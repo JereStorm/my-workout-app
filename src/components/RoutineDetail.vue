@@ -12,7 +12,7 @@
         <div v-for="(bloque, indexBloque) in rutina.bloques" :key="indexBloque" class="my-3">
             <div class="d-flex justify-content-between align-items-baseline">
                 <p class="h5 text-lg text-start font-semibold mb-2">{{ indexBloque + 1 }}° Bloque </p>
-                <p class="h5 text-sm text-end text-gray-400 mb-2">Series: {{ bloque.series }}</p>
+                <p class="h5 text-sm text-end text-gray-400 mb-2">{{ bloque.series }} Series</p>
             </div>
             <ul class="space-y-2 list-unstyled">
                 <li v-for="(ejercicio, indexEjercicio) in bloque.ejercicios" :key="indexEjercicio" class="p-3 rounded">
