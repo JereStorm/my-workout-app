@@ -5,23 +5,41 @@
                 @routine-added="handleRoutineAdded" @close="closeAddRoutineForm" />
         </transition>
         <transition name="slide-fade" @after-leave="showAddRoutineForm = true">
+
             <div v-show="showMainContent" class="routines-container">
+                <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
+
                 <div class="text-center mb-5">
-                    <button @click="openAddRoutineForm" class="btn btn-outline-danger px-5" id="add-routine">Agregar
-                        rutina</button>
+                    <button @click="openAddRoutineForm" class="btn btn-outline-danger px-5" id="add-routine">
+                        Agregar rutina
+                    </button>
                 </div>
-                <div v-show="localRoutines.length > 0">
+
+                <!-- Selector de orden -->
+                <div v-show="sortedRoutines.length > 0">
+                    <div class="d-flex align-items-baseline w-100 text-start ms-5 mb-3">
+                        <label for="orderBy" class="me-2">Ordenar por</label>
+                        <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
+                            <option value="asc">De más fácil</option>
+                            <option value="desc">De más difícil</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div v-show="sortedRoutines.length > 0">
                     <transition-group name="fade-item" tag="ul" class="routine-resumen"
-                        :class="{ 'column-layout': rutinasMostradas.size > 0 }">
-                        <li v-for="routine in localRoutines" :key="routine.id"
+                        :class="{ 'column-layout': rutinasMostradas.length > 0 }">
+                        <li v-for="routine in sortedRoutines" :key="routine.id"
                             :ref="el => routineRefs.set(routine.id, el)" class="mb-1 routine-card"
-                            :class="{ 'expanded': rutinasMostradas.has(routine.id) }">
+                            :class="{ 'expanded': rutinasMostradas.includes(routine.id) }">
                             <!-- Bloques (esquina superior izquierda) -->
                             <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
-                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{
+                                <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{
                                     routine.bloques.length }} Bloques</h6>
-                                <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{ totalSeries(routine)
-                                    }} Series</h6>
+                                <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{ totalSeries(routine) }}
+                                    Series
+                                </h6>
                             </div>
 
                             <div class="text-center font-weight-medium  my-2">
@@ -31,25 +49,27 @@
                             </div>
 
                             <transition name="expand-fade">
-                                <RoutineDetail v-show="rutinasMostradas.has(routine.id)" :rutina="routine" />
+                                <RoutineDetail v-show="rutinasMostradas.includes(routine.id)" :rutina="routine" />
                             </transition>
 
                             <!-- Dificultad abajo -->
                             <div class="d-flex justify-content-between align-items-baseline text-gray-700 ">
                                 <h6 class="mb-0 difficulty-container"
-                                    :class="{ 'h4': rutinasMostradas.has(routine.id) }" :title="routine.dificultad">
+                                    :class="{ 'h4': rutinasMostradas.includes(routine.id) }"
+                                    :title="routine.dificultad">
                                     <span v-html="renderDifficulty(routine.dificultad)"></span>
-                                    <span class="difficulty d-none d-sm-inline" v-if="rutinasMostradas.has(routine.id)">
+                                    <span class="difficulty d-none d-sm-inline"
+                                        v-if="rutinasMostradas.includes(routine.id)">
                                         ({{ routine.dificultad }})
                                     </span>
 
                                 </h6>
 
-                                <div v-if="isMobile && !rutinasMostradas.has(routine.id)"
+                                <div v-if="isMobile && !rutinasMostradas.includes(routine.id)"
                                     class="dropdown-menu-container" @click.stop>
                                     <span
                                         @click.stop="cardMenuAbierto = cardMenuAbierto === routine.id ? null : routine.id">
-                                        <i class="bi bi-gear-fill"></i>
+                                        <i class="bi bi-three-dots-vertical"></i>
                                     </span>
                                     <transition name="fade-item">
                                         <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
@@ -85,47 +105,71 @@
 
                             </div>
                         </li>
-
                     </transition-group>
                 </div>
-                <div v-if="localRoutines.length == 0 && !isLoading">
-                    <h5>No hay rutinas guardadas.</h5>
-                </div>
 
+                <div v-show="sortedRoutines.length === 0 && !isLoading">
+                    <h5>No hay rutinas guardadas aún.</h5>
+                </div>
             </div>
         </transition>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
-import { useProfileStore } from '@/stores/profile'; // Ajusta la ruta a tu store
-import AddFormRoutine from '@/components/addFormRoutine.vue'; // Ajusta la ruta si es necesario
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
+import { useProfileStore } from '@/stores/profile';
+import AddFormRoutine from '@/components/addFormRoutine.vue';
 import RoutineDetail from '@/components/RoutineDetail.vue';
 import { cloneDeep } from 'lodash-es';
+import { RouterLink } from 'vue-router';
 
-const cardMenuAbierto = ref(null); // id de la rutina cuyo menú está abierto
 const profileStore = useProfileStore();
 const showAddRoutineForm = ref(false);
 const showMainContent = ref(true);
 const isLoading = ref(true);
-const isMobile = ref(window.innerWidth < 768); // <768px se considera mobile
-
-// Usamos un computed para reaccionar a los cambios en el store
-const localRoutines = computed(() => profileStore.getUserRoutines);
-const routineRefs = ref(new Map());
-const rutinasMostradas = ref(new Set());
+const isMobile = ref(window.innerWidth < 768);
 const rutinaSeleccionada = ref(null);
+const routineRefs = ref(new Map());
+const rutinasMostradas = ref([]);
 
-const handleClickOutside = (e) => {
-    const menuElement = document.querySelector('.dropdown-menu-container');
-    if (cardMenuAbierto.value !== null && !menuElement?.contains(e.target)) {
-        cardMenuAbierto.value = null;
-    }
+const cardMenuAbierto = ref(null);
+
+// Mapear nivel de dificultad a valor numérico
+const niveles = {
+    'Muy facil': 1,
+    'Facil': 2,
+    'Intermedia': 3,
+    'Dificil': 4,
+    'Muy dificil': 5
 };
 
-import { watch } from 'vue';
+/** 
+ * Estado para seleccionar orden de listado:
+ * 'asc'  = de más fácil a más difícil
+ * 'desc' = de más difícil a más fácil
+ */
+const order = ref('desc');
 
+/**
+ * Lista original desde el store, reactiva.
+ */
+const rawRoutines = computed(() => profileStore.getUserRoutines);
+
+/**
+ * Computed que devuelve `rawRoutines` ordenadas según `order`.
+ */
+const sortedRoutines = computed(() => {
+    return [...rawRoutines.value].sort((a, b) => {
+        const na = niveles[a.dificultad] || 0;
+        const nb = niveles[b.dificultad] || 0;
+        return order.value === 'asc' ? na - nb : nb - na;
+    });
+});
+
+/**
+ * Observamos el estado cardMenuAbierto y manejamos los listeners
+ */
 watch(cardMenuAbierto, (nuevoValor) => {
     if (nuevoValor !== null) {
         window.addEventListener('click', handleClickOutside);
@@ -134,7 +178,20 @@ watch(cardMenuAbierto, (nuevoValor) => {
     }
 });
 
+/**
+ * Maneja el estado del mini menu que se encuentra en las cards version mobile
+ * @param e 
+ */
+const handleClickOutside = (e) => {
+    const menuElement = document.querySelector('.dropdown-menu-container');
+    if (cardMenuAbierto.value !== null && !menuElement?.contains(e.target)) {
+        cardMenuAbierto.value = null;
+    }
+};
 
+/**
+ * Recarga las rutinas desde Firebase al montar el componente.
+ */
 onMounted(async () => {
     isLoading.value = true;
     try {
@@ -144,97 +201,103 @@ onMounted(async () => {
     }
 });
 
-const mostrarRutina = (rutinaId) => {
-    if (rutinasMostradas.value.has(rutinaId)) {
-        rutinasMostradas.value.delete(rutinaId);
+/**
+ * Expande o colapsa la vista detallada de una rutina y hace scroll hacia ella.
+ * @param {string} rutinaId 
+ */
+function mostrarRutina(rutinaId) {
+    const index = rutinasMostradas.value.indexOf(rutinaId);
+    if (index !== -1) {
+        rutinasMostradas.value.splice(index, 1);
     } else {
-        rutinasMostradas.value.add(rutinaId);
+        rutinasMostradas.value.push(rutinaId);
         nextTick(() => {
             setTimeout(() => {
-                const el = routineRefs.value.get(rutinaId); // Accede al ref usando .value
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                const el = routineRefs.value.get(rutinaId);
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 300);
         });
     }
-};
+}
 
-const eliminarRutina = (rutinaId) => {
-    if (confirm("¿Estás seguro de que querés eliminar esta rutina?")) {
+
+/**
+ * Elimina una rutina tras confirmación del usuario.
+ * @param {string} rutinaId 
+ */
+function eliminarRutina(rutinaId) {
+    if (confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
         profileStore.deleteRutina(rutinaId);
-        rutinasMostradas.value.delete(rutinaId);
-    }
-};
 
-const editarRutina = (rutina) => {
+        const index = rutinasMostradas.value.indexOf(rutinaId);
+        if (index !== -1) {
+            rutinasMostradas.value.splice(index, 1);
+        }
+    }
+}
+
+/**
+ * Prepara el formulario para editar una rutina existente.
+ * @param {Object} rutina 
+ */
+function editarRutina(rutina) {
     rutinaSeleccionada.value = cloneDeep(rutina);
     showMainContent.value = false;
-};
+}
 
-const copiarRutina = async (rutina) => {
+/**
+ * Copia una rutina y la agrega al inicio de la lista.
+ * @param {Object} rutina 
+ */
+async function copiarRutina(rutina) {
     const copia = {
         ...JSON.parse(JSON.stringify(rutina)),
         nombre: rutina.nombre + ' (copia)'
     };
     delete copia.id;
     delete copia.fechaCreacion;
-
     try {
-        const docRef = await profileStore.createRutinaFirebase(copia); // ahora devolvemos el docRef
-        const newId = docRef.id;
-
-        mostrarRutina(newId); // expandimos visualmente
-
-    } catch (error) {
-        console.error('Error copiando rutina:', error);
+        const docRef = await profileStore.createRutinaFirebase(copia);
+        mostrarRutina(docRef.id);
+    } catch (err) {
+        console.error('Error copiando rutina:', err);
     }
-};
+}
 
-
-const handleRoutineAdded = async (rutina) => {
-    try {
-        closeAddRoutineForm();
-        if (rutina.editada) {
-            // Lógica para actualizar en Firebase 
-            await profileStore.updateRutina(rutina);
-        } else {
-            const docRef = await profileStore.createRutinaFirebase(rutina); // ahora devolvemos el docRef
-            const newId = docRef.id;
-            rutina.id = newId;
-            //opcional expandir la rutina al completarse la edicion / agregado
-            mostrarRutina(rutina.id)
-        }
-    } catch (error) {
-        console.error('Error al guardar la rutina:', error);
-        // Aquí podrías mostrar un mensaje de error al usuario
+/**
+ * Maneja el evento de agregado/edición de rutina desde el formulario.
+ * @param {Object} rutina 
+ */
+async function handleRoutineAdded(rutina) {
+    closeAddRoutineForm();
+    if (rutina.editada) {
+        await profileStore.updateRutina(rutina);
+    } else {
+        const docRef = await profileStore.createRutinaFirebase(rutina);
+        rutina.id = docRef.id;
+        mostrarRutina(rutina.id);
     }
-};
+}
 
-const openAddRoutineForm = () => {
+/** Muestra el formulario de nueva rutina */
+function openAddRoutineForm() {
     showMainContent.value = false;
-};
+}
 
-const closeAddRoutineForm = () => {
+/** Cierra el formulario y resetea selección */
+function closeAddRoutineForm() {
     showAddRoutineForm.value = false;
     rutinaSeleccionada.value = null;
-};
+}
 
-const totalSeries = (routine) => {
-    return (routine.bloques || []).reduce((total, bloque) => total + (bloque.series || 1), 0);
-};
+/** Cuenta el total de series de una rutina */
+const totalSeries = (routine) =>
+    (routine.bloques || []).reduce((sum, b) => sum + (b.series || 1), 0);
 
-const renderDifficulty = (dificultad) => {
-    const niveles = {
-        "Muy facil": 1,
-        "Facil": 2,
-        "Intermedia": 3,
-        "Dificil": 4,
-        "Muy dificil": 5
-    };
-    const rayos = '⚡️'.repeat(niveles[dificultad] || 0);
-    return rayos;
-};
+/** Renderiza iconos de dificultad con rayos */
+const renderDifficulty = (dificultad) =>
+    '⚡️'.repeat(niveles[dificultad] || 0);
+
 </script>
 
 <style scoped>
@@ -457,14 +520,14 @@ const renderDifficulty = (dificultad) => {
 
 .mini-menu {
     position: absolute;
-    top: -50px;
+    top: -96px;
     right: 0;
     background-color: #1f1f1f;
     border: 1px solid #555;
     border-radius: 6px;
     list-style: none;
-    padding: 8px 0;
-    z-index: 10;
+    padding: 5px 0;
+    z-index: 10000;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 

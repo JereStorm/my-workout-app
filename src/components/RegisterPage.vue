@@ -3,7 +3,8 @@
         <transition name="fade-slide-register" mode="out-in">
             <form v-show="showForm" class="form-register p-4 rounded shadow" @submit.prevent="register">
                 <div class="d-flex justify-content-between">
-                    <h2 class="text-center ms-3 mb-4 fw-bold text-light">Register <i class="bi bi-person-add"></i></h2>
+                    <h2 class="text-center ms-3 mb-4 fw-bold text-light">Registro <i class="bi bi-person-add"></i>
+                    </h2>
                     <router-link class="text-decoration-none" to="/">
                         <button type="button" class="btn-exit btn btn-outline-light"><i class="bi bi-x"></i></button>
                     </router-link>
@@ -11,24 +12,30 @@
                 <div class="mb-3 text-start">
                     <label for="inputEmail" class="form-label text-light">Email</label>
                     <input required v-model="email" type="email" class="form-control" id="inputEmail"
-                        placeholder="Enter your email">
+                        placeholder="leomessi@gmail.com">
                 </div>
                 <div class="mb-3 text-start">
-                    <label for="inputPassword" class="form-label text-light">Password</label>
+                    <label for="inputPassword" class="form-label text-light">Contraseña</label>
                     <input required v-model="password" type="password" class="form-control" id="inputPassword"
-                        placeholder="Enter your password">
+                        placeholder="**********">
+                </div>
+                <div class="mb-3 text-start">
+                    <label for="confirmPassword" class="form-label text-light">Confirmar contraseña</label>
+                    <input required v-model="confirmPassword" type="password" class="form-control" id="confirmPassword"
+                        placeholder="**********">
                 </div>
 
+
                 <button class="btn-register btn w-100 py-2 text-light" type="submit">
-                    Register <i class="bi bi-send-fill"></i>
+                    Registrarse <i class="bi bi-send-fill"></i>
                 </button>
 
                 <!-- Notificador de éxito/error -->
                 <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
-                    Already have an account?
-                    <router-link to="/login" class="login">Login</router-link>
+                    ¿Ya tenes tu cuenta?
+                    <router-link to="/login" class="login">Inicia sesion</router-link>
                 </p>
             </form>
         </transition>
@@ -42,6 +49,8 @@ import Notifier from "@/components/NotifierComponent.vue"; // Importamos el noti
 
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
+
 const showForm = ref(false);
 const showNotifier = ref(false); // Controla la visibilidad del Notifier
 const notification = ref({ message: "", type: "" });
@@ -49,32 +58,38 @@ const notification = ref({ message: "", type: "" });
 const userStore = useUserStore();
 
 const register = async () => {
-    notification.value = { message: "", type: "" }; // Limpiar notificación anterior
-    showNotifier.value = false; // Asegurar que la animación se reinicie
+    notification.value = { message: "", type: "" };
+    showNotifier.value = false;
+
+    // Validación local de confirmación de contraseña
+    if (password.value !== confirmPassword.value) {
+        confirmPassword.value = "";
+        notification.value = { message: "Las contraseñas no coinciden.", type: "error" };
+        showNotifier.value = true;
+        return;
+    }
 
     try {
-        const response = await userStore.register(email.value, password.value); // Esperamos respuesta
+        const response = await userStore.register(email.value, password.value);
 
         if (response.ok) {
             notification.value = { message: response.message, type: "success" };
+            setTimeout(() => {
+                showNotifier.value = false;
+                userStore.$router.push('/dashboard');
+            }, 1500);
         } else {
             notification.value = { message: response.message, type: "error" };
         }
-
     } catch (error) {
         console.error("Unexpected error:", error);
-        notification.value = { message: "Something went wrong. Please try again.", type: "error" };
+        notification.value = { message: "Error inesperado. Intentá de nuevo.", type: "error" };
     }
 
-    showNotifier.value = true; // Mostrar el notificador
+    showNotifier.value = true;
 
-
-    // Hacer que el mensaje desaparezca después de 3 segundos
-    setTimeout(() => {
-        showNotifier.value = false; // Oculta con animación
-        userStore.$router.push('/dashboard');
-    }, 1500);
 };
+
 
 // Se ejecuta cuando la animación de salida termina
 const clearNotification = () => {
@@ -134,7 +149,6 @@ main {
 .form-register {
     max-width: 400px;
     width: 92%;
-    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px;

@@ -11,21 +11,21 @@
                 <div class="mb-3 text-start">
                     <label for="inputEmail" class="form-label text-light">Email</label>
                     <input required v-model="email" type="email" class="form-control" id="inputEmail"
-                        placeholder="Enter your email">
+                        placeholder="leomessi@gmail.com">
                 </div>
                 <div class="mb-3 text-start">
-                    <label for="inputPassword" class="form-label text-light">Password</label>
+                    <label for="inputPassword" class="form-label text-light">Contraseña</label>
                     <input required v-model="password" type="password" class="form-control" id="inputPassword"
-                        placeholder="Enter your password">
+                        placeholder="*********">
                 </div>
-                <button class="btn-login btn w-100 py-2 text-light" type="submit">Sign
-                    In <i class="bi bi-send-fill"></i></button>
+                <button class="btn-login btn w-100 py-2 text-light" type="submit">Inciar Sesion <i
+                        class="bi bi-send-fill"></i></button>
                 <!-- Notificador de éxito/error -->
                 <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
-                    Don't have an account?
-                    <router-link to="/register">Register</router-link>
+                    ¿Todavia no tenes una cuenta?
+                    <router-link to="/register">Registrate</router-link>
                 </p>
             </form>
         </transition>
@@ -114,13 +114,12 @@ main {
 .form-login {
     max-width: 400px;
     width: 92%;
-    background: rgba(255, 255, 255, 0.1);
+    /* background: rgba(255, 255, 255, 0.1); */
     /* Fondo semi-transparente */
     backdrop-filter: blur(12px);
     /* Efecto blur */
     border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px;
-    border-radius: 12px;
 }
 
 .form-login label {

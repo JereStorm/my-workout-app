@@ -1,13 +1,14 @@
 <template>
     <div class="w-100">
         <SideBarComponent />
-        <transition name="route-fade" mode="out-in"
-            class="w-100 h-100 d-flex justify-content-center align-items-center">
-            <router-view />
-        </transition>
+        <router-view v-slot="{ Component }">
+            <transition name="route-fade" mode="out-in"
+                class="w-100 h-100 d-flex justify-content-center align-items-center">
+                <component :is="Component" />
+            </transition>
+        </router-view>
     </div>
 </template>
-
 
 <script setup>
 import { useProfileStore } from '@/stores/profile';
@@ -28,7 +29,6 @@ onMounted(() => {
         console.log("Onmounted: profile", profile)
     }
 });
-
 </script>
 
 <style scoped>
@@ -56,7 +56,7 @@ onMounted(() => {
 
 .route-fade-enter-active,
 .route-fade-leave-active {
-    transition: all 0.6s ease;
+    transition: all 0.3s ease;
 }
 
 .route-fade-enter-from {
