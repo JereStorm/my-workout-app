@@ -1,30 +1,37 @@
 import { defineStore } from "pinia";
 import { auth } from "../firebaseConfig";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { useProfileStore } from "./profile"; // Importa el profileStore
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "firebase/auth";
+import { useProfileStore } from "./profile";
 
 export const useUserStore = defineStore("user", {
     state: () => ({
         user: null,
-        profileStore: null,
     }),
     actions: {
         initAuthListener() {
-            onAuthStateChanged(auth, (user) => {
-                const profileStore = useProfileStore(); // usa directamente el store aquí
-                if (user) {
-                    this.user = { email: user.email, id: user.uid };
-                    // Asigna datos mínimos al profile (esto se puede ampliar después con Firestore si lo deseas)
-                    profileStore.setProfile({
-                        id: user.uid,
-                        email: user.email,
-                        nickname: "", // o podrías cargar desde BD si ya existe
-                        routines: [],
-                    });
-                    console.log("Sesión iniciada. Usuario:", this.user);
+            onAuthStateChanged(auth, async (fbUser) => {
+                const profileStore = useProfileStore();
+                if (fbUser) {
+                    // 1. guardamos en userStore
+                    this.user = { email: fbUser.email, id: fbUser.uid };
+
+                    // 2. cargamos (o creamos) perfil en Firestore
+                    await profileStore.loadProfile(fbUser.uid, fbUser.email);
+
+                    // 3. traemos las rutinas del usuario
+                    await profileStore.getRutinas();
+
+                    console.log("Sesión iniciada. Perfil y rutinas cargados.");
                 } else {
+                    // al desloguear
                     this.user = null;
-                    profileStore.setProfile(null);
+                    // opcional: reiniciar el store de perfil a estado inicial
+                    profileStore.$reset();
                 }
             });
         },

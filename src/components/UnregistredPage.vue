@@ -1,9 +1,9 @@
 <template>
     <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
         <h2>
-            my workout app
-            <span>my workout app</span>
-            <span>my workout app</span>
+            calistorm
+            <span>calistorm</span>
+            <span>calistorm</span>
             <span>Train Smart</span>
         </h2>
 
@@ -88,7 +88,7 @@
     letter-spacing: 0.7em;
     text-align: center;
     padding-left: 20px;
-    margin-left: 5px;
+    margin-left: 30px;
     transition: 0.5s;
 }
 

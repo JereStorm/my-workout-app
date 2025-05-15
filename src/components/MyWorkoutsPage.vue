@@ -21,7 +21,7 @@
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{
                                     routine.bloques.length }} Bloques</h6>
                                 <h6 :class="{ 'h5': rutinasMostradas.has(routine.id) }">{{ totalSeries(routine)
-                                    }} Series</h6>
+                                }} Series</h6>
                             </div>
 
                             <div class="text-center font-weight-medium  my-2">
@@ -141,14 +141,14 @@ const cerrarMenu = (e) => {
     }
 };
 
-onMounted(async () => {
-    isLoading.value = true;
-    try {
-        await profileStore.getRutinas();
-    } finally {
-        isLoading.value = false;
-    }
-});
+// onMounted(async () => {
+//     isLoading.value = true;
+//     try {
+//         await profileStore.getRutinas();
+//     } finally {
+//         isLoading.value = false;
+//     }
+// });
 
 const mostrarRutina = (rutinaId) => {
     if (rutinasMostradas.value.has(rutinaId)) {

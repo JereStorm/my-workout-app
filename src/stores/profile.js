@@ -1,130 +1,189 @@
 import { defineStore } from 'pinia';
-import { db } from '../firebaseConfig'; // Asegúrate de que la ruta sea correcta
-import { collection, query, where, getDocs, getDoc, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import {
+    collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc,
+} from 'firebase/firestore';
 
+/**
+ * Define el store de Pinia para la información del perfil del usuario.
+ */
 export const useProfileStore = defineStore('profile', {
+    /**
+     * Estado del store. Contiene la información del perfil del usuario.
+     */
     state: () => ({
         profile: {
             id: null,
             email: '',
             nickname: '',
             routines: [],
-            // ... otras propiedades del perfil
         },
     }),
+
+    /**
+      * Acciones del store. Contienen las funciones para modificar el estado
+      * y realizar operaciones asíncronas, como interactuar con Firebase.
+      */
     actions: {
-        setProfile(profileData) {
-            this.profile = { ...this.profile, ...profileData };
-            if (this.profile.routines === undefined) {
-                this.profile.routines = [];
+        /**
+         * Carga el perfil del usuario desde Firestore utilizando su UID.
+         * Si el perfil no existe, crea uno nuevo con el UID y el email proporcionados.
+         * @param {string} uid - El UID del usuario.
+         * @param {string} email - El email del usuario.
+         * @throws {Error} Si el UID del usuario es inválido.
+         */
+        async loadProfile(uid, email) {
+            if (!uid) {
+                throw new Error('UID de usuario inválido');
             }
 
-            console.log(this.profile)
-        },
-        updateNickname(nickname) {
-            this.profile = { ...this.profile, nickname };
-            console.log("UNick:", this.profile)
-        },
-        async getRutinas() {
+            const profileRef = doc(db, 'profiles', uid);
             try {
-                if (!this.profile.id) {
-                    throw new Error('El usuario no está autenticado');
+                const snapshot = await getDoc(profileRef);
+
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    this.profile = { id: uid, email: data.email, nickname: data.nickname || '', routines: [] };
+                } else {
+                    // Crear perfil inicial
+                    const initialProfile = { idUser: uid, email, nickname: '' };
+                    await setDoc(profileRef, initialProfile);
+                    this.profile = { id: uid, email, nickname: '', routines: [] };
                 }
+            } catch (error) {
+                console.error('Error al cargar o crear el perfil:', error);
+                throw error;
+            }
+        },
 
-                const routinesRef = collection(db, 'routines');
-                const q = query(routinesRef, where('idUser', '==', this.profile.id));
-                const querySnapshot = await getDocs(q);
+        /**
+         * Actualiza el nickname del usuario tanto en Firestore como en el estado local.
+         * @param {string} newNickname - El nuevo nickname del usuario.
+         * @throws {Error} Si el usuario no está autenticado (no tiene un ID de perfil).
+         */
+        async setNickname(newNickname) {
+            if (!this.profile.id) {
+                throw new Error('Usuario no autenticado');
+            }
 
-                const fetchedRoutines = [];
+            const profileRef = doc(db, 'profiles', this.profile.id);
+            try {
+                await updateDoc(profileRef, { nickname: newNickname });
+                this.profile.nickname = newNickname;
+            } catch (error) {
+                console.error('Error al actualizar el nickname:', error);
+                throw error;
+            }
+        },
 
-                querySnapshot.forEach((docSnap) => {
-                    fetchedRoutines.push({ id: docSnap.id, ...docSnap.data() });
+        /**
+         * Obtiene todas las rutinas asociadas al usuario autenticado desde Firestore.
+         * Las rutinas se ordenan por fecha de creación de forma descendente.
+         * @throws {Error} Si el usuario no está autenticado.
+         */
+        async getRutinas() {
+            if (!this.profile.id) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const routinesRef = collection(db, 'routines');
+            const queryConstraints = [where('idUser', '==', this.profile.id)];
+            const q = query(routinesRef, ...queryConstraints);
+
+            try {
+                const snapshot = await getDocs(q);
+                const routines = [];
+                snapshot.forEach((document) => {
+                    routines.push({ id: document.id, ...document.data() });
                 });
 
-                const sortedRoutines = fetchedRoutines.sort(
-                    (a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
-                );
+                // Ordenar las rutinas por fecha de creación descendente
+                routines.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
 
-                this.profile.routines = sortedRoutines;
-
-                console.log('Rutinas ordenadas y obtenidas de Firebase:', sortedRoutines);
+                this.profile.routines = routines;
             } catch (error) {
-                console.error('Error al obtener rutinas de Firebase:', error);
+                console.error('Error al obtener las rutinas:', error);
                 throw error;
             }
         },
+
+        /**
+         * Elimina una rutina de Firestore y actualiza el estado local.
+         * @param {string} routineId - El ID de la rutina a eliminar.
+         */
         async deleteRutina(routineId) {
             try {
-                // Eliminar de Firebase
+                this.profile.routines = this.profile.routines.filter((routine) => routine.id !== routineId);
                 await deleteDoc(doc(db, 'routines', routineId));
-                console.log('Rutina eliminada de Firebase:', routineId);
-
-                // Opcional: volver a sincronizar desde Firebase
-                await this.getRutinas();
             } catch (error) {
-                console.error('Error al eliminar rutina de Firebase:', error);
+                console.error('Error al eliminar la rutina:', error);
                 throw error;
             }
         },
-        async updateRutina(rutinaEditada) {
+
+        /**
+         * Actualiza una rutina existente en Firestore y actualiza el estado local.
+         * @param {object} rutina - El objeto de la rutina con los datos actualizados.
+         * @throws {Error} Si la rutina no tiene un ID.
+         */
+        async updateRutina(rutina) {
+            if (!rutina.id) {
+                throw new Error('Rutina sin ID');
+            }
+
+            const rutinaRef = doc(db, 'routines', rutina.id);
+            const { id, ...payload } = rutina;
             try {
-                if (!rutinaEditada.id) {
-                    throw new Error('La rutina no tiene un ID válido.');
-                }
-
-                const rutinaRef = doc(db, 'routines', rutinaEditada.id);
-
-                // Verificá si el documento existe antes de actualizar
-                const rutinaSnap = await getDoc(rutinaRef);
-                if (!rutinaSnap.exists()) {
-                    throw new Error(`La rutina con ID ${rutinaEditada.id} no existe en Firebase.`);
-                }
-
-                const rutinaParaFirebase = { ...rutinaEditada };
-                delete rutinaParaFirebase.id;
-
-                await updateDoc(rutinaRef, rutinaParaFirebase);
-                console.log('Rutina actualizada en Firebase:', rutinaEditada.id);
-
-                const index = this.profile.routines.findIndex(
-                    (rutina) => rutina.id === rutinaEditada.id
-                );
-
+                const index = this.profile.routines.findIndex((r) => r.id === rutina.id);
                 if (index !== -1) {
-                    // this.profile.routines.splice(index, 1, rutinaEditada);
-                    console.log('Rutina actualizada en estado local:', rutinaEditada);
-                    await this.getRutinas();
-                } else {
-                    console.warn(`No se encontró la rutina con ID: ${rutinaEditada.id}`);
+                    this.profile.routines.splice(index, 1, rutina);
                 }
+                await updateDoc(rutinaRef, payload);
             } catch (error) {
-                console.error('Error al actualizar rutina en Firebase:', error);
+                console.error('Error al actualizar la rutina:', error);
                 throw error;
             }
         },
+
+        /**
+         * Crea una nueva rutina en Firestore y la añade al estado local.
+         * @param {object} rutinaData - Los datos de la nueva rutina a crear.
+         * @returns {Promise<import('firebase/firestore').DocumentReference>} - La referencia del documento creado en Firestore.
+         */
         async createRutinaFirebase(rutinaData) {
+            const payload = {
+                ...rutinaData,
+                fechaCreacion: new Date().toISOString(),
+                idUser: this.profile.id,
+            };
+
             try {
-                const newRoutine = {
-                    fechaCreacion: new Date().toISOString(),
-                    idUser: this.profile.id,
-                    ...rutinaData,
-                };
-
-                const docRef = await addDoc(collection(db, 'routines'), newRoutine);
-
-                const serverRoutine = { ...newRoutine, id: docRef.id };
-                // console.log("Server Routine: ", serverRoutine)
-                this.profile.routines.unshift(serverRoutine);
-                return docRef; //Devolvemos el ref para que lo uses en copiar
+                const docRef = await addDoc(collection(db, 'routines'), payload);
+                const newRutina = { id: docRef.id, ...payload };
+                this.profile.routines.unshift(newRutina);
+                return docRef;
             } catch (error) {
-                console.error('Error al crear rutina en Firebase:', error);
+                console.error('Error al crear la rutina en Firebase:', error);
                 throw error;
             }
         },
-
     },
+    /**
+     * Getters del store. Permiten acceder al estado de forma computada.
+     */
     getters: {
+        /**
+         * Obtiene el nickname del perfil del usuario.
+         * @param {object} state - El estado actual del store.
+         * @returns {string} - El nickname del usuario.
+         */
         getNickname: (state) => state.profile.nickname,
+
+        /**
+         * Obtiene la lista de rutinas del perfil del usuario.
+         * @param {object} state - El estado actual del store.
+         * @returns {Array<object>} - La lista de rutinas del usuario.
+         */
         getUserRoutines: (state) => state.profile.routines,
-    }
+    },
 });

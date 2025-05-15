@@ -52,7 +52,7 @@
         <!-- 🔹 Botón para abrir sidebar (solo mobile) -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
             <!-- <h1 class="mb-0">C a l i<span> T a s k</span></h1> -->
-            <router-link to="/dashboard" class="h2 mb-0 text-light ">
+            <router-link to="/dashboard" class="h2 mb-0 d-flex gap-2">
                 <i class="bi bi-house"></i>
             </router-link>
             <button class="btn btn-outline-info" @click.stop="toggleSidebar">

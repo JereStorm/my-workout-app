@@ -34,13 +34,12 @@ const profile = computed(() => profileStore.profile);
 const nickname = ref('');
 
 onMounted(async () => {
-    await profileStore.getRutinas();
     nickname.value = profile.value.nickname;
 });
 
 const guardarNickname = async () => {
     try {
-        profileStore.updateNickname(nickname.value);
+        profileStore.setNickname(nickname.value);
         // También actualiza en Firestore si tenés ese código
         alert('Nombre de usuario actualizado correctamente');
     } catch (error) {
