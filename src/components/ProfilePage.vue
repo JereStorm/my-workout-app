@@ -120,7 +120,9 @@ h2 {
 @media only screen and (min-width: 768px) {
     .contenedor {
         padding-left: 180px;
+        padding-top: 30px;
         margin: 0 auto;
+        margin-top: 20px;
     }
 }
 </style>

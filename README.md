@@ -40,7 +40,7 @@
 
 ## 🛠️ En desarrollo / Mejoras previstas
 
-🔄 **Persistencia del perfil**  
+🔄 **Persistencia del perfil**  (HECHO 14/05)
 - Guardado y recuperación del nickname del usuario en Firestore (actualmente es solo local).
 
 📅 **Historial de entrenamientos**  
@@ -58,7 +58,7 @@
 🌙 **Tema oscuro / claro**  
 - Selector de tema visual, con preferencia guardada en el dispositivo.
 
-🔐 **Reglas de seguridad personalizadas**  
+🔐 **Reglas de seguridad personalizadas**  (HECHO 14/05)
 - Las reglas de Firestore aseguran que cada usuario solo vea o edite sus propias rutinas.
 
 ---
