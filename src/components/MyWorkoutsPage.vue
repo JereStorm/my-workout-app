@@ -1,12 +1,6 @@
 <template>
     <div class="my-workouts">
-        <!-- <transition name="slide-fade" @after-leave="showMainContent = true">
-            <AddFormRoutine v-show="showAddRoutineForm" :rutinaParaEditar="rutinaSeleccionada"
-                @routine-added="handleRoutineAdded" @close="closeAddRoutineForm" />
-        </transition> -->
-
-
-        <div v-show="showMainContent" class="routines-container">
+        <div class="routines-container">
             <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
             <div class="text-center mb-5">
@@ -116,17 +110,12 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
-import AddFormRoutine from '@/components/addFormRoutine.vue';
 import RoutineDetail from '@/components/RoutineDetail.vue';
-import { cloneDeep } from 'lodash-es';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 
 const profileStore = useProfileStore();
-const showAddRoutineForm = ref(false);
-const showMainContent = ref(true);
 const isLoading = ref(true);
 const isMobile = ref(window.innerWidth < 768);
-const rutinaSeleccionada = ref(null);
 const routineRefs = ref(new Map());
 const rutinasMostradas = ref([]);
 const route = useRoute();
@@ -265,32 +254,6 @@ async function copiarRutina(rutina) {
     }
 }
 
-/**
- * Maneja el evento de agregado/edición de rutina desde el formulario.
- * @param {Object} rutina 
- */
-async function handleRoutineAdded(rutina) {
-    closeAddRoutineForm();
-    if (rutina.editada) {
-        await profileStore.updateRutina(rutina);
-    } else {
-        const docRef = await profileStore.createRutinaFirebase(rutina);
-        rutina.id = docRef.id;
-        mostrarRutina(rutina.id);
-    }
-}
-
-/** Muestra el formulario de nueva rutina */
-function openAddRoutineForm() {
-    showMainContent.value = false;
-}
-
-/** Cierra el formulario y resetea selección */
-function closeAddRoutineForm() {
-    showAddRoutineForm.value = false;
-    rutinaSeleccionada.value = null;
-}
-
 /** Cuenta el total de series de una rutina */
 const totalSeries = (routine) =>
     (routine.bloques || []).reduce((sum, b) => sum + (b.series || 1), 0);
@@ -367,22 +330,6 @@ const renderDifficulty = (dificultad) =>
 
 .difficulty-container .difficulty {
     font-size: 18px;
-}
-
-/* Animación de entrada para el formulario */
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-    transition: all 0.3s ease-out;
-}
-
-.slide-fade-enter-from {
-    transform: translateY(-20px);
-    opacity: 0;
-}
-
-.slide-fade-leave-to {
-    transform: translateY(20px);
-    opacity: 0;
 }
 
 .edit-resume-container {
