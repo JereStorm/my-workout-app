@@ -151,6 +151,7 @@ const nuevaRutina = reactive({
 });
 
 onMounted(async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     const rutinaIdFromRoute = route.query.id;
     if (rutinaIdFromRoute) {
         try {

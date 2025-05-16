@@ -175,6 +175,19 @@ watch(cardMenuAbierto, (nuevoValor) => {
 });
 
 /**
+ * Recarga las rutinas desde Firebase al montar el componente.
+ */
+onMounted(async () => {
+    isLoading.value = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+        // await profileStore.getRutinas();
+    } finally {
+        isLoading.value = false;
+    }
+});
+
+/**
  * Maneja el estado del mini menu que se encuentra en las cards version mobile
  * @param e 
  */
@@ -184,18 +197,6 @@ const handleClickOutside = (e) => {
         cardMenuAbierto.value = null;
     }
 };
-
-/**
- * Recarga las rutinas desde Firebase al montar el componente.
- */
-onMounted(async () => {
-    isLoading.value = true;
-    try {
-        // await profileStore.getRutinas();
-    } finally {
-        isLoading.value = false;
-    }
-});
 
 /**
  * Expande o colapsa la vista detallada de una rutina y hace scroll hacia ella.

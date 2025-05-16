@@ -12,15 +12,12 @@
 
 <script setup>
 import { useProfileStore } from '@/stores/profile';
-// import { useUserStore } from '@/stores/user';
 import { storeToRefs } from "pinia";
 import { onMounted } from 'vue';
 import SideBarComponent from './SideBarComponent.vue';
 
-// const userStore = useUserStore();
 const profileStore = useProfileStore();
 
-// const { user } = storeToRefs(userStore); // 🌟 Hacemos `user` reactivo en el componente
 const { profile } = storeToRefs(profileStore); // 🌟 Hacemos `user` reactivo en el componente
 
 onMounted(() => {
