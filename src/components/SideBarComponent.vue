@@ -29,7 +29,7 @@
                     <li class="nav-item">
                         <router-link to="/dashboard/my-profile"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
-                            <i class="bi bi-person-circle"></i> Mi perfil
+                            <i class="bi bi-person-circle"></i> Mi Perfil
                         </router-link>
                     </li>
                     <hr />
@@ -37,7 +37,7 @@
                         <button
                             class="nav-link d-flex flex-column justify-content-center align-items-center text-light px-1"
                             @click.prevent="logout">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar sesion
+                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
                         </button>
                     </li>
                 </ul>

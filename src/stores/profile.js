@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { db } from '../firebaseConfig';
 import {
-    collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc,
+    collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc, orderBy
 } from 'firebase/firestore';
 
 /**
@@ -87,7 +87,10 @@ export const useProfileStore = defineStore('profile', {
             }
 
             const routinesRef = collection(db, 'routines');
-            const queryConstraints = [where('idUser', '==', this.profile.id)];
+            const queryConstraints = [
+                where('idUser', '==', this.profile.id),
+                orderBy('fechaCreacion', 'desc') // Ordenar por fecha de creación descendente por defecto
+            ];
             const q = query(routinesRef, ...queryConstraints);
 
             try {
@@ -96,10 +99,6 @@ export const useProfileStore = defineStore('profile', {
                 snapshot.forEach((document) => {
                     routines.push({ id: document.id, ...document.data() });
                 });
-
-                // Ordenar las rutinas por fecha de creación descendente
-                routines.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-
                 this.profile.routines = routines;
             } catch (error) {
                 console.error('Error al obtener las rutinas:', error);

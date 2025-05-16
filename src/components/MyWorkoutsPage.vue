@@ -9,16 +9,16 @@
                 </RouterLink>
             </div>
 
-            <!-- Selector de orden -->
-            <div v-show="sortedRoutines.length > 0">
+            <div v-show="rawRoutines.length > 0">
                 <div class="d-flex align-items-baseline w-100 text-start ms-5 mb-3">
                     <label for="orderBy" class="me-2">Ordenar por</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
+                        <option value="fechaCreacionDesc">Más Reciente</option>
+                        <option value="fechaCreacionAsc">Más Antigua</option>
                         <option value="asc">De más fácil</option>
                         <option value="desc">De más difícil</option>
                     </select>
                 </div>
-
             </div>
 
             <div v-show="sortedRoutines.length > 0">
@@ -65,7 +65,7 @@
                                 </span>
                                 <transition name="fade-item">
                                     <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
-                                        <li @click="mostrarRutina(routine.id)">
+                                        <li @click="expandirRutina(routine.id)">
                                             <i class="bi bi-arrows-angle-expand"></i>
                                         </li>
                                         <li @click.stop="editarRutina(routine)">
@@ -81,7 +81,7 @@
                                 </transition>
                             </div>
                             <div v-else class="edit-resume-container">
-                                <span @click="mostrarRutina(routine.id)">
+                                <span @click="expandirRutina(routine.id)">
                                     <i class="bi bi-arrows-angle-expand"></i>
                                 </span>
                                 <span @click.stop="editarRutina(routine)">
@@ -137,7 +137,7 @@ const niveles = {
  * 'asc'  = de más fácil a más difícil
  * 'desc' = de más difícil a más fácil
  */
-const order = ref('desc');
+const order = ref('fechaCreacionDesc');
 
 /**
  * Lista original desde el store, reactiva.
@@ -149,9 +149,15 @@ const rawRoutines = computed(() => profileStore.getUserRoutines);
  */
 const sortedRoutines = computed(() => {
     return [...rawRoutines.value].sort((a, b) => {
-        const na = niveles[a.dificultad] || 0;
-        const nb = niveles[b.dificultad] || 0;
-        return order.value === 'asc' ? na - nb : nb - na;
+        if (order.value === 'fechaCreacionDesc') {
+            return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
+        } else if (order.value === 'fechaCreacionAsc') {
+            return new Date(a.fechaCreacion) - new Date(b.fechaCreacion);
+        } else {
+            const na = niveles[a.dificultad] || 0;
+            const nb = niveles[b.dificultad] || 0;
+            return order.value === 'asc' ? na - nb : nb - na;
+        }
     });
 });
 
@@ -193,7 +199,7 @@ onMounted(async () => {
  * Expande o colapsa la vista detallada de una rutina y hace scroll hacia ella.
  * @param {string} rutinaId 
  */
-function mostrarRutina(rutinaId) {
+function expandirRutina(rutinaId) {
     const index = rutinasMostradas.value.indexOf(rutinaId);
     if (index !== -1) {
         rutinasMostradas.value.splice(index, 1);
@@ -248,7 +254,7 @@ async function copiarRutina(rutina) {
     delete copia.fechaCreacion;
     try {
         const docRef = await profileStore.createRutinaFirebase(copia);
-        mostrarRutina(docRef.id);
+        expandirRutina(docRef.id);
     } catch (err) {
         console.error('Error copiando rutina:', err);
     }
