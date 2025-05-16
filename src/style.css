@@ -59,13 +59,13 @@ body {
 /* Botón Info - Agregar Bloque */
 .btn-info {
   background: linear-gradient(135deg, #00cfff, #00ffaa);
-  color: #101010;
+  color: #282828;
 }
 
 /* Botón Success - Guardar Rutina */
 .btn-success {
   background: linear-gradient(135deg, #00ffaa, #00ff88);
-  color: #101010;
+  color: #282828;
 }
 
 /* Botón Danger - Cancelar */
@@ -82,7 +82,7 @@ body {
 
 .btn-outline-info:hover {
   background: #00cfff;
-  color: #101010;
+  color: #242424;
 }
 
 /* Outline Success */
@@ -93,7 +93,7 @@ body {
 
 .btn-outline-success:hover {
   background: #00ffaa;
-  color: #101010;
+  color: #242424;
 }
 
 /* Outline Danger */

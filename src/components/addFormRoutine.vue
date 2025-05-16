@@ -3,7 +3,7 @@
         <h2 class="text-center mb-4">
             {{ nuevaRutina.id ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
         </h2>
-        <form @submit.prevent="guardarRutina" class="bg-dark p-4">
+        <form @submit.prevent="guardarRutina" class="bg-dark p-2 p-md-4">
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" v-model="nuevaRutina.nombre" spellcheck="false" autocomplete="on"
@@ -34,7 +34,7 @@
             </div>
 
             <div v-for="(bloque, index) in nuevaRutina.bloques" :key="index"
-                class="bloque-container mb-3 px-3 py-2 rounded text-start">
+                class="bloque-container mb-3 px-2 pt-2 pb-3 rounded text-start">
                 <div class="mb-3 d-flex justify-content-between align-items-baseline ">
                     <h5 class="text-start m-0">{{ index + 1 }}° Bloque</h5>
                     <div class="d-flex flex-column align-items-center justify-content-center col-md-2">
@@ -71,32 +71,36 @@
                             <select v-model="ejercicio.esfuerzo" class="form-select bg-dark text-info input-rir"
                                 :id="'esfuerzo-' + index + '-' + ejercicioIndex">
 
-                                <option value="">-</option> <!-- Opción vacía -->
+                                <option select value="">-</option> <!-- Opción vacía -->
                                 <option value="1">RIR 1</option>
                                 <option value="2">RIR 2</option>
                                 <option value="3">RIR 3</option>
                             </select>
                         </div>
                     </div>
-                    <div v-if="ejercicioIndex > 0" class="d-flex w-100 justify-content-center">
-                        <button type="button" @click="eliminarEjercicio(index, ejercicioIndex)"
-                            class="btn btn-outline-danger delete-exercise w-50">Eliminar
-                            Ejercicio </button>
+                    <div class="d-flex w-100 justify-content-center gap-2">
+                        <button type="button" @click="agregarEjercicio(index)" class="btn btn-outline-info">
+                            <i class="bi bi-plus-circle-fill"></i> Ejercicio
+                        </button>
+                        <button v-if="ejercicioIndex > 0" type="button"
+                            @click="eliminarEjercicio(index, ejercicioIndex)"
+                            class="btn btn-outline-danger delete-exercise ">
+                            <i class="bi bi-trash-fill"></i> Ejercicio
+                        </button>
+
                     </div>
 
                 </div>
-                <div class="btns-set-bloque mb-2">
-                    <button type="button" @click="agregarEjercicio(index)" class="btn w-50 px-1 btn-info mt-2">Agregar
-                        Ejercicio</button>
+                <div class="btns-set-bloque ">
                     <button v-if="index > 0" type="button" @click="eliminarBloque(index)"
-                        class="btn w-50 btn-sm btn-outline-danger mt-2">
-                        Eliminar Bloque
+                        class="btn btn-outline-danger">
+                        <i class="bi bi-trash-fill"></i> Bloque
                     </button>
                 </div>
             </div>
             <div class="text-center d-flex flex-column align-items-center">
-                <button type="button" @click="agregarBloque" class="btn btn-info w-50">
-                    <i class="bi bi-plus-circle me-2"></i> Agregar Bloque
+                <button type="button" @click="agregarBloque" class="btn btn-outline-info">
+                    <i class="bi bi-plus-circle-fill"></i> Agregar Bloque
                 </button>
             </div>
 
@@ -108,7 +112,7 @@
                     {{ 'Guardar rutina' }}
                 </button>
 
-                <button type="button" @click="handleCancelar" class="btn btn-outline-danger mt-3">
+                <button type="button" @click="handleCancelar" class="btn btn-danger mt-3">
                     <i class="bi bi-x-circle me-2"></i> Cancelar
                 </button>
             </div>
@@ -283,23 +287,16 @@ select {
 
 .btns-set-bloque {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
 }
 
 .btns-set-bloque button {
-    font-size: 0.9rem;
     padding: 5px 10px;
+    width: 80%;
+    margin: 0px auto;
 }
 
 .btns-set-routine button {
     width: 80%;
-
-}
-
-.delete-exercise {
-    font-size: 0.9rem;
 }
 
 .add-routine-form {
@@ -324,6 +321,15 @@ select {
     text-align: center;
 }
 
+.bloque-container .btn {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    padding: 4px 12px;
+    width: 80%;
+    gap: 10px;
+}
+
 /* Solo se fija si NO es mobile */
 @media only screen and (min-width: 768px) {
     .add-routine-form {
@@ -344,6 +350,12 @@ select {
 
     .setting-exercise {
         gap: 40px;
+    }
+
+    .bloque-container .btn {
+        min-width: 180px;
+        width: 80%;
+        max-width: 240px;
     }
 }
 
