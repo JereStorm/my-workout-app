@@ -1,118 +1,115 @@
 <template>
     <div class="my-workouts">
-        <transition name="slide-fade" @after-leave="showMainContent = true">
+        <!-- <transition name="slide-fade" @after-leave="showMainContent = true">
             <AddFormRoutine v-show="showAddRoutineForm" :rutinaParaEditar="rutinaSeleccionada"
                 @routine-added="handleRoutineAdded" @close="closeAddRoutineForm" />
-        </transition>
-        <transition name="slide-fade" @after-leave="showAddRoutineForm = true">
+        </transition> -->
 
-            <div v-show="showMainContent" class="routines-container">
-                <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
-                <div class="text-center mb-5">
-                    <button @click="openAddRoutineForm" class="btn btn-outline-danger px-5" id="add-routine">
-                        Agregar rutina
-                    </button>
-                </div>
+        <div v-show="showMainContent" class="routines-container">
+            <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
-                <!-- Selector de orden -->
-                <div v-show="sortedRoutines.length > 0">
-                    <div class="d-flex align-items-baseline w-100 text-start ms-5 mb-3">
-                        <label for="orderBy" class="me-2">Ordenar por</label>
-                        <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
-                            <option value="asc">De más fácil</option>
-                            <option value="desc">De más difícil</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <div v-show="sortedRoutines.length > 0">
-                    <transition-group name="fade-item" tag="ul" class="routine-resumen"
-                        :class="{ 'column-layout': rutinasMostradas.length > 0 }">
-                        <li v-for="routine in sortedRoutines" :key="routine.id"
-                            :ref="el => routineRefs.set(routine.id, el)" class="mb-1 routine-card"
-                            :class="{ 'expanded': rutinasMostradas.includes(routine.id) }">
-                            <!-- Bloques (esquina superior izquierda) -->
-                            <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
-                                <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{
-                                    routine.bloques.length }} Bloques</h6>
-                                <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{ totalSeries(routine) }}
-                                    Series
-                                </h6>
-                            </div>
-
-                            <div class="text-center font-weight-medium  my-2">
-                                <h3 class="ellipsis" :title="routine.nombre">
-                                    {{ routine.nombre }}
-                                </h3>
-                            </div>
-
-                            <transition name="expand-fade">
-                                <RoutineDetail v-show="rutinasMostradas.includes(routine.id)" :rutina="routine" />
-                            </transition>
-
-                            <!-- Dificultad abajo -->
-                            <div class="d-flex justify-content-between align-items-baseline text-gray-700 ">
-                                <h6 class="mb-0 difficulty-container"
-                                    :class="{ 'h4': rutinasMostradas.includes(routine.id) }"
-                                    :title="routine.dificultad">
-                                    <span v-html="renderDifficulty(routine.dificultad)"></span>
-                                    <span class="difficulty d-none d-sm-inline"
-                                        v-if="rutinasMostradas.includes(routine.id)">
-                                        ({{ routine.dificultad }})
-                                    </span>
-
-                                </h6>
-
-                                <div v-if="isMobile && !rutinasMostradas.includes(routine.id)"
-                                    class="dropdown-menu-container" @click.stop>
-                                    <span
-                                        @click.stop="cardMenuAbierto = cardMenuAbierto === routine.id ? null : routine.id">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </span>
-                                    <transition name="fade-item">
-                                        <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
-                                            <li @click="mostrarRutina(routine.id)">
-                                                <i class="bi bi-arrows-angle-expand"></i>
-                                            </li>
-                                            <li @click.stop="editarRutina(routine)">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </li>
-                                            <li @click.stop="eliminarRutina(routine.id)">
-                                                <i class="bi bi-trash3"></i>
-                                            </li>
-                                            <li @click.stop="copiarRutina(routine)">
-                                                <i class="bi bi-copy"></i>
-                                            </li>
-                                        </ul>
-                                    </transition>
-                                </div>
-                                <div v-else class="edit-resume-container">
-                                    <span @click="mostrarRutina(routine.id)">
-                                        <i class="bi bi-arrows-angle-expand"></i>
-                                    </span>
-                                    <span @click.stop="editarRutina(routine)">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </span>
-                                    <span @click.stop="eliminarRutina(routine.id)">
-                                        <i class="bi bi-trash3"></i>
-                                    </span>
-                                    <span @click.stop="copiarRutina(routine)">
-                                        <i class="bi bi-copy"></i>
-                                    </span>
-                                </div>
-
-                            </div>
-                        </li>
-                    </transition-group>
-                </div>
-
-                <div v-show="sortedRoutines.length === 0 && !isLoading">
-                    <h5>No hay rutinas guardadas aún.</h5>
-                </div>
+            <div class="text-center mb-5">
+                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-danger px-5" id="add-routine">
+                    Agregar rutina
+                </RouterLink>
             </div>
-        </transition>
+
+            <!-- Selector de orden -->
+            <div v-show="sortedRoutines.length > 0">
+                <div class="d-flex align-items-baseline w-100 text-start ms-5 mb-3">
+                    <label for="orderBy" class="me-2">Ordenar por</label>
+                    <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
+                        <option value="asc">De más fácil</option>
+                        <option value="desc">De más difícil</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div v-show="sortedRoutines.length > 0">
+                <transition-group name="fade-item" tag="ul" class="routine-resumen"
+                    :class="{ 'column-layout': rutinasMostradas.length > 0 }">
+                    <li v-for="routine in sortedRoutines" :key="routine.id" :ref="el => routineRefs.set(routine.id, el)"
+                        class="mb-1 routine-card" :class="{ 'expanded': rutinasMostradas.includes(routine.id) }">
+                        <!-- Bloques (esquina superior izquierda) -->
+                        <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
+                            <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{
+                                routine.bloques.length }} Bloques</h6>
+                            <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{ totalSeries(routine) }}
+                                Series
+                            </h6>
+                        </div>
+
+                        <div class="text-center font-weight-medium  my-2">
+                            <h3 class="ellipsis" :title="routine.nombre">
+                                {{ routine.nombre }}
+                            </h3>
+                        </div>
+
+                        <transition name="expand-fade">
+                            <RoutineDetail v-show="rutinasMostradas.includes(routine.id)" :rutina="routine" />
+                        </transition>
+
+                        <!-- Dificultad abajo -->
+                        <div class="d-flex justify-content-between align-items-baseline text-gray-700 ">
+                            <h6 class="mb-0 difficulty-container"
+                                :class="{ 'h4': rutinasMostradas.includes(routine.id) }" :title="routine.dificultad">
+                                <span v-html="renderDifficulty(routine.dificultad)"></span>
+                                <span class="difficulty d-none d-sm-inline"
+                                    v-if="rutinasMostradas.includes(routine.id)">
+                                    ({{ routine.dificultad }})
+                                </span>
+
+                            </h6>
+
+                            <div v-if="isMobile && !rutinasMostradas.includes(routine.id)"
+                                class="dropdown-menu-container" @click.stop>
+                                <span
+                                    @click.stop="cardMenuAbierto = cardMenuAbierto === routine.id ? null : routine.id">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </span>
+                                <transition name="fade-item">
+                                    <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
+                                        <li @click="mostrarRutina(routine.id)">
+                                            <i class="bi bi-arrows-angle-expand"></i>
+                                        </li>
+                                        <li @click.stop="editarRutina(routine)">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </li>
+                                        <li @click.stop="eliminarRutina(routine.id)">
+                                            <i class="bi bi-trash3"></i>
+                                        </li>
+                                        <li @click.stop="copiarRutina(routine)">
+                                            <i class="bi bi-copy"></i>
+                                        </li>
+                                    </ul>
+                                </transition>
+                            </div>
+                            <div v-else class="edit-resume-container">
+                                <span @click="mostrarRutina(routine.id)">
+                                    <i class="bi bi-arrows-angle-expand"></i>
+                                </span>
+                                <span @click.stop="editarRutina(routine)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </span>
+                                <span @click.stop="eliminarRutina(routine.id)">
+                                    <i class="bi bi-trash3"></i>
+                                </span>
+                                <span @click.stop="copiarRutina(routine)">
+                                    <i class="bi bi-copy"></i>
+                                </span>
+                            </div>
+
+                        </div>
+                    </li>
+                </transition-group>
+            </div>
+
+            <div v-show="sortedRoutines.length === 0 && !isLoading">
+                <h5>No hay rutinas guardadas aún.</h5>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -122,7 +119,7 @@ import { useProfileStore } from '@/stores/profile';
 import AddFormRoutine from '@/components/addFormRoutine.vue';
 import RoutineDetail from '@/components/RoutineDetail.vue';
 import { cloneDeep } from 'lodash-es';
-import { RouterLink } from 'vue-router';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 
 const profileStore = useProfileStore();
 const showAddRoutineForm = ref(false);
@@ -132,6 +129,8 @@ const isMobile = ref(window.innerWidth < 768);
 const rutinaSeleccionada = ref(null);
 const routineRefs = ref(new Map());
 const rutinasMostradas = ref([]);
+const route = useRoute();
+const router = useRouter();
 
 const cardMenuAbierto = ref(null);
 
@@ -241,8 +240,10 @@ function eliminarRutina(rutinaId) {
  * @param {Object} rutina 
  */
 function editarRutina(rutina) {
-    rutinaSeleccionada.value = cloneDeep(rutina);
-    showMainContent.value = false;
+    router.push({
+        path: '/dashboard/form-routine',
+        query: { id: rutina.id }
+    });
 }
 
 /**

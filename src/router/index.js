@@ -8,6 +8,7 @@ import DashboardPage from "@/components/DashboardPage.vue";
 import UnregistredPage from "@/components/UnregistredPage.vue";
 import MyWorkoutsPage from "@/components/MyWorkoutsPage.vue";
 import ProfilePage from "@/components/ProfilePage.vue";
+import addFormRoutine from "@/components/addFormRoutine.vue";
 
 const routes = [
     { path: "/register", component: RegisterPage },
@@ -27,6 +28,10 @@ const routes = [
             {
                 path: '/dashboard/my-profile',
                 component: ProfilePage
+            },
+            {
+                path: '/dashboard/form-routine',
+                component: addFormRoutine
             },
 
         ],

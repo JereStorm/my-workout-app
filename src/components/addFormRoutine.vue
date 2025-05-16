@@ -1,8 +1,8 @@
 <template>
     <div class="add-routine-form">
-        <!-- <h2 class="text-center mb-4">
-            {{ props.rutinaParaEditar ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
-        </h2> -->
+        <h2 class="text-center mb-4">
+            {{ nuevaRutina.id ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
+        </h2>
         <form @submit.prevent="guardarRutina" class="bg-dark p-4">
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">Nombre</label>
@@ -120,13 +120,18 @@
 <!-- AddFormRoutine.vue -->
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, watch, defineEmits, defineProps } from 'vue';
+import { reactive, watch, defineProps, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useProfileStore } from '@/stores/profile';
 
 const props = defineProps({
     rutinaParaEditar: Object
 });
 
-const emit = defineEmits(['routine-added', 'close']);
+const profileStore = useProfileStore();
+
+const route = useRoute();
+const router = useRouter();
 
 const nuevaRutina = reactive({
     nombre: '',
@@ -141,11 +146,23 @@ const nuevaRutina = reactive({
     }]
 });
 
-watch(() => props.rutinaParaEditar, (nuevaRutinaEditada) => {
-    if (nuevaRutinaEditada) {
-        Object.assign(nuevaRutina, cloneDeep(props.rutinaParaEditar));
+onMounted(async () => {
+    const rutinaIdFromRoute = route.query.id;
+    if (rutinaIdFromRoute) {
+        try {
+            const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
+            if (rutinaExistente) {
+                Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
+            } else {
+                console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
+                // Opcional: Redirigir o mostrar un mensaje de error
+            }
+        } catch (error) {
+            console.error('Error al cargar la rutina para editar:', error);
+            // Opcional: Mostrar un mensaje de error al usuario
+        }
     }
-}, { immediate: true });
+});
 
 const resetFormulario = () => {
     Object.assign(nuevaRutina, {
@@ -163,28 +180,23 @@ const resetFormulario = () => {
 };
 
 const handleCancelar = () => {
-    emit('close');
-    setTimeout(() => {
-        resetFormulario();
-    }, 500);
+    router.push('/dashboard/my-workouts');
 };
 
 const guardarRutina = async () => {
-    if (props.rutinaParaEditar) {
-        console.log("Editando", { ...nuevaRutina })
-        emit('routine-added', { ...nuevaRutina, editada: true });
-    } else {
-        const newRoutine = {
-            ...nuevaRutina,
-        };
-        console.log("Agregando", newRoutine)
-        emit('routine-added', newRoutine);
+    try {
+        if (nuevaRutina.id) {
+            // Editar rutina existente
+            await profileStore.updateRutina({ ...nuevaRutina });
+        } else {
+            // Crear nueva rutina
+            await profileStore.createRutinaFirebase({ ...nuevaRutina });
+        }
+        router.push('/dashboard/my-workouts');
+    } catch (error) {
+        console.error('Error al guardar la rutina:', error);
+        // Manejar errores (mostrar mensaje al usuario, etc.)
     }
-
-    setTimeout(() => {
-        resetFormulario();
-    }, 500);
-
 };
 
 const agregarBloque = () => {
@@ -223,16 +235,6 @@ const inputClass = (valor) => {
 #descansoSeries {
     width: 70px;
 }
-
-#esfuerzo .add-routine-form {
-    width: 100%;
-}
-
-.add-routine-form form {
-    border-radius: 8px;
-    width: 100%;
-}
-
 
 .add-routine-form form input,
 select {
@@ -300,15 +302,17 @@ select {
     font-size: 0.9rem;
 }
 
-/* Estilos adicionales si es necesario */
-.my-workouts {
-    padding: 20px;
-}
-
 .add-routine-form {
     width: 100%;
-    min-width: 350px;
-    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+}
+
+.add-routine-form form {
+    border-radius: 8px;
+    width: 90%;
 }
 
 .card {
@@ -323,7 +327,15 @@ select {
 /* Solo se fija si NO es mobile */
 @media only screen and (min-width: 768px) {
     .add-routine-form {
-        width: 90%;
+        width: 100%;
+        padding: 20px;
+        padding-left: 160px;
+
+    }
+
+    .add-routine-form form {
+        min-width: 500px;
+        max-width: 600px;
     }
 
     .btn {

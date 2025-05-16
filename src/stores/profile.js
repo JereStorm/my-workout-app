@@ -106,6 +106,36 @@ export const useProfileStore = defineStore('profile', {
                 throw error;
             }
         },
+        /**
+         * Obtiene una rutina específica por su ID desde Firestore.
+         * @param {string} idRutina - El ID de la rutina a obtener.
+         * @returns {Promise<object|null>} - Un objeto con los datos de la rutina o null si no se encuentra.
+         */
+        async getRutina(idRutina) {
+            try {
+                const docRef = doc(db, 'routines', idRutina);
+                const snapshot = await getDoc(docRef);
+
+                if (snapshot.exists()) {
+                    return { id: snapshot.id, ...snapshot.data() };
+                } else {
+                    console.warn(`No se encontró la rutina con ID: ${idRutina}`);
+                    return null;
+                }
+            } catch (error) {
+                console.error(`Error al obtener la rutina con ID ${idRutina}:`, error);
+                throw error;
+            }
+        },
+        /**
+         * Busca una rutina en el array local de rutinas del perfil por su ID.
+         * No realiza ninguna llamada a la base de datos.
+         * @param {string} rutinaId - El ID de la rutina a buscar.
+         * @returns {object|undefined} - El objeto de la rutina si se encuentra, undefined en caso contrario.
+         */
+        getRutinaLocal(rutinaId) {
+            return this.profile.routines.find(rutina => rutina.id === rutinaId);
+        },
 
         /**
          * Elimina una rutina de Firestore y actualiza el estado local.
@@ -134,11 +164,12 @@ export const useProfileStore = defineStore('profile', {
             const rutinaRef = doc(db, 'routines', rutina.id);
             const { id, ...payload } = rutina;
             try {
+                console.log("Antes del horror:", rutina)
+                await updateDoc(rutinaRef, payload);
                 const index = this.profile.routines.findIndex((r) => r.id === rutina.id);
                 if (index !== -1) {
                     this.profile.routines.splice(index, 1, rutina);
                 }
-                await updateDoc(rutinaRef, payload);
             } catch (error) {
                 console.error('Error al actualizar la rutina:', error);
                 throw error;

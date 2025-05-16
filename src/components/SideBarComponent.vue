@@ -217,6 +217,7 @@ onUnmounted(() => {
     width: 100%;
     background-color: #151515;
     border-bottom: 1px solid #555555;
+    z-index: 600;
 }
 
 .heather span {
@@ -236,6 +237,7 @@ onUnmounted(() => {
     .sidebar-profile {
         position: fixed;
         top: 0;
+
     }
 
     .profileNickname {
