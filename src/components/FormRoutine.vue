@@ -3,7 +3,7 @@
         <h2 class="text-center mb-4">
             {{ nuevaRutina.id ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
         </h2>
-        <form @submit.prevent="guardarRutina" class="bg-dark p-2 p-md-4">
+        <form @submit.prevent="guardarRutina" class="p-2 p-md-4">
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" v-model="nuevaRutina.nombre" spellcheck="false" autocomplete="on"
@@ -11,8 +11,8 @@
             </div>
             <div class="mb-3 flex-column d-flex justify-content-center align-items-start col-md-3">
                 <label for="dificultad" class="form-label">Dificultad</label>
-                <select v-model="nuevaRutina.dificultad" class="form-select bg-dark text-info input-difficulty"
-                    id="dificultad" required>
+                <select v-model="nuevaRutina.dificultad" class="form-select text-info input-difficulty" id="dificultad"
+                    required>
                     <option value="Muy facil">Muy fácil</option>
                     <option value="Facil">Fácil</option>
                     <option value="Intermedia">Intermedia</option>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="col-md-3 text-center">
                             <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}" class="form-label">Esfuerzo</label>
-                            <select v-model="ejercicio.esfuerzo" class="form-select bg-dark text-info input-rir"
+                            <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
                                 :id="'esfuerzo-' + index + '-' + ejercicioIndex">
 
                                 <option select value="">-</option> <!-- Opción vacía -->
@@ -250,6 +250,10 @@ select {
     color: aqua;
 }
 
+#dificultad {
+    width: auto;
+}
+
 .add-routine-form form .input-number,
 .input-difficulty,
 .input-rir {
@@ -308,7 +312,7 @@ select {
 }
 
 .add-routine-form form {
-    border-radius: 8px;
+    border-radius: 0px;
     width: 90%;
 }
 
