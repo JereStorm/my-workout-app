@@ -77,9 +77,12 @@ const register = async () => {
             setTimeout(() => {
                 showNotifier.value = false;
                 userStore.$router.push('/dashboard');
-            }, 1500);
+            }, 2000);
         } else {
             notification.value = { message: response.message, type: "error" };
+            setTimeout(() => {
+                showNotifier.value = false;
+            }, 2000);
         }
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -114,8 +117,9 @@ main {
     padding: 0px;
     height: 22px;
     width: 22px;
-    color: #800020;
-    border: 1px solid red;
+    background-color: #800020;
+    color: #ffffff;
+
 }
 
 .btn-exit i {
@@ -166,18 +170,17 @@ main {
     max-width: 400px;
     width: 92%;
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px;
     border-radius: 12px;
 }
 
 .form-register .btn-register {
     border: 1px solid #484848;
-    background-color: #282828;
+    background-color: #800020;
 }
 
 .form-register .btn-register:hover {
-    background-color: #800020;
+    background-color: #282828;
 }
 
 @media only screen and (min-width: 768px) {

@@ -54,21 +54,7 @@ export const useUserStore = defineStore("user", {
             } catch (error) {
                 console.error("Error en registro:", error.message);
 
-                let message = "Unknown error. Please try again.";
-                switch (error.code) {
-                    case "auth/email-already-in-use":
-                        message = "This email is already in use.";
-                        break;
-                    case "auth/invalid-email":
-                        message = "Invalid email format.";
-                        break;
-                    case "auth/weak-password":
-                        message = "Password too weak. Use at least 6 characters.";
-                        break;
-                    default:
-                        message = "Failed to register. Please try again.";
-                        break;
-                }
+                let message = this.translateFirebaseError(error.code);
 
                 return { ok: false, message }; // ✅ Retorna error con mensaje
             }
@@ -88,25 +74,25 @@ export const useUserStore = defineStore("user", {
                 console.error("Error en login:", error.message);
 
                 // Manejo de errores personalizados
-                let message = "Unknown error. Please try again.";
-                switch (error.code) {
-                    case "auth/user-not-found":
-                        message = "User not found. Please check your email.";
-                        break;
-                    case "auth/wrong-password":
-                        message = "Incorrect password. Please try again.";
-                        break;
-                    case "auth/invalid-credential":
-                        message = "Invalid credentials. Please check your input.";
-                        break;
-                    default:
-                        // message = "Authentication failed. Please try again."; Opcional limitar la informacion
-                        message = error.code;
-                        break;
-                }
+                let message = this.translateFirebaseError(error.code)
 
                 return { ok: false, message }; //Retorna error con mensaje
             }
+        },
+        translateFirebaseError(code) {
+            if (!code) return "Error desconocido.";
+            console.log(code)
+            const map = {
+                "auth/email-already-in-use": "El email ya esta en uso.",
+                "auth/invalid-credential": "Credenciales inválidas.",
+                "auth/user-not-found": "No existe una cuenta con ese correo.",
+                "auth/wrong-password": "Contraseña incorrecta.",
+                "auth/too-many-requests": "Demasiados intentos fallidos.",
+                "auth/network-request-failed": "Problema de conexión.",
+                "auth/invalid-email": "El formato del email no es válido.",
+            };
+
+            return map[code] || "Error de autenticación. Intentá nuevamente.";
         },
 
         /**

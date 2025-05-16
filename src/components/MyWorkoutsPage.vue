@@ -284,6 +284,8 @@ const renderDifficulty = (dificultad) =>
 
 #add-routine {
     width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
 .routines-container {

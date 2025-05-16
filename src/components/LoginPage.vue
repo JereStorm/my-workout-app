@@ -18,7 +18,7 @@
                     <input required v-model="password" type="password" class="form-control" id="inputPassword"
                         placeholder="*********">
                 </div>
-                <button class="btn-login btn w-100 py-2 text-light" type="submit">Inciar Sesion <i
+                <button class="btn-login btn w-100 py-2 text-light" type="submit">Iniciar Sesion <i
                         class="bi bi-send-fill"></i></button>
                 <!-- Notificador de éxito/error -->
                 <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
@@ -59,12 +59,15 @@ const login = async () => {
             setTimeout(() => {
                 showNotifier.value = false;
                 userStore.$router.push('/dashboard');
-            }, 1500);
+            }, 2000);
         } else {
-            // Traducción de errores comunes de Firebase
-            const translatedMessage = translateFirebaseError(response.code || response.message);
-            notification.value = { message: translatedMessage, type: "error" };
+
+            notification.value = { message: response.message, type: "error" };
             showNotifier.value = true;
+
+            setTimeout(() => {
+                showNotifier.value = false;
+            }, 2000);
         }
 
     } catch (error) {
@@ -72,20 +75,6 @@ const login = async () => {
         notification.value = { message: "Error inesperado. Intentá de nuevo.", type: "error" };
         showNotifier.value = true;
     }
-};
-
-const translateFirebaseError = (code) => {
-    if (!code) return "Error desconocido.";
-    const map = {
-        "auth/invalid-credential": "Credenciales inválidas. Chequeá tu email y contraseña.",
-        "auth/user-not-found": "No existe una cuenta con ese correo.",
-        "auth/wrong-password": "Contraseña incorrecta.",
-        "auth/too-many-requests": "Demasiados intentos fallidos. Intentalo más tarde.",
-        "auth/network-request-failed": "Problema de conexión. Verificá tu red.",
-        "auth/invalid-email": "El formato del email no es válido.",
-    };
-
-    return map[code] || "Error de autenticación. Intentá nuevamente.";
 };
 
 const clearNotification = () => {
@@ -110,8 +99,8 @@ main {
     padding: 0px;
     height: 22px;
     width: 22px;
-    color: #800020;
-    border: 1px solid red;
+    background-color: #800020;
+    color: #ffffff;
 }
 
 .btn-exit i {
@@ -136,7 +125,6 @@ main {
     /* Fondo semi-transparente */
     backdrop-filter: blur(12px);
     /* Efecto blur */
-    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px;
 }
 
@@ -169,12 +157,13 @@ main {
 }
 
 .form-login .btn-login {
+    background-color: #800020;
     border: 1px solid #484848;
-    background-color: #282828;
+
 }
 
 .form-login .btn-login:hover {
-    background-color: #800020;
+    background-color: #313131;
 }
 
 
