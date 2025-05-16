@@ -45,11 +45,6 @@ body {
   font-weight: 500;
 }
 
-/* Hover general */
-.btn:hover {
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
 /* Animación leve al hacer clic */
 .btn:active {
   transform: scale(0.98);
@@ -108,13 +103,6 @@ body {
 }
 
 /* Íconos suaves al hover */
-.btn i {
-  transition: transform 0.3s ease;
-}
-
-.btn:hover i {
-  transform: scale(1.1);
-}
 
 form {
   z-index: 500;

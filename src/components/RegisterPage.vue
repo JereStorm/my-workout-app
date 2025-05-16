@@ -114,6 +114,8 @@ main {
     padding: 0px;
     height: 22px;
     width: 22px;
+    color: #800020;
+    border: 1px solid red;
 }
 
 .btn-exit i {
@@ -122,6 +124,13 @@ main {
     justify-content: center;
     height: 16px;
     width: 16px;
+}
+
+.btn-exit:hover {
+    background-color: #c70000;
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(207, 4, 21, 0.842);
+    /* sombra rojiza suave */
 }
 
 .form-register label {
@@ -133,6 +142,13 @@ main {
     height: 30px;
     border-radius: 3px;
     font-size: small;
+    background-image: none !important;
+    background-color: #151515 !important;
+    color: fieldtext !important;
+}
+
+.form-register input::placeholder {
+    color: #919191 !important;
 }
 
 /* Animación de entrada */

@@ -4,8 +4,10 @@
             <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
             <div class="text-center mb-5">
-                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-danger px-5" id="add-routine">
-                    Agregar rutina
+                <RouterLink to="/dashboard/form-routine"
+                    class="btn btn-outline-danger px-5 d-flex gap-2 justify-content-center align-items-baseline"
+                    id="add-routine">
+                    <i class="bi bi-plus-circle-fill"></i> Agregar Rutina
                 </RouterLink>
             </div>
 
@@ -481,7 +483,7 @@ const renderDifficulty = (dificultad) =>
     border-radius: 6px;
     list-style: none;
     padding: 5px 0;
-    z-index: 10000;
+    z-index: 550;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 

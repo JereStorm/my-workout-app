@@ -113,7 +113,7 @@
                 </button>
 
                 <button type="button" @click="handleCancelar" class="btn btn-danger mt-3">
-                    <i class="bi bi-x-circle me-2"></i> Cancelar
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
             </div>
 
@@ -256,7 +256,6 @@ select {
     border: 1px solid aquamarine;
     width: 70px;
     text-align: center;
-    padding-right: 0px;
 
 }
 
@@ -321,7 +320,7 @@ select {
     text-align: center;
 }
 
-.bloque-container .btn {
+.add-routine-form .btn {
     display: flex;
     justify-content: center;
     align-items: baseline;
@@ -337,6 +336,14 @@ select {
         padding: 20px;
         padding-left: 160px;
 
+    }
+
+    .add-routine-form form .input-number {
+        padding-right: 0px;
+    }
+
+    .add-routine-form .btn i {
+        font-size: 18px;
     }
 
     .add-routine-form form {
@@ -357,6 +364,7 @@ select {
         width: 80%;
         max-width: 240px;
     }
+
 }
 
 @keyframes blink {

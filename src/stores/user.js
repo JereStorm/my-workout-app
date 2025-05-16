@@ -100,7 +100,8 @@ export const useUserStore = defineStore("user", {
                         message = "Invalid credentials. Please check your input.";
                         break;
                     default:
-                        message = "Authentication failed. Please try again.";
+                        // message = "Authentication failed. Please try again."; Opcional limitar la informacion
+                        message = error.code;
                         break;
                 }
 

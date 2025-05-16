@@ -35,59 +35,68 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../stores/user";
-import Notifier from "@/components/NotifierComponent.vue"; // Importamos el notificador
-
+import Notifier from "@/components/NotifierComponent.vue";
 
 const email = ref("");
 const password = ref("");
 const showForm = ref(false);
-const showNotifier = ref(false); // Controla la visibilidad del Notifier
+const showNotifier = ref(false);
 const notification = ref({ message: "", type: "" });
-
 
 const userStore = useUserStore();
 
 const login = async () => {
-    console.log(email.value, password.value);
-    notification.value = { message: "", type: "" }; // Limpiar notificación anterior
-    showNotifier.value = false; // Asegurar que la animación se reinicie
+    notification.value = { message: "", type: "" };
+    showNotifier.value = false;
 
     try {
-
-        const response = await userStore.login(email.value, password.value); //Esperamos la respuesta
+        const response = await userStore.login(email.value, password.value);
 
         if (response.ok) {
-            notification.value = { message: response.message, type: "success" };
+            notification.value = { message: "¡Inicio de sesión exitoso!", type: "success" };
+            showNotifier.value = true;
+
+            setTimeout(() => {
+                showNotifier.value = false;
+                userStore.$router.push('/dashboard');
+            }, 1500);
         } else {
-            notification.value = { message: response.message, type: "error" };
+            // Traducción de errores comunes de Firebase
+            const translatedMessage = translateFirebaseError(response.code || response.message);
+            notification.value = { message: translatedMessage, type: "error" };
+            showNotifier.value = true;
         }
+
     } catch (error) {
         console.error("Unexpected error:", error);
-        notification.value = { message: "Something went wrong. Please try again.", type: "error" };
+        notification.value = { message: "Error inesperado. Intentá de nuevo.", type: "error" };
+        showNotifier.value = true;
     }
-
-
-    showNotifier.value = true; // Mostrar el notificador
-
-
-    // Hacer que el mensaje desaparezca después de 3 segundos
-    setTimeout(() => {
-        userStore.$router.push('/dashboard');
-        showNotifier.value = false; // Oculta con animación
-    }, 1500);
 };
 
+const translateFirebaseError = (code) => {
+    if (!code) return "Error desconocido.";
+    const map = {
+        "auth/invalid-credential": "Credenciales inválidas. Chequeá tu email y contraseña.",
+        "auth/user-not-found": "No existe una cuenta con ese correo.",
+        "auth/wrong-password": "Contraseña incorrecta.",
+        "auth/too-many-requests": "Demasiados intentos fallidos. Intentalo más tarde.",
+        "auth/network-request-failed": "Problema de conexión. Verificá tu red.",
+        "auth/invalid-email": "El formato del email no es válido.",
+    };
 
-// Se ejecuta cuando la animación de salida termina
+    return map[code] || "Error de autenticación. Intentá nuevamente.";
+};
+
 const clearNotification = () => {
     notification.value = { message: "", type: "" };
 };
-
 
 onMounted(() => {
     showForm.value = true;
 });
 </script>
+
 
 <style>
 main {
@@ -101,6 +110,8 @@ main {
     padding: 0px;
     height: 22px;
     width: 22px;
+    color: #800020;
+    border: 1px solid red;
 }
 
 .btn-exit i {
@@ -109,6 +120,13 @@ main {
     justify-content: center;
     height: 16px;
     width: 16px;
+}
+
+.btn-exit:hover {
+    background-color: #c70000;
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(207, 4, 21, 0.842);
+    /* sombra rojiza suave */
 }
 
 .form-login {
@@ -131,6 +149,13 @@ main {
     height: 30px;
     border-radius: 3px;
     font-size: small;
+    background-image: none !important;
+    background-color: #151515 !important;
+    color: fieldtext !important;
+}
+
+.form-login input::placeholder {
+    color: #919191 !important;
 }
 
 /* Animación de entrada */
