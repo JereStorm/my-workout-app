@@ -106,10 +106,12 @@
 
             <hr>
 
+            <div v-if="isLoading" class="loader-form"></div>
+
             <div class="text-center d-flex btns-set-routine flex-column align-items-center">
                 <button type="submit" class="btn btn-success mt-0">
                     <i class="bi bi-box-arrow-down"></i>
-                    {{ 'Guardar rutina' }}
+                    Guardar rutina
                 </button>
 
                 <button type="button" @click="handleCancelar" class="btn btn-danger mt-3">
@@ -124,7 +126,7 @@
 <!-- AddFormRoutine.vue -->
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, watch, defineProps, onMounted } from 'vue';
+import { reactive, watch, defineProps, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 
@@ -136,6 +138,8 @@ const profileStore = useProfileStore();
 
 const route = useRoute();
 const router = useRouter();
+
+const isLoading = ref(false);
 
 const nuevaRutina = reactive({
     nombre: '',
@@ -189,6 +193,7 @@ const handleCancelar = () => {
 };
 
 const guardarRutina = async () => {
+    isLoading.value = true;
     try {
         if (nuevaRutina.id) {
             // Editar rutina existente
@@ -197,6 +202,7 @@ const guardarRutina = async () => {
             // Crear nueva rutina
             await profileStore.createRutinaFirebase({ ...nuevaRutina });
         }
+        isLoading.value = false;
         router.push('/dashboard/my-workouts');
     } catch (error) {
         console.error('Error al guardar la rutina:', error);
@@ -399,5 +405,72 @@ input:-webkit-autofill:active {
     background-color: transparent !important;
     box-shadow: inset 0 0 0 1000px #212529 !important;
     border-bottom: 1px solid lightskyblue;
+}
+
+.loader-form {
+    margin-bottom: 10px;
+    width: 0;
+    height: 4.8px;
+    display: inline-block;
+    position: relative;
+    background: aqua;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    animation: animFw 4s linear infinite;
+}
+
+.loader-form::after,
+.loader-form::before {
+    content: '';
+    width: 10px;
+    height: 1px;
+    background: #FFF;
+    position: absolute;
+    top: 9px;
+    right: -2px;
+    opacity: 0;
+    transform: rotate(-45deg) translateX(0px);
+    box-sizing: border-box;
+    animation: coli1 0.3s linear infinite;
+}
+
+.loader-form::before {
+    top: -4px;
+    transform: rotate(45deg);
+    animation: coli2 0.3s linear infinite;
+}
+
+@keyframes animFw {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes coli1 {
+    0% {
+        transform: rotate(-45deg) translateX(0px);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: rotate(-45deg) translateX(-45px);
+        opacity: 0;
+    }
+}
+
+@keyframes coli2 {
+    0% {
+        transform: rotate(45deg) translateX(0px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(45deg) translateX(-45px);
+        opacity: 0.7;
+    }
 }
 </style>

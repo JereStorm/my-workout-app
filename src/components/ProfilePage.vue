@@ -1,6 +1,6 @@
 <template>
     <div class="contenedor">
-        <h1>Mi Perfil <i class="bi bi-person-circle"></i></h1>
+        <h1 class="my-md-5">Mi Perfil <i class="bi bi-person-circle"></i></h1>
 
         <div class="info-container">
             <div class="w-100 mb-4 justify-content-center d-flex align-items-end gap-3">
@@ -119,10 +119,10 @@ h2 {
 
 @media only screen and (min-width: 768px) {
     .contenedor {
-        padding-left: 180px;
-        padding-top: 30px;
+        padding-left: 160px;
         margin: 0 auto;
-        margin-top: 20px;
+        margin-bottom: auto;
+        padding-top: 0px;
     }
 }
 </style>

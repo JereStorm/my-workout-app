@@ -11,7 +11,7 @@
                     </router-link>
                     <div class="username-container text-center font-weight-medium">
                         <p class="ellipsis my-0" :title="profile.nickname">
-                            <span class="h5"> {{ profile.nickname ||
+                            <span class="h5"> #{{ profile.nickname ||
                                 "Usuario" }} </span>
                         </p>
                     </div>

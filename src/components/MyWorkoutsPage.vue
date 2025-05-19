@@ -1,9 +1,9 @@
 <template>
     <div class="my-workouts">
         <div class="routines-container">
-            <h1 class="my-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
+            <h1 class="my-md-5 mb-3">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
-            <div class="text-center mb-5">
+            <div class="text-center mb-3">
                 <RouterLink to="/dashboard/form-routine"
                     class="btn btn-outline-danger px-5 d-flex gap-2 justify-content-center align-items-baseline"
                     id="add-routine">
@@ -11,10 +11,9 @@
                 </RouterLink>
             </div>
 
-            <div v-if="isLoading && rawRoutines.length === 0" class="loader"></div>
-
-            <div v-show="rawRoutines.length > 0">
-                <div class="d-flex align-items-baseline text-start ms-5 mb-3">
+            <div v-show="rawRoutines.length > 0"
+                class="d-flex justify-content-center justify-content-md-start ms-md-5 mb-3">
+                <div class="d-flex align-items-baseline text-start">
                     <label for="orderBy" class="me-2">Ordenar por</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
                         <option value="fechaCreacionDesc">Más Reciente</option>
@@ -24,6 +23,8 @@
                     </select>
                 </div>
             </div>
+
+            <div v-if="isLoading || (rawRoutines.length === 0 && isLoading)" class="loader"></div>
 
             <div v-show="sortedRoutines.length > 0">
                 <transition-group name="fade-item" tag="ul" class="routine-resumen"
@@ -50,15 +51,21 @@
                         </transition>
 
                         <!-- Dificultad abajo -->
-                        <div class="d-flex justify-content-between align-items-baseline text-gray-700 ">
-                            <h6 class="mb-0 difficulty-container"
-                                :class="{ 'h4': rutinasMostradas.includes(routine.id) }" :title="routine.dificultad">
-                                <span v-html="renderDifficulty(routine.dificultad)"></span>
-                                <span class="difficulty d-sm-inline"
-                                    v-if="isMobile || rutinasMostradas.includes(routine.id)">
+                        <div class="d-flex justify-content-between align-items-center text-gray-700 ">
+                            <h6 v-if="isMobile" class="mb-0 difficulty-container"
+                                :class="{ 'h4 d-flex flex-column': rutinasMostradas.includes(routine.id) }"
+                                :title="routine.dificultad">
+                                <span class="difficulty-icons" v-html="renderDifficulty(routine.dificultad)"></span>
+                                <span class="difficulty-text" v-if="isMobile || rutinasMostradas.includes(routine.id)">
                                     ({{ routine.dificultad }})
                                 </span>
 
+                            </h6>
+                            <h6 v-else :class="{ 'h4': rutinasMostradas.includes(routine.id) }">
+                                <span class="difficulty-icons" v-html="renderDifficulty(routine.dificultad)"></span>
+                                <span class="difficulty-text" v-if="isMobile || rutinasMostradas.includes(routine.id)">
+                                    ({{ routine.dificultad }})
+                                </span>
                             </h6>
 
                             <div v-if="isMobile && !rutinasMostradas.includes(routine.id)"
@@ -180,7 +187,6 @@ watch(cardMenuAbierto, (nuevoValor) => {
  * Recarga las rutinas desde Firebase al montar el componente.
  */
 onMounted(async () => {
-    isLoading.value = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -191,11 +197,14 @@ watch(
         // console.log("Watch 2")
         if (!uid) return;
         // Si aún no hay UID, salimos
+        isLoading.value = true;
 
         try {
             //Si no hay rutinas por default, verificamos la BD
             if (profileStore.getUserRoutines.length === 0)
                 await profileStore.getRutinas();
+            else
+                isLoading.value = false;
         } catch (err) {
             console.error('Error al cargar rutinas:', err);
         } finally {
@@ -371,8 +380,17 @@ const renderDifficulty = (dificultad) =>
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.difficulty-container .difficulty {
+.difficulty-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     font-size: 18px;
+}
+
+.difficulty-text {
+    font-size: 14px;
 }
 
 .edit-resume-container {
@@ -454,6 +472,14 @@ const renderDifficulty = (dificultad) =>
         width: auto;
     }
 
+    .difficulty-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .difficulty-text {
+        font-size: 16px;
+    }
 }
 
 /* Animacion para la expansion del resumen */
