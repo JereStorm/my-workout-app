@@ -11,15 +11,15 @@ import ProfilePage from "@/components/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
 
 const routes = [
-    { path: "/register", component: RegisterPage },
-    { path: "/login", component: LoginPage },
+    { path: "my-workout-app/register", component: RegisterPage },
+    { path: "my-workout-app/login", component: LoginPage },
     {
-        path: "/dashboard",
+        path: "my-workout-app/dashboard",
         component: DashboardPage,
         children: [
             {
                 path: "",
-                redirect: "/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
+                redirect: "my-workout-app/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
             },
             {
                 path: '/dashboard/my-workouts',
@@ -38,8 +38,8 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
-    { path: "/unregistred", component: UnregistredPage },
-    { path: "/:pathMatch(.*)*", component: UnregistredPage }, // Captura rutas no definidas
+    { path: "my-workout-app/unregistred", component: UnregistredPage },
+    { path: "my-workout-app/:pathMatch(.*)*", component: UnregistredPage }, // Captura rutas no definidas
 ];
 
 const router = createRouter({
