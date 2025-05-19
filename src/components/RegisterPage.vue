@@ -76,7 +76,7 @@ const register = async () => {
             notification.value = { message: response.message, type: "success" };
             setTimeout(() => {
                 showNotifier.value = false;
-                userStore.$router.push('/dashboard');
+                userStore.$router.push('my-workout-app/dashboard');
             }, 2000);
         } else {
             notification.value = { message: response.message, type: "error" };

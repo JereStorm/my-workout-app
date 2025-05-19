@@ -58,7 +58,7 @@ const login = async () => {
 
             setTimeout(() => {
                 showNotifier.value = false;
-                userStore.$router.push('/dashboard');
+                userStore.$router.push('my-workout-app/dashboard');
             }, 2000);
         } else {
 
