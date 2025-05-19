@@ -17,6 +17,7 @@ export const useProfileStore = defineStore('profile', {
             email: '',
             nickname: '',
             routines: [],
+            charge: false,
         },
     }),
 
@@ -82,6 +83,7 @@ export const useProfileStore = defineStore('profile', {
          * @throws {Error} Si el usuario no está autenticado.
          */
         async getRutinas() {
+            console.log("GetRutinas()")
             if (!this.profile.id) {
                 throw new Error('Usuario no autenticado');
             }

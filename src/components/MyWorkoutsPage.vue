@@ -1,7 +1,7 @@
 <template>
     <div class="my-workouts">
         <div class="routines-container">
-            <h1 class="mb-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
+            <h1 class="my-5">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
             <div class="text-center mb-5">
                 <RouterLink to="/dashboard/form-routine"
@@ -11,8 +11,10 @@
                 </RouterLink>
             </div>
 
+            <div v-if="isLoading && rawRoutines.length === 0" class="loader"></div>
+
             <div v-show="rawRoutines.length > 0">
-                <div class="d-flex align-items-baseline w-100 text-start ms-5 mb-3">
+                <div class="d-flex align-items-baseline text-start ms-5 mb-3">
                     <label for="orderBy" class="me-2">Ordenar por</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
                         <option value="fechaCreacionDesc">Más Reciente</option>
@@ -52,8 +54,8 @@
                             <h6 class="mb-0 difficulty-container"
                                 :class="{ 'h4': rutinasMostradas.includes(routine.id) }" :title="routine.dificultad">
                                 <span v-html="renderDifficulty(routine.dificultad)"></span>
-                                <span class="difficulty d-none d-sm-inline"
-                                    v-if="rutinasMostradas.includes(routine.id)">
+                                <span class="difficulty d-sm-inline"
+                                    v-if="isMobile || rutinasMostradas.includes(routine.id)">
                                     ({{ routine.dificultad }})
                                 </span>
 
@@ -180,12 +182,28 @@ watch(cardMenuAbierto, (nuevoValor) => {
 onMounted(async () => {
     isLoading.value = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    try {
-        // await profileStore.getRutinas();
-    } finally {
-        isLoading.value = false;
-    }
 });
+
+// 2) Vigilamos profile.id y cuando exista, cargamos rutinas
+watch(
+    () => profileStore.profile.id,
+    async (uid) => {
+        // console.log("Watch 2")
+        if (!uid) return;
+        // Si aún no hay UID, salimos
+
+        try {
+            //Si no hay rutinas por default, verificamos la BD
+            if (profileStore.getUserRoutines.length === 0)
+                await profileStore.getRutinas();
+        } catch (err) {
+            console.error('Error al cargar rutinas:', err);
+        } finally {
+            isLoading.value = false;   // Apagamos el loader
+        }
+    },
+    { immediate: true }            // Para que se ejecute de una vez
+);
 
 /**
  * Maneja el estado del mini menu que se encuentra en las cards version mobile
@@ -217,19 +235,29 @@ function expandirRutina(rutinaId) {
     }
 }
 
-
 /**
  * Elimina una rutina tras confirmación del usuario.
  * @param {string} rutinaId 
  */
-function eliminarRutina(rutinaId) {
-    if (confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
-        profileStore.deleteRutina(rutinaId);
-
+async function eliminarRutina(rutinaId) {
+    if (!confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
+        console.log("Eliminar cancelado")
+        return;
+    }
+    try {
         const index = rutinasMostradas.value.indexOf(rutinaId);
         if (index !== -1) {
             rutinasMostradas.value.splice(index, 1);
         }
+
+        await profileStore.deleteRutina(rutinaId);
+        isLoading.value = false;
+
+        // if (profileStore.getUserRoutines.length === 0) {
+        //     isLoading.value = false;
+        // }
+    } catch (error) {
+        console.log("Error al borrar la rutina.", error);
     }
 }
 
@@ -249,6 +277,7 @@ function editarRutina(rutina) {
  * @param {Object} rutina 
  */
 async function copiarRutina(rutina) {
+    isLoading.value = true
     const copia = {
         ...JSON.parse(JSON.stringify(rutina)),
         nombre: rutina.nombre + ' (copia)'
@@ -257,9 +286,12 @@ async function copiarRutina(rutina) {
     delete copia.fechaCreacion;
     try {
         const docRef = await profileStore.createRutinaFirebase(copia);
+        isLoading.value = false;
         expandirRutina(docRef.id);
     } catch (err) {
         console.error('Error copiando rutina:', err);
+        isLoading.value = false;
+
     }
 }
 
@@ -378,12 +410,13 @@ const renderDifficulty = (dificultad) =>
 
 @media only screen and (min-width: 768px) {
     .my-workouts {
-        padding-top: 30px;
+        padding-top: 0px;
         padding-left: 160px;
-        margin-top: 20px;
+        padding-right: 0px;
         width: 100%;
         display: flex;
         justify-content: center;
+        min-height: 100vh;
     }
 
     .routine-resumen {
@@ -408,7 +441,8 @@ const renderDifficulty = (dificultad) =>
     }
 
     .routines-container {
-        width: 80%;
+        width: 90%;
+        margin-bottom: auto;
     }
 
     .edit-resume-container {

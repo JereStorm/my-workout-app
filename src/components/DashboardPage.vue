@@ -63,6 +63,6 @@ onMounted(() => {
 
 .route-fade-leave-to {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(-50px);
 }
 </style>

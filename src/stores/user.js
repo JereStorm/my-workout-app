@@ -29,9 +29,10 @@ export const useUserStore = defineStore("user", {
                     await profileStore.loadProfile(fbUser.uid, fbUser.email);
 
                     // 3. Obtener las rutinas asociadas al usuario.
-                    await profileStore.getRutinas();
+                    // await profileStore.getRutinas();
 
-                    console.log("Sesión iniciada. Perfil y rutinas cargados.");
+                    // console.log("Sesión iniciada. Perfil y rutinas cargados.");
+                    console.log("Sesión iniciada. Perfil");
                 } else {
                     // Al cerrar sesión, limpiar el estado del usuario.
                     this.user = null;
