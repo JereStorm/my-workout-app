@@ -11,26 +11,26 @@ import ProfilePage from "@/components/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
 
 const routes = [
-    { path: "my-workout-app/register", component: RegisterPage },
-    { path: "my-workout-app/login", component: LoginPage },
+    { path: "/register", component: RegisterPage },
+    { path: "/login", component: LoginPage },
     {
-        path: "my-workout-app/dashboard",
+        path: "/dashboard",
         component: DashboardPage,
         children: [
             {
                 path: "",
-                redirect: "my-workout-app/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
+                redirect: "/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
             },
             {
-                path: 'my-workout-app/dashboard/my-workouts',
+                path: '/dashboard/my-workouts',
                 component: MyWorkoutsPage
             },
             {
-                path: 'my-workout-app/dashboard/my-profile',
+                path: '/dashboard/my-profile',
                 component: ProfilePage
             },
             {
-                path: 'my-workout-app/dashboard/form-routine',
+                path: '/dashboard/form-routine',
                 component: FormRoutine
             },
 
@@ -38,8 +38,8 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
-    { path: "my-workout-app/unregistred", component: UnregistredPage },
-    { path: "my-workout-app/:pathMatch(.*)*", component: UnregistredPage }, // Captura rutas no definidas
+    { path: "/unregistred", component: UnregistredPage },
+    { path: "/:pathMatch(.*)*", component: UnregistredPage }, // Captura rutas no definidas
 ];
 
 const router = createRouter({
@@ -68,12 +68,12 @@ function getAuthUser() {
 router.beforeEach(async (to, from, next) => {
     const user = await getAuthUser(); // Espera a Firebase antes de continuar
 
-    if (to.path === "my-workout-app/login" && user) {
-        return next("my-workout-app/dashboard"); // Evita que un usuario autenticado entre al login
+    if (to.path === "/login" && user) {
+        return next("/dashboard"); // Evita que un usuario autenticado entre al login
     }
 
     if (to.matched.some((record) => record.meta.requiresAuth) && !user) {
-        return next("my-workout-app/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
+        return next("/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
     }
 
     next();
