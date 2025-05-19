@@ -22,15 +22,15 @@ const routes = [
                 redirect: "my-workout-app/dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
             },
             {
-                path: '/dashboard/my-workouts',
+                path: 'my-workout-app/dashboard/my-workouts',
                 component: MyWorkoutsPage
             },
             {
-                path: '/dashboard/my-profile',
+                path: 'my-workout-app/dashboard/my-profile',
                 component: ProfilePage
             },
             {
-                path: '/dashboard/form-routine',
+                path: 'my-workout-app/dashboard/form-routine',
                 component: FormRoutine
             },
 
@@ -68,12 +68,12 @@ function getAuthUser() {
 router.beforeEach(async (to, from, next) => {
     const user = await getAuthUser(); // Espera a Firebase antes de continuar
 
-    if (to.path === "/login" && user) {
-        return next("/dashboard"); // Evita que un usuario autenticado entre al login
+    if (to.path === "my-workout-app/login" && user) {
+        return next("my-workout-app/dashboard"); // Evita que un usuario autenticado entre al login
     }
 
     if (to.matched.some((record) => record.meta.requiresAuth) && !user) {
-        return next("/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
+        return next("my-workout-app/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
     }
 
     next();
