@@ -275,6 +275,10 @@ select {
     text-align: start;
 }
 
+.input-difficulty option {
+    background-color: #151515;
+}
+
 .bloque-container {
     border: 1px solid lightskyblue;
 }
