@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { auth } from "@/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -43,7 +43,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory('/my-workout-app/'),
+    history: createWebHashHistory('/my-workout-app/'),
     routes,
 });
 
