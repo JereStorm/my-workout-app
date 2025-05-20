@@ -103,7 +103,6 @@ export const useUserStore = defineStore("user", {
             try {
                 await signOut(auth);
                 this.user = null;
-                this.$router.push("/");
             } catch (error) {
                 console.error("Error en logout:", error.message);
             }

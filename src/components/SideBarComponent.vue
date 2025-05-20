@@ -70,15 +70,21 @@ import { useProfileStore } from '@/stores/profile';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRouter } from "vue-router";
+
 
 const isSidebarVisible = ref(false);
 const isMobile = ref(window.innerWidth < 768); // <768px se considera mobile
 
 const profileStore = useProfileStore();
 const userStore = useUserStore();
+const router = useRouter();
 const { profile } = storeToRefs(profileStore);
 
-const logout = () => userStore.logout();
+const logout = async () => {
+    await userStore.logout();
+    router.push("/");
+};
 
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
