@@ -4,7 +4,7 @@
             <h1 class="my-md-5 mb-3">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
 
             <div class="text-center mb-3">
-                <RouterLink to="/dashboard/form-routine"
+                <RouterLink to="dashboard/form-routine"
                     class="btn btn-outline-danger px-5 d-flex gap-2 justify-content-center align-items-baseline"
                     id="add-routine">
                     <i class="bi bi-plus-circle-fill"></i> Agregar Rutina
@@ -276,7 +276,7 @@ async function eliminarRutina(rutinaId) {
  */
 function editarRutina(rutina) {
     router.push({
-        path: 'my-workout-app/dashboard/form-routine',
+        path: '/dashboard/form-routine',
         query: { id: rutina.id }
     });
 }

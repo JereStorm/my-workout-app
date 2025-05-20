@@ -189,7 +189,7 @@ const resetFormulario = () => {
 };
 
 const handleCancelar = () => {
-    router.push('my-workout-app/dashboard/my-workouts');
+    router.push('/dashboard/my-workouts');
 };
 
 const guardarRutina = async () => {
@@ -203,7 +203,7 @@ const guardarRutina = async () => {
             await profileStore.createRutinaFirebase({ ...nuevaRutina });
         }
         isLoading.value = false;
-        router.push('my-workout-app/dashboard/my-workouts');
+        router.push('/dashboard/my-workouts');
     } catch (error) {
         console.error('Error al guardar la rutina:', error);
         // Manejar errores (mostrar mensaje al usuario, etc.)

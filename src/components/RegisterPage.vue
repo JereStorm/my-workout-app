@@ -35,7 +35,7 @@
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
                     ¿Ya tenes tu cuenta?
-                    <router-link to="/my-workout-app/login" class="login">Inicia sesion</router-link>
+                    <router-link to="login" class="login">Inicia sesion</router-link>
                 </p>
             </form>
         </transition>
@@ -76,7 +76,7 @@ const register = async () => {
             notification.value = { message: response.message, type: "success" };
             setTimeout(() => {
                 showNotifier.value = false;
-                userStore.$router.push('/my-workout-app/dashboard');
+                userStore.$router.push('/dashboard');
             }, 2000);
         } else {
             notification.value = { message: response.message, type: "error" };

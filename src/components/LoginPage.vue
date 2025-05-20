@@ -25,7 +25,7 @@
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
                     ¿Todavia no tenes una cuenta?
-                    <router-link to="/register">Registrate</router-link>
+                    <router-link to="register">Registrate</router-link>
                 </p>
             </form>
         </transition>
@@ -58,7 +58,7 @@ const login = async () => {
 
             setTimeout(() => {
                 showNotifier.value = false;
-                userStore.$router.push('my-workout-app/dashboard');
+                userStore.$router.push('/dashboard');
             }, 2000);
         } else {
 
