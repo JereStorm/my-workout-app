@@ -25,7 +25,7 @@
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
                     ¿Todavia no tenes una cuenta?
-                    <router-link to="register">Registrate</router-link>
+                    <router-link to="/register">Registrate</router-link>
                 </p>
             </form>
         </transition>

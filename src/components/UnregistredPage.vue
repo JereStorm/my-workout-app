@@ -11,8 +11,8 @@
 
         <transition name="fade-slide-nav" appear>
             <nav class="auth-links">
-                <router-link to="login" class="btn px-4">Login</router-link>
-                <router-link to="register" class="btn px-4">Register</router-link>
+                <router-link to="/login" class="btn px-4">Login</router-link>
+                <router-link to="/register" class="btn px-4">Register</router-link>
             </nav>
         </transition>
     </div>
