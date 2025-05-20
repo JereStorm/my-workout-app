@@ -35,7 +35,7 @@
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
                     ¿Ya tenes tu cuenta?
-                    <router-link to="my-workout-app/login" class="login">Inicia sesion</router-link>
+                    <router-link to="/my-workout-app/login" class="login">Inicia sesion</router-link>
                 </p>
             </form>
         </transition>
