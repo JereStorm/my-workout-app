@@ -56,12 +56,12 @@ function getAuthUser() {
 router.beforeEach(async (to, from, next) => {
     const user = await getAuthUser(); // Espera a Firebase antes de continuar
     console.log("Middleware routes, to:", to.fullPath)
-    if (to.path === "/my-workout-app/login" && user) {
-        return next("/my-workout-app/dashboard"); // Evita que un usuario autenticado entre al login
+    if (to.path === "/login" && user) {
+        return next("/dashboard"); // Evita que un usuario autenticado entre al login
     }
 
     if (to.matched.some((record) => record.meta.requiresAuth) && !user) {
-        return next("/my-workout-app/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
+        return next("/login"); // Si la ruta requiere autenticación y no hay usuario, redirige al login
     }
 
     next();

@@ -1,5 +1,5 @@
 <template>
-    <main class="w-100 m-auto d-flex justify-content-center align-items-center">
+    <main class="w-100 mb-auto mt-5 mx-auto mt-md-auto d-flex justify-content-center align-items-center">
         <transition name="fade-slide-login" mode="out-in">
             <form v-show="showForm" class="form-login p-4 rounded shadow " @submit.prevent="login">
                 <div class="d-flex justify-content-between">
@@ -10,13 +10,13 @@
                 </div>
                 <div class="mb-3 text-start">
                     <label for="inputEmail" class="form-label text-light">Email</label>
-                    <input required v-model="email" type="email" class="form-control" id="inputEmail"
+                    <input required v-model="email" type="email" class="form-control text-light" id="inputEmail"
                         placeholder="Ej: leomessi@gmail.com">
                 </div>
                 <div class="mb-3 text-start">
                     <label for="inputPassword" class="form-label text-light">Contraseña</label>
-                    <input required v-model="password" type="password" class="form-control" id="inputPassword"
-                        placeholder="*********">
+                    <input required v-model="password" type="password" class="form-control text-light"
+                        id="inputPassword" placeholder="*********">
                 </div>
                 <button class="btn-login btn w-100 py-2 text-light" type="submit">Iniciar Sesion <i
                         class="bi bi-send-fill"></i></button>
