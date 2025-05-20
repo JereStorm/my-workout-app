@@ -67,7 +67,7 @@ function getAuthUser() {
 // Middleware para proteger rutas
 router.beforeEach(async (to, from, next) => {
     const user = await getAuthUser(); // Espera a Firebase antes de continuar
-    console.log("Middleware routes, to:", to.path)
+    console.log("Middleware routes, to:", to.fullPath)
     if (to.path === "/my-workout-app/login" && user) {
         return next("/my-workout-app/dashboard"); // Evita que un usuario autenticado entre al login
     }
