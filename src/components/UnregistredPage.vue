@@ -1,13 +1,24 @@
 <template>
     <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
-        <h2>
-            my workout app
-            <span>my workout app</span>
-            <span>my workout app</span>
-            <span>Train Smart</span>
-        </h2>
+        <div class="split-text-container mb-md-5">
+            <!-- Versión escritorio -->
+            <span class="text-part left desktop-title">MY</span>
+            <span class="text-part right desktop-title">Workout</span>
+            <span class="text-part right desktop-title ">App</span>
 
-
+            <!-- Versión mobile -->
+            <div class="mobile-title d-md-none d-flex flex-column text-center">
+                <div class="mobile-part from-left">
+                    <span v-for="(char, index) in myLetters" :key="'my' + index">{{ char }}</span>
+                </div>
+                <div class="mobile-part from-right">
+                    <span v-for="(char, index) in workoutLetters" :key="'workout' + index">{{ char }}</span>
+                </div>
+                <div class="mobile-part from-left">
+                    <span v-for="(char, index) in appLetters" :key="'app' + index">{{ char }}</span>
+                </div>
+            </div>
+        </div>
 
         <transition name="fade-slide-nav" appear>
             <nav class="auth-links">
@@ -16,85 +27,156 @@
             </nav>
         </transition>
     </div>
-    <!-- Barra de navegación con animación solo al crearse -->
-
 </template>
 
+
 <script setup>
-
-// const titles = [
-//     'My Workout App',
-//     'Construi tu fuerza',
-//     'Registra tu progreso',
-//     'Entrena inteligente'
-// ];
-
+const myLetters = "MY".split("");
+const workoutLetters = "WORKOUT".split("");
+const appLetters = "APP".split("");
 </script>
 
-
-
 <style>
-.title-container h2 {
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    font-family: consolas;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 5em;
-    color: transparent;
+/* Estilos base */
+.mobile-title {
+    display: none;
+    font-size: 2.0rem;
+    font-weight: bold;
+    color: #fff;
+    gap: 0.2rem;
+}
+
+.mobile-part {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Animaciones específicas */
+.from-left {
+    animation: slideInLeft 1s ease-out;
+}
+
+.from-right {
+    animation: slideInRight 1s ease-out;
+}
+
+.from-bottom {
+    animation: slideInBottom 1s ease-out;
+}
+
+@keyframes slideInLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInBottom {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mostrar solo en desktop */
+@media (min-width: 768px) {
+    .desktop-title {
+        display: inline-block;
+    }
+
+    .mobile-title {
+        display: none !important;
+    }
+}
+
+/* Mostrar solo en mobile */
+@media (max-width: 767px) {
+    .split-text-container {
+        flex-direction: column;
+        align-items: center;
+        font-size: 2rem;
+    }
+
+    .desktop-title {
+        display: none !important;
+    }
+
+    .mobile-title {
+        display: flex;
+    }
+}
+
+.split-text-container {
+    display: flex;
+    font-size: 5rem;
+    font-weight: bold;
     text-transform: uppercase;
-}
-
-.title-container h2 span:nth-child(1) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: #000;
-    transition: 0.5s ease;
-    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    color: #fff;
     overflow: hidden;
 }
 
-.title-container h2:hover span:nth-child(1) {
-    transform: translateY(-18px);
+.text-part {
+    display: inline-block;
+    position: relative;
+    transform: translateX(0);
+    animation-duration: 2s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
 }
 
-.title-container h2 span:nth-child(2) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: #000;
-    transition: 0.5s;
-    clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-    overflow: hidden;
+.text-part.left {
+    transform: translateX(-200%);
+    animation-name: slide-in-left;
 }
 
-.title-container h2:hover span:nth-child(2) {
-    transform: translateY(18px);
+.text-part.right {
+    transform: translateX(200%);
+    animation-name: slide-in-right;
 }
 
-.title-container h2 span:nth-child(3) {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%) scaleY(0);
-    width: 91%;
-    color: #000;
-    background: aqua;
-    font-size: 0.25em;
-    font-weight: 500;
-    letter-spacing: 0.7em;
-    text-align: center;
-    padding-left: 20px;
-    margin-left: 30px;
-    transition: 0.5s;
+@keyframes slide-in-left {
+    0% {
+        transform: translateX(-200%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
-.title-container h2:hover span:nth-child(3) {
-    transform: translateY(-50%) scaleY(1);
+@keyframes slide-in-right {
+    0% {
+        transform: translateX(200%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
+
 
 .auth-links .btn {
     backdrop-filter: blur(12px);
