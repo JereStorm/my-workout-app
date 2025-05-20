@@ -276,7 +276,7 @@ async function eliminarRutina(rutinaId) {
  */
 function editarRutina(rutina) {
     router.push({
-        path: '/dashboard/form-routine',
+        name: 'FormRoutine',
         query: { id: rutina.id }
     });
 }

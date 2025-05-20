@@ -11,35 +11,23 @@ import ProfilePage from "@/components/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
 
 const routes = [
-    { path: "/register", component: RegisterPage },
-    { path: "/login", component: LoginPage },
+    { path: '/register', name: 'Register', component: RegisterPage },
+    { path: '/login', name: 'Login', component: LoginPage },
     {
-        path: "/dashboard",
+        path: '/dashboard',
+        name: 'Dashboard',
         component: DashboardPage,
         children: [
-            {
-                path: "",
-                redirect: "dashboard/my-workouts", // Redirige /dashboard a /dashboard/my-workouts
-            },
-            {
-                path: "/dashboard/my-workouts",
-                component: MyWorkoutsPage
-            },
-            {
-                path: "/dashboard/my-profile",
-                component: ProfilePage
-            },
-            {
-                path: "/dashboard/form-routine",
-                component: FormRoutine
-            },
-
+            { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
+            { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
+            { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
+            { path: '', redirect: { name: 'MyWorkouts' } }
         ],
         meta: { requiresAuth: true },
     },
 
-    { path: "/unregistred", component: UnregistredPage },
-    { path: "/:pathMatch(.*)*", redirect: "unregistred" }, // Captura rutas no definidas
+    { path: '/unregistred', name: 'Unregistred', component: UnregistredPage },
+    { path: '/:pathMatch(.*)*', redirect: { name: 'Unregistred' } }
 ];
 
 const router = createRouter({

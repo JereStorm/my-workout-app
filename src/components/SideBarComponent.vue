@@ -6,7 +6,7 @@
                 class="sidebar-profile flex-column flex-shrink-0 px-1 text-bg-dark"
                 :class="{ 'mobile-mode': isMobile }">
                 <div class="d-flex flex-column align-items-center">
-                    <router-link v-if="!isMobile" to="/dashboard" class="h3 mb-1 text-light ">
+                    <router-link v-if="!isMobile" :to="{ name: 'Dashboard' }" class="h3 mb-1 text-light ">
                         <i class="bi bi-house"></i>
                     </router-link>
                     <div class="username-container text-center font-weight-medium">
@@ -20,14 +20,14 @@
                 <hr />
                 <ul class="nav text-center nav-pills flex-column mb-auto">
                     <li class="nav-item">
-                        <router-link to="/dashboard/my-workouts"
+                        <router-link :to="{ name: 'MyWorkouts' }"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
                             <i class="bi bi-clipboard-check"></i> Mis Rutinas
                         </router-link>
                     </li>
                     <hr />
                     <li class="nav-item">
-                        <router-link to="/dashboard/my-profile"
+                        <router-link :to="{ name: 'MyProfile' }"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
                             <i class="bi bi-person-circle"></i> Mi Perfil
                         </router-link>
@@ -52,7 +52,7 @@
         <!-- 🔹 Botón para abrir sidebar (solo mobile) -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
             <!-- <h1 class="mb-0">C a l i<span> T a s k</span></h1> -->
-            <router-link to="/dashboard" class="h2 mb-0 d-flex gap-2">
+            <router-link :to="{ name: 'Dashboard' }" class="h2 mb-0 d-flex gap-2">
                 <i class="bi bi-house"></i>
             </router-link>
             <button class="btn btn-outline-info" @click.stop="toggleSidebar">
@@ -83,7 +83,7 @@ const { profile } = storeToRefs(profileStore);
 
 const logout = async () => {
     await userStore.logout();
-    router.push("/");
+    router.push({ name: 'Unregistred' })  // o a "Unregistred"
 };
 
 const toggleSidebar = () => {
