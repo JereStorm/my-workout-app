@@ -2,19 +2,22 @@
     <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
         <div class="split-text-container mb-md-5">
             <!-- Versión escritorio -->
-            <span class="text-part left desktop-title">MY</span>
-            <span class="text-part right desktop-title">Workout</span>
-            <span class="text-part right desktop-title ">App</span>
+            <div class="desktop-title-container d-none d-md-block">
+                <span class="text-part left desktop-title">MY</span>
+                <span class="text-part right desktop-title">Workout</span>
+                <span class="text-part right desktop-title">App</span>
+            </div>
 
             <!-- Versión mobile -->
-            <div class="mobile-title d-md-none d-flex flex-column text-center">
+            <div
+                class="mobile-title d-md-none d-flex flex-column align-items-center justify-content-center text-center">
                 <div class="mobile-part from-left">
                     <span v-for="(char, index) in myLetters" :key="'my' + index">{{ char }}</span>
                 </div>
                 <div class="mobile-part from-right">
                     <span v-for="(char, index) in workoutLetters" :key="'workout' + index">{{ char }}</span>
                 </div>
-                <div class="mobile-part from-left">
+                <div class="mobile-part from-bottom">
                     <span v-for="(char, index) in appLetters" :key="'app' + index">{{ char }}</span>
                 </div>
             </div>
@@ -29,21 +32,30 @@
     </div>
 </template>
 
-
 <script setup>
 const myLetters = "MY".split("");
 const workoutLetters = "WORKOUT".split("");
 const appLetters = "APP".split("");
 </script>
 
-<style>
-/* Estilos base */
+<style scoped>
+/* ---------------- BASE (Mobile First) ---------------- */
+
+.split-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Mobile Title (base por defecto) */
 .mobile-title {
-    display: none;
-    font-size: 2.0rem;
+    display: flex;
+    width: 300px;
+    font-size: 1.8rem;
     font-weight: bold;
     color: #fff;
-    gap: 0.2rem;
+    justify-content: center;
 }
 
 .mobile-part {
@@ -52,7 +64,6 @@ const appLetters = "APP".split("");
     align-items: center;
 }
 
-/* Animaciones específicas */
 .from-left {
     animation: slideInLeft 1s ease-out;
 }
@@ -65,9 +76,10 @@ const appLetters = "APP".split("");
     animation: slideInBottom 1s ease-out;
 }
 
+/* Animaciones */
 @keyframes slideInLeft {
     0% {
-        transform: translateX(-100%);
+        transform: translateX(-300px);
         opacity: 0;
     }
 
@@ -79,7 +91,7 @@ const appLetters = "APP".split("");
 
 @keyframes slideInRight {
     0% {
-        transform: translateX(100%);
+        transform: translateX(300px);
         opacity: 0;
     }
 
@@ -101,82 +113,21 @@ const appLetters = "APP".split("");
     }
 }
 
-/* Mostrar solo en desktop */
-@media (min-width: 768px) {
-    .desktop-title {
-        display: inline-block;
-    }
-
-    .mobile-title {
-        display: none !important;
-    }
+/* Ocultar desktop title en mobile */
+.desktop-title-container {
+    display: none !important;
 }
 
-/* Mostrar solo en mobile */
-@media (max-width: 767px) {
-    .split-text-container {
-        flex-direction: column;
-        align-items: center;
-        font-size: 2rem;
-    }
-
-    .desktop-title {
-        display: none !important;
-    }
-
-    .mobile-title {
-        display: flex;
-    }
-}
-
-.split-text-container {
+/* Navbar & botones */
+.auth-links {
+    position: absolute;
+    top: 50%;
+    width: 100%;
     display: flex;
-    font-size: 5rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #fff;
-    overflow: hidden;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 5px;
 }
-
-.text-part {
-    display: inline-block;
-    position: relative;
-    transform: translateX(0);
-    animation-duration: 2s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: forwards;
-}
-
-.text-part.left {
-    transform: translateX(-200%);
-    animation-name: slide-in-left;
-}
-
-.text-part.right {
-    transform: translateX(200%);
-    animation-name: slide-in-right;
-}
-
-@keyframes slide-in-left {
-    0% {
-        transform: translateX(-200%);
-    }
-
-    100% {
-        transform: translateX(0);
-    }
-}
-
-@keyframes slide-in-right {
-    0% {
-        transform: translateX(200%);
-    }
-
-    100% {
-        transform: translateX(0);
-    }
-}
-
 
 .auth-links .btn {
     backdrop-filter: blur(12px);
@@ -185,22 +136,15 @@ const appLetters = "APP".split("");
     transition: all 1s ease;
 }
 
-/* Estilos de la barra de navegación */
-.auth-links {
-    position: absolute;
-    top: 50%;
-    width: 80%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: auto 30px;
-    margin-top: 5px;
+.auth-links .btn:hover {
+    border: 1px solid rgb(104, 104, 104);
+    background-color: rgb(90, 243, 235);
+    color: #101010;
 }
 
-
-/* Animación de entrada */
+/* Transición entrada nav */
 .fade-slide-nav-enter-active {
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .fade-slide-nav-enter-from {
@@ -213,23 +157,7 @@ const appLetters = "APP".split("");
     transform: translateY(0);
 }
 
-.auth-links .btn:hover {
-    border: 1px solid rgb(104, 104, 104);
-    background-color: rgb(90, 243, 235);
-    color: #101010;
-}
-
-.title-wrapper {
-    transform: translateY(-10%);
-}
-
-.title-word {
-    display: block;
-    line-height: 1.2;
-}
-
-
-/* Animación de flotación continua */
+/* Animaciones continuas */
 @keyframes float {
     0% {
         transform: translateY(0);
@@ -241,54 +169,79 @@ const appLetters = "APP".split("");
 }
 
 @keyframes borderColorChange {
-    0% {
+
+    0%,
+    100% {
         border-color: #101010;
     }
 
     50% {
         border-color: #909090;
-
-    }
-
-    100% {
-        border-color: #101010;
-
     }
 }
 
-@keyframes pulse-glow {
+/* ---------------- DESKTOP OVERRIDES ---------------- */
+@media (min-width: 768px) {
 
-    0%,
-    100% {
-        text-shadow:
-            0 0 5px rgba(0, 255, 255, 0.3),
-            0 0 10px rgba(0, 255, 255, 0.4),
-            0 0 20px rgba(0, 255, 255, 0.5);
+    /* Mostrar título de escritorio y ocultar mobile */
+    .desktop-title-container {
+        display: flex !important;
+        font-size: 5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #fff;
+        overflow: hidden;
     }
 
-    50% {
-        text-shadow:
-            0 0 10px rgba(0, 255, 255, 0.6),
-            0 0 20px rgba(0, 255, 255, 0.7),
-            0 0 30px rgba(0, 255, 255, 0.8);
-    }
-}
-
-@keyframes blink {
-
-    0%,
-    100% {
-        opacity: 1;
+    .mobile-title {
+        display: none !important;
     }
 
-    50% {
-        opacity: 0;
+    /* Partes del texto animadas (desktop) */
+    .text-part {
+        display: inline-block;
+        position: relative;
+        animation-duration: 2s;
+        animation-timing-function: ease-out;
+        animation-fill-mode: forwards;
     }
-}
 
-@media only screen and (min-width: 768px) {
-    .title-container h2 {
-        font-size: 8em;
+    .text-part.left {
+        transform: translateX(-200%);
+        animation-name: slide-in-left;
+    }
+
+    .text-part.right {
+        transform: translateX(200%);
+        animation-name: slide-in-right;
+    }
+
+    .auth-links {
+        width: 50%;
+    }
+
+    @keyframes slide-in-left {
+        0% {
+            transform: translateX(-200%);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slide-in-right {
+        0% {
+            transform: translateX(200%);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 }
 </style>
