@@ -164,7 +164,7 @@ onUnmounted(() => {
     top: 0;
     left: 0;
     margin-top: 55px;
-    z-index: 20;
+    z-index: 502;
 }
 
 .profileNickname {
@@ -185,7 +185,7 @@ onUnmounted(() => {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 9;
+    z-index: 501;
 }
 
 /* Transiciones */
