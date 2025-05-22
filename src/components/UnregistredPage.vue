@@ -56,8 +56,8 @@ const appLetters = "APP".split("");
 .mobile-title {
     display: flex;
     width: 300px;
-    font-size: 3rem;
-    font-weight: bold;
+    font-size: 2.5rem;
+    font-weight: bolder;
     color: #fff;
     justify-content: center;
 }
