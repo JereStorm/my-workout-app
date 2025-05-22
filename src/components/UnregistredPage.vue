@@ -1,6 +1,6 @@
 <template>
-    <div class="vh-100 w-100 d-flex align-items-center justify-content-center title-container">
-        <div class="split-text-container mb-md-5">
+    <div class="w-100 my-auto d-flex align-items-center justify-content-center title-container">
+        <div class="split-text-container mb-md-5 me-2">
             <!-- Versión escritorio -->
             <div class="desktop-title-container d-none d-md-block">
                 <span class="text-part left desktop-title aurora-title" data-text="MY">MY</span>
@@ -49,6 +49,7 @@ const appLetters = "APP".split("");
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
