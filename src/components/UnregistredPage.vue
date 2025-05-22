@@ -136,7 +136,8 @@ const appLetters = "APP".split("");
 .auth-links .btn {
     backdrop-filter: blur(12px);
     color: azure;
-    animation: float 2s ease-in-out infinite alternate, borderColorChange 3.2s infinite linear;
+    animation: float 2s ease-in-out infinite alternate, borderAuroraPulse 8s ease infinite;
+
     transition: all 1s ease;
 }
 
@@ -172,15 +173,25 @@ const appLetters = "APP".split("");
     }
 }
 
-@keyframes borderColorChange {
+@keyframes borderAuroraPulse {
+    0% {
+        border-color: #00ff94;
+    }
 
-    0%,
-    100% {
-        border-color: #101010;
+    25% {
+        border-color: #00f0ff;
     }
 
     50% {
-        border-color: #909090;
+        border-color: #8a2be2;
+    }
+
+    75% {
+        border-color: #ca1a1a;
+    }
+
+    100% {
+        border-color: #00f0ff;
     }
 }
 
