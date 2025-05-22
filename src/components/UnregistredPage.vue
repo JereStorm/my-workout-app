@@ -1,5 +1,5 @@
 <template>
-    <div class="w-100 my-auto d-flex align-items-center justify-content-center title-container">
+    <div class="w-100 d-flex align-items-center justify-content-center title-container">
         <div class="split-text-container mb-md-5 me-2">
             <!-- Versión escritorio -->
             <div class="desktop-title-container d-none d-md-block">
@@ -44,6 +44,9 @@ const appLetters = "APP".split("");
 
 <style scoped>
 /* ---------------- BASE (Mobile First) ---------------- */
+.title-container {
+    margin-top: 100px;
+}
 
 .split-text-container {
     display: flex;
