@@ -3,22 +3,26 @@
         <div class="split-text-container mb-md-5">
             <!-- Versión escritorio -->
             <div class="desktop-title-container d-none d-md-block">
-                <span class="text-part left desktop-title">MY</span>
-                <span class="text-part right desktop-title">Workout</span>
-                <span class="text-part right desktop-title">App</span>
+                <span class="text-part left desktop-title aurora-title" data-text="MY">MY</span>
+                <span class="text-part right desktop-title aurora-title" data-text="Workout">Workout</span>
+                <span class="text-part right desktop-title aurora-title" data-text="App">App</span>
+
             </div>
 
             <!-- Versión mobile -->
             <div
                 class="mobile-title d-md-none d-flex flex-column align-items-center justify-content-center text-center">
                 <div class="mobile-part from-left">
-                    <span v-for="(char, index) in myLetters" :key="'my' + index">{{ char }}</span>
+                    <span v-for="(char, index) in myLetters" :key="'my' + index" class="aurora-title"
+                        :data-text="char">{{ char }}</span>
                 </div>
                 <div class="mobile-part from-right">
-                    <span v-for="(char, index) in workoutLetters" :key="'workout' + index">{{ char }}</span>
+                    <span v-for="(char, index) in workoutLetters" :key="'workout' + index" class="aurora-title"
+                        :data-text="char">{{ char }}</span>
                 </div>
                 <div class="mobile-part from-bottom">
-                    <span v-for="(char, index) in appLetters" :key="'app' + index">{{ char }}</span>
+                    <span v-for="(char, index) in appLetters" :key="'app' + index" class="aurora-title"
+                        :data-text="char">{{ char }}</span>
                 </div>
             </div>
         </div>
@@ -26,7 +30,7 @@
         <transition name="fade-slide-nav" appear>
             <nav class="auth-links">
                 <router-link to="/login" class="btn px-4">Login</router-link>
-                <router-link to="/register" class="btn px-4">Register</router-link>
+                <router-link to="/register" class="btn px-4 ">Register</router-link>
             </nav>
         </transition>
     </div>
@@ -186,7 +190,7 @@ const appLetters = "APP".split("");
     /* Mostrar título de escritorio y ocultar mobile */
     .desktop-title-container {
         display: flex !important;
-        font-size: 5rem;
+        font-size: 5.5rem;
         font-weight: bold;
         text-transform: uppercase;
         color: #fff;
@@ -242,6 +246,62 @@ const appLetters = "APP".split("");
             transform: translateX(0);
             opacity: 1;
         }
+    }
+}
+
+/* ———————————————— */
+/* Efecto Aurora Boreal */
+/* ———————————————— */
+
+.aurora-title {
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    z-index: 0;
+}
+
+/* Capa de degradado animado que se recorta al texto */
+.aurora-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg,
+            #00ff94,
+            #00f0ff,
+            #8a2be2,
+            #ca1a1a,
+            #00f0ff);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: aurora 8s ease infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes aurora {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    25% {
+        background-position: 50% 100%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    75% {
+        background-position: 50% 0%;
+    }
+
+    100% {
+        background-position: 0% 50%;
     }
 }
 </style>
