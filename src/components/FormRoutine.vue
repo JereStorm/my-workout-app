@@ -1,9 +1,11 @@
 <template>
+
     <div class="add-routine-form">
         <h2 class="text-center mb-4">
-            {{ nuevaRutina.id ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
+            {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
         </h2>
-        <form @submit.prevent="guardarRutina" class="p-2 p-md-4">
+        <div v-if="isLoadingInfo" class="loader"></div>
+        <form v-else @submit.prevent="guardarRutina" class="p-2 p-md-4">
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" v-model="nuevaRutina.nombre" spellcheck="false" autocomplete="on"
@@ -27,7 +29,7 @@
                 <div class="d-flex gap-2 align-items-baseline">
                     <input type="number" v-model="nuevaRutina.descansoBloques" class="form-control  input-number"
                         id="descansoBloques">
-                    <span class="descanso-min">
+                    <span class="descanso-min text-info fw-medium">
                         {{ formatTiempo(nuevaRutina.descansoBloques) }} M
                     </span>
                 </div>
@@ -38,7 +40,7 @@
                 <div class="d-flex gap-2 align-items-baseline">
                     <input type="number" v-model="nuevaRutina.descansoSeries" class="form-control  input-number"
                         id="descansoSeries">
-                    <span class="descanso-min">
+                    <span class="descanso-min text-info fw-medium">
                         {{ formatTiempo(nuevaRutina.descansoSeries) }} M
                     </span>
                 </div>
@@ -119,7 +121,7 @@
 
             <hr>
 
-            <div v-if="isLoading" class="loader-form"></div>
+            <div v-if="isLoadingSave" class="loader-form"></div>
 
             <div class="text-center d-flex btns-set-routine flex-column align-items-center">
                 <button type="submit" class="btn btn-success mt-0">
@@ -139,10 +141,9 @@
 <!-- AddFormRoutine.vue -->
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, onMounted, ref } from 'vue';
+import { reactive, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
-
 
 /** Store global con los datos del perfil (incluye las rutinas) */
 const profileStore = useProfileStore();
@@ -151,8 +152,12 @@ const profileStore = useProfileStore();
 const route = useRoute();
 const router = useRouter();
 
+const rutinaIdFromRoute = route.query.id;
+
 /** Estado de carga (útil para desactivar botones o mostrar spinners) */
-const isLoading = ref(false);
+const isLoadingSave = ref(false);
+
+const isLoadingInfo = ref(false);
 
 /**
  * Estado reactivo de la rutina que se está creando o editando.
@@ -172,19 +177,17 @@ const nuevaRutina = reactive({
 });
 
 /**
- * Al montar el componente, revisa si se pasó un ID por la ruta para cargar una rutina existente.
- * Si se encuentra, clona profundamente y carga en el estado `nuevaRutina`.
+ * Intenta cargar la rutina en función del query.id
  */
-onMounted(async () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const rutinaIdFromRoute = route.query.id;
+function aplicarRutinaSiCorresponde() {
 
     if (rutinaIdFromRoute) {
+        isLoadingInfo.value = true;
         try {
             const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
             if (rutinaExistente) {
                 Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
+                isLoadingInfo.value = false;
             } else {
                 console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
                 // Aquí podrías redirigir o mostrar un mensaje al usuario
@@ -194,6 +197,27 @@ onMounted(async () => {
             // Se recomienda mostrar feedback al usuario
         }
     }
+}
+
+watch(
+    () => profileStore.getUserRoutines.length,
+    (len) => {
+        if (len > 0) {
+            // Cuando por fin haya alguna rutina, prueba a mapear la que toque
+            aplicarRutinaSiCorresponde();
+        }
+    }
+);
+
+
+/**
+ * Al montar el componente, revisa si se pasó un ID por la ruta para cargar una rutina existente.
+ * Si se encuentra, clona profundamente y carga en el estado `nuevaRutina`.
+ */
+onMounted(async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // si ya llegaron antes, aplica de una vez:
+    aplicarRutinaSiCorresponde();
 });
 
 /**
@@ -227,7 +251,7 @@ const handleCancelar = () => {
  * Muestra mensajes de error si ocurre algún problema.
  */
 const guardarRutina = async () => {
-    isLoading.value = true;
+    isLoadingSave.value = true;
     try {
         if (nuevaRutina.id) {
             // Edición de rutina existente
@@ -236,7 +260,7 @@ const guardarRutina = async () => {
             // Creación de rutina nueva
             await profileStore.createRutinaFirebase({ ...nuevaRutina });
         }
-        isLoading.value = false;
+        isLoadingSave.value = false;
         router.push({ name: "MyWorkouts" });
     } catch (error) {
         console.error('Error al guardar la rutina:', error);

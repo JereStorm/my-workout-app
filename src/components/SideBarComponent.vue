@@ -6,7 +6,8 @@
                 class="sidebar-profile flex-column flex-shrink-0 px-1 text-bg-dark"
                 :class="{ 'mobile-mode': isMobile }">
                 <div class="d-flex flex-column align-items-center">
-                    <router-link v-if="!isMobile" :to="{ name: 'Dashboard' }" class="h3 mb-1 text-light ">
+                    <router-link v-if="!isMobile" :to="{ name: 'MyWorkouts' }"
+                        class="h3 mb-1 text-light router-link-active">
                         <i class="bi bi-house"></i>
                     </router-link>
                     <div class="username-container text-center font-weight-medium">
@@ -52,7 +53,7 @@
         <!-- 🔹 Botón para abrir sidebar (solo mobile) -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
             <!-- <h1 class="mb-0">C a l i<span> T a s k</span></h1> -->
-            <router-link :to="{ name: 'Dashboard' }" class="h2 mb-0 d-flex gap-2">
+            <router-link :to="{ name: 'MyWorkouts' }" class="h2 mb-0 d-flex gap-2 router-link-active">
                 <i class="bi bi-house"></i>
             </router-link>
             <button class="btn btn-outline-info" @click.stop="toggleSidebar">
