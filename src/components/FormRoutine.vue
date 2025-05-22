@@ -24,13 +24,25 @@
                 <label for="descansoBloques" class="form-label w-50 mb-0">
                     Descanso entre Bloques
                 </label>
-                <input type="number" v-model="nuevaRutina.descansoBloques" class="form-control  input-number"
-                    id="descansoBloques">
+                <div class="d-flex gap-2 align-items-baseline">
+                    <input type="number" v-model="nuevaRutina.descansoBloques" class="form-control  input-number"
+                        id="descansoBloques">
+                    <span class="descanso-min">
+                        {{ formatTiempo(nuevaRutina.descansoBloques) }} M
+                    </span>
+                </div>
+
             </div>
             <div class="mb-3 text-start d-flex justify-content-start gap-5 align-items-center ">
                 <label for="descansoSeries" class="form-label w-50 mb-0">Descanso entre Series</label>
-                <input type="number" v-model="nuevaRutina.descansoSeries" class="form-control  input-number"
-                    id="descansoSeries">
+                <div class="d-flex gap-2 align-items-baseline">
+                    <input type="number" v-model="nuevaRutina.descansoSeries" class="form-control  input-number"
+                        id="descansoSeries">
+                    <span class="descanso-min">
+                        {{ formatTiempo(nuevaRutina.descansoSeries) }} M
+                    </span>
+                </div>
+
             </div>
 
             <div v-for="(bloque, index) in nuevaRutina.bloques" :key="index"
@@ -79,7 +91,8 @@
                         </div>
                     </div>
                     <div class="d-flex w-100 justify-content-center gap-2">
-                        <button type="button" @click="agregarEjercicio(index)" class="btn btn-outline-info">
+                        <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
+                            class="btn btn-outline-info">
                             <i class="bi bi-plus-circle-fill"></i> Ejercicio
                         </button>
                         <button v-if="ejercicioIndex > 0" type="button"
@@ -126,21 +139,25 @@
 <!-- AddFormRoutine.vue -->
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, watch, defineProps, onMounted, ref } from 'vue';
+import { reactive, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 
-const props = defineProps({
-    rutinaParaEditar: Object
-});
 
+/** Store global con los datos del perfil (incluye las rutinas) */
 const profileStore = useProfileStore();
 
+/** Acceso al enrutador y a la ruta actual */
 const route = useRoute();
 const router = useRouter();
 
+/** Estado de carga (útil para desactivar botones o mostrar spinners) */
 const isLoading = ref(false);
 
+/**
+ * Estado reactivo de la rutina que se está creando o editando.
+ * Contiene nombre, dificultad, descansos y bloques (cada uno con ejercicios).
+ */
 const nuevaRutina = reactive({
     nombre: '',
     dificultad: 'Intermedia',
@@ -154,9 +171,15 @@ const nuevaRutina = reactive({
     }]
 });
 
+/**
+ * Al montar el componente, revisa si se pasó un ID por la ruta para cargar una rutina existente.
+ * Si se encuentra, clona profundamente y carga en el estado `nuevaRutina`.
+ */
 onMounted(async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
     const rutinaIdFromRoute = route.query.id;
+
     if (rutinaIdFromRoute) {
         try {
             const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
@@ -164,15 +187,19 @@ onMounted(async () => {
                 Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
             } else {
                 console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
-                // Opcional: Redirigir o mostrar un mensaje de error
+                // Aquí podrías redirigir o mostrar un mensaje al usuario
             }
         } catch (error) {
             console.error('Error al cargar la rutina para editar:', error);
-            // Opcional: Mostrar un mensaje de error al usuario
+            // Se recomienda mostrar feedback al usuario
         }
     }
 });
 
+/**
+ * Restablece el formulario a sus valores por defecto.
+ * Ideal para "crear nueva rutina" o limpiar después de guardar.
+ */
 const resetFormulario = () => {
     Object.assign(nuevaRutina, {
         nombre: '',
@@ -188,57 +215,97 @@ const resetFormulario = () => {
     });
 };
 
+/**
+ * Navega a la vista de rutinas del usuario.
+ */
 const handleCancelar = () => {
     router.push({ name: "MyWorkouts" });
 };
 
+/**
+ * Guarda la rutina actual: si tiene ID, se actualiza; si no, se crea una nueva.
+ * Muestra mensajes de error si ocurre algún problema.
+ */
 const guardarRutina = async () => {
     isLoading.value = true;
     try {
         if (nuevaRutina.id) {
-            // Editar rutina existente
+            // Edición de rutina existente
             await profileStore.updateRutina({ ...nuevaRutina });
         } else {
-            // Crear nueva rutina
+            // Creación de rutina nueva
             await profileStore.createRutinaFirebase({ ...nuevaRutina });
         }
         isLoading.value = false;
         router.push({ name: "MyWorkouts" });
     } catch (error) {
         console.error('Error al guardar la rutina:', error);
-        // Manejar errores (mostrar mensaje al usuario, etc.)
+        // Aquí podrías usar un sistema de notificaciones o alertas
     }
 };
 
+/**
+ * Agrega un nuevo bloque de ejercicios a la rutina.
+ */
 const agregarBloque = () => {
     nuevaRutina.bloques.push({
-        series: 3, // Añadimos 'series' al nuevo bloque
+        series: 3,
         ejercicios: [
-            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 } // Quitamos 'series' del nuevo ejercicio
+            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 }
         ]
     });
 };
 
+/**
+ * Elimina el bloque en la posición indicada.
+ * @param {number} index Índice del bloque a eliminar.
+ */
 const eliminarBloque = (index) => {
     nuevaRutina.bloques.splice(index, 1);
 };
 
-
-const agregarEjercicio = (bloqueIndex) => {
-    nuevaRutina.bloques[bloqueIndex].ejercicios.push({
-        nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 // Quitamos 'series' del nuevo ejercicio
+/**
+ * Agrega un nuevo ejercicio inmediatamente después de uno existente.
+ * @param {number} bloqueIndex Índice del bloque donde se agrega el ejercicio.
+ * @param {number} ejercicioIndex Índice del ejercicio después del cual se insertará el nuevo.
+ */
+const agregarEjercicio = (bloqueIndex, ejercicioIndex) => {
+    const ejercicios = nuevaRutina.bloques[bloqueIndex].ejercicios;
+    ejercicios.splice(ejercicioIndex + 1, 0, {
+        nombre: '',
+        repeticiones: 1,
+        tiempo: 0,
+        esfuerzo: 0
     });
 };
 
+/**
+ * Elimina un ejercicio de un bloque específico.
+ * @param {number} bloqueIndex Índice del bloque.
+ * @param {number} ejercicioIndex Índice del ejercicio a eliminar.
+ */
 const eliminarEjercicio = (bloqueIndex, ejercicioIndex) => {
     nuevaRutina.bloques[bloqueIndex].ejercicios.splice(ejercicioIndex, 1);
 };
 
+/**
+ * Aplica una clase CSS de alerta si un valor es inválido (vacío o nulo).
+ * @param {*} valor Valor a validar.
+ * @returns {string} Clase CSS condicional.
+ */
 const inputClass = (valor) => {
     return valor === null || valor === '' || valor === undefined ? 'input-alert' : '';
 };
 
+const formatTiempo = (segundos) => {
+    const m = Math.floor(segundos / 60);
+    const s = segundos % 60;
+    const mm = String(m).padStart(2, '0');
+    const ss = String(s).padStart(2, '0');
+    return `${mm}:${ss}`;
+};
 </script>
+
 
 <style scoped>
 /* Estilos - Puedes añadir más para el formulario */
@@ -342,6 +409,10 @@ select {
     padding: 4px 12px;
     width: 80%;
     gap: 10px;
+}
+
+.descanso-min {
+    width: 70px;
 }
 
 /* Solo se fija si NO es mobile */
