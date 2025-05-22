@@ -45,7 +45,7 @@ const appLetters = "APP".split("");
 <style scoped>
 /* ---------------- BASE (Mobile First) ---------------- */
 .title-container {
-    margin-top: 100px;
+    margin-top: 30px;
 }
 
 .split-text-container {
