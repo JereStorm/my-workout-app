@@ -60,7 +60,7 @@
                     item-key="nombre" handle=".drag-handle" class="ejercicios-list" :animation="200" ghost-class="ghost"
                     :delay="100" :delay-on-touch-only="true">
                     <template #item="{ element: ejercicio, index: ejercicioIndex }">
-                        <div class="ejercicio-container p-1 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
+                        <div class="ejercicio-container px-2 py-3 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
                             :key="ejercicio.nombre + '-' + ejercicioIndex">
                             <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
                             <!-- Agrega un “handle” visual -->
