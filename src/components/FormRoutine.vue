@@ -65,7 +65,7 @@
                             <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
                             <!-- Agrega un “handle” visual -->
                             <div class="row w-100 d-flex flex-column justify-content-center gap-3">
-                                <div class="w-100 mb-2 px-0 px-md-2">
+                                <div class="w-100 mb-2 px-3 px-md-2">
                                     <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
                                         class="form-label">Ejercicio</label>
                                     <input type="text" v-model="ejercicio.nombre" spellcheck="false" autocomplete="on"
@@ -99,7 +99,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="d-flex w-100 justify-content-center gap-2">
+                            <div class="d-flex w-100 justify-content-center gap-2 px-5">
                                 <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
                                     class="btn btn-outline-info">
                                     <i class="bi bi-plus-circle-fill"></i> Ejercicio
@@ -114,9 +114,10 @@
                         </div>
                     </template>
                 </Draggable>
-                <div class="btns-set-bloque ">
-                    <button v-if="index > 0" type="button" @click="eliminarBloque(index)"
-                        class="btn btn-outline-danger mt-1">
+                <hr class="mt-0 mt-md-2" v-if="index === 0 && nuevaRutina.bloques.length > 1">
+                <div class="btns-set-bloque px-5">
+                    <button v-if="index > 0 || (index === 0 && nuevaRutina.bloques.length > 1)" type="button"
+                        @click="eliminarBloque(index)" class="btn btn-outline-danger mt-1">
                         <i class="bi bi-trash-fill"></i> Bloque
                     </button>
                 </div>
