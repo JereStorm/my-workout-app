@@ -60,20 +60,20 @@
                     item-key="nombre" handle=".drag-handle" class="ejercicios-list" :animation="200" ghost-class="ghost"
                     :delay="100" :delay-on-touch-only="true">
                     <template #item="{ element: ejercicio, index: ejercicioIndex }">
-                        <div class="ejercicio-container px-2 py-3 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
+                        <div class="ejercicio-container p-3  p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
                             :key="ejercicio.nombre + '-' + ejercicioIndex">
                             <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
                             <!-- Agrega un “handle” visual -->
                             <div class="row w-100 d-flex flex-column justify-content-center gap-3">
                                 <div class="w-100 mb-2 px-3 px-md-2">
                                     <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
-                                        class="form-label">Ejercicio</label>
+                                        class="form-label mb-0">Ejercicio</label>
                                     <input type="text" v-model="ejercicio.nombre" spellcheck="false" autocomplete="on"
                                         required :class="['form-control', inputClass(nuevaRutina.nombre)]"
                                         :id="'ejercicio-' + index + '-' + ejercicioIndex">
                                 </div>
                             </div>
-                            <div class="setting-exercise">
+                            <div class="setting-exercise py-2">
                                 <div class="col-md-3 mb-2 text-center">
                                     <label for="reps-{{ index }}-{{ ejercicioIndex }}" class="form-label">Reps</label>
                                     <input type="number" v-model="ejercicio.repeticiones"
@@ -101,19 +101,21 @@
                             </div>
                             <div class="d-flex w-100 justify-content-center gap-2 px-5">
                                 <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
-                                    class="btn btn-outline-info">
-                                    <i class="bi bi-plus-circle-fill"></i> Ejercicio
+                                    class="btn btn-outline-info w-auto">
+                                    <i class="bi bi-plus-circle-fill"></i> {{ isMobile ? "" : "Ejercicio" }}
                                 </button>
                                 <button v-if="ejercicioIndex > 0" type="button"
                                     @click="eliminarEjercicio(index, ejercicioIndex)"
-                                    class="btn btn-outline-danger delete-exercise ">
-                                    <i class="bi bi-trash-fill"></i> Ejercicio
+                                    class="btn btn-outline-danger w-auto delete-exercise ">
+                                    <i class="bi bi-trash-fill"></i> {{ isMobile ? "" : "Ejercicio" }}
                                 </button>
                             </div>
+                            <hr class="divisor mt-2 mb-0">
+
                         </div>
                     </template>
                 </Draggable>
-                <hr class="mt-0 mt-md-2" v-if="index > 0 || (index === 0 && nuevaRutina.bloques.length > 1)">
+                <hr class="divisor m-2" v-if="ejercicioIndex < nuevaRutina.bloques[index].ejercicios.length - 1">
                 <div class="btns-set-bloque px-5">
                     <button v-if="index > 0 || (index === 0 && nuevaRutina.bloques.length > 1)" type="button"
                         @click="eliminarBloque(index)" class="btn btn-outline-danger mt-1">
@@ -169,6 +171,7 @@ const isLoadingSave = ref(false);
 
 const isLoadingInfo = ref(false);
 
+const isMobile = ref(window.innerWidth < 768);
 /**
  * Estado reactivo de la rutina que se está creando o editando.
  * Contiene nombre, dificultad, descansos y bloques (cada uno con ejercicios).
@@ -197,6 +200,8 @@ function aplicarRutinaSiCorresponde() {
             const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
             if (rutinaExistente) {
                 Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
+
+                console.log(nuevaRutina)
                 isLoadingInfo.value = false;
             } else {
                 console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
@@ -379,7 +384,7 @@ const formatTiempo = (segundos) => {
 .ejercicios-list {
     display: flex;
     flex-direction: column;
-    gap: 10px
+    gap: 5px
 }
 
 #descansoBloques,
@@ -620,5 +625,10 @@ input:-webkit-autofill:active {
         transform: rotate(45deg) translateX(-45px);
         opacity: 0.7;
     }
+}
+
+.divisor {
+    width: 100%;
+    height: 1px;
 }
 </style>
