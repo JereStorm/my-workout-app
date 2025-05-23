@@ -1,5 +1,4 @@
 <template>
-
     <div class="add-routine-form">
         <h2 class="text-center mb-4">
             {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
@@ -57,55 +56,69 @@
                             :id="'series-bloque-' + index" min="1">
                     </div>
                 </div>
+                <Draggable v-model="nuevaRutina.bloques[index].ejercicios" :group="{ name: 'ejercicios' }"
+                    item-key="nombre" handle=".drag-handle" class="ejercicios-list" :animation="200" ghost-class="ghost"
+                    chosen-class="chosen" drag-class="drag" :delay="100" :delay-on-touch-only="true">
+                    <template #item="{ element: ejercicio, index: ejercicioIndex }">
+                        <transition-group name="v" tag="div">
+                            <div class="ejercicio-container p-2 d-flex flex-column align-items-center gap-3 drag-handle"
+                                :key="ejercicio.nombre + '-' + ejercicioIndex">
+                                <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
+                                <!-- Agrega un “handle” visual -->
+                                <div class="row w-100 d-flex flex-column justify-content-center gap-3">
+                                    <div class="w-100 mb-2">
+                                        <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
+                                            class="form-label">Ejercicio</label>
+                                        <input type="text" v-model="ejercicio.nombre" spellcheck="false"
+                                            autocomplete="on" required
+                                            :class="['form-control', inputClass(nuevaRutina.nombre)]"
+                                            :id="'ejercicio-' + index + '-' + ejercicioIndex">
+                                    </div>
+                                </div>
+                                <div class="setting-exercise">
+                                    <div class="col-md-3 mb-2 text-center">
+                                        <label for="reps-{{ index }}-{{ ejercicioIndex }}"
+                                            class="form-label">Reps</label>
+                                        <input type="number" v-model="ejercicio.repeticiones"
+                                            class="form-control input-number"
+                                            :id="'reps-' + index + '-' + ejercicioIndex" min="1">
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <label for="tiempo-{{ index }}-{{ ejercicioIndex }}"
+                                            class="form-label">Tiempo</label>
+                                        <input type="number" v-model="ejercicio.tiempo"
+                                            class="form-control input-number"
+                                            :id="'tiempo-' + index + '-' + ejercicioIndex" min="0">
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}"
+                                            class="form-label">Esfuerzo</label>
+                                        <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
+                                            :id="'esfuerzo-' + index + '-' + ejercicioIndex">
 
-                <div v-for="(ejercicio, ejercicioIndex) in bloque.ejercicios" :key="ejercicioIndex"
-                    class="ejercicio-container  p-2 d-flex flex-column align-items-center gap-3">
-                    <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
-                    <div class="row w-100 d-flex flex-column justify-content-center gap-3">
-                        <div class="w-100 mb-2">
-                            <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}" class="form-label">Ejercicio</label>
-                            <input type="text" v-model="ejercicio.nombre" spellcheck="false" autocomplete="on" required
-                                :class="['form-control', inputClass(nuevaRutina.nombre)]"
-                                :id="'ejercicio-' + index + '-' + ejercicioIndex">
-                        </div>
-                    </div>
-                    <div class="setting-exercise ">
-                        <div class="col-md-3 mb-2 text-center">
-                            <label for="reps-{{ index }}-{{ ejercicioIndex }}" class="form-label">Reps</label>
-                            <input type="number" v-model="ejercicio.repeticiones" class="form-control input-number"
-                                :id="'reps-' + index + '-' + ejercicioIndex" min="1">
-                        </div>
-                        <div class="col-md-3 text-center">
-                            <label for="tiempo-{{ index }}-{{ ejercicioIndex }}" class="form-label">Tiempo</label>
-                            <input type="number" v-model="ejercicio.tiempo" class="form-control input-number"
-                                :id="'tiempo-' + index + '-' + ejercicioIndex" min="0">
-                        </div>
-                        <div class="col-md-3 text-center">
-                            <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}" class="form-label">Esfuerzo</label>
-                            <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
-                                :id="'esfuerzo-' + index + '-' + ejercicioIndex">
+                                            <option select value="">-</option> <!-- Opción vacía -->
+                                            <option value="1">RIR 1</option>
+                                            <option value="2">RIR 2</option>
+                                            <option value="3">RIR 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex w-100 justify-content-center gap-2">
+                                    <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
+                                        class="btn btn-outline-info">
+                                        <i class="bi bi-plus-circle-fill"></i> Ejercicio
+                                    </button>
+                                    <button v-if="ejercicioIndex > 0" type="button"
+                                        @click="eliminarEjercicio(index, ejercicioIndex)"
+                                        class="btn btn-outline-danger delete-exercise ">
+                                        <i class="bi bi-trash-fill"></i> Ejercicio
+                                    </button>
 
-                                <option select value="">-</option> <!-- Opción vacía -->
-                                <option value="1">RIR 1</option>
-                                <option value="2">RIR 2</option>
-                                <option value="3">RIR 3</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-flex w-100 justify-content-center gap-2">
-                        <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
-                            class="btn btn-outline-info">
-                            <i class="bi bi-plus-circle-fill"></i> Ejercicio
-                        </button>
-                        <button v-if="ejercicioIndex > 0" type="button"
-                            @click="eliminarEjercicio(index, ejercicioIndex)"
-                            class="btn btn-outline-danger delete-exercise ">
-                            <i class="bi bi-trash-fill"></i> Ejercicio
-                        </button>
-
-                    </div>
-
-                </div>
+                                </div>
+                            </div>
+                        </transition-group>
+                    </template>
+                </Draggable>
                 <div class="btns-set-bloque ">
                     <button v-if="index > 0" type="button" @click="eliminarBloque(index)"
                         class="btn btn-outline-danger">
@@ -136,6 +149,7 @@
 
         </form>
     </div>
+
 </template>
 
 <!-- AddFormRoutine.vue -->
@@ -144,6 +158,7 @@ import { cloneDeep } from 'lodash-es';
 import { reactive, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
+import Draggable from 'vuedraggable';
 
 /** Store global con los datos del perfil (incluye las rutinas) */
 const profileStore = useProfileStore();
@@ -332,7 +347,50 @@ const formatTiempo = (segundos) => {
 
 
 <style scoped>
-/* Estilos - Puedes añadir más para el formulario */
+/* Clases para el draggable */
+.ghost {
+    opacity: 0.5;
+    background-color: #272727;
+    border: 1px dashed #17a2b8;
+}
+
+.chosen {
+    background-color: #222222;
+}
+
+.drag {
+    cursor: grabbing;
+}
+
+/* Transiciones suaves para mover los ítems */
+.ejercicios-list .v-move,
+.ejercicios-list .v-enter-active,
+.ejercicios-list .v-leave-active {
+    transition: all 0.3s ease;
+}
+
+.ejercicios-list .v-enter-from,
+.ejercicios-list .v-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+
+.drag-handle {
+    color: #ccc;
+    transition: all 0.4s ease;
+}
+
+.drag-handle:hover {
+    background-color: #1d1d1d;
+    cursor: pointer;
+}
+
+.ejercicios-list {
+    display: flex;
+    flex-direction: column;
+}
+
 #descansoBloques,
 #descansoSeries {
     width: 70px;
