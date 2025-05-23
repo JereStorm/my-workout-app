@@ -48,7 +48,7 @@
 
             <div v-for="(bloque, index) in nuevaRutina.bloques" :key="index"
                 class="bloque-container mb-3 px-2 pt-2 pb-3 rounded text-start">
-                <div class="mb-3 d-flex justify-content-between align-items-baseline ">
+                <div class="mb-1 d-flex justify-content-between align-items-baseline ">
                     <h5 class="text-start m-0">{{ index + 1 }}° Bloque</h5>
                     <div class="d-flex flex-column align-items-center justify-content-center col-md-2">
                         <label for="series-bloque-{{ index }}" class="form-label mb-1">Series</label>
@@ -61,12 +61,12 @@
                     chosen-class="chosen" drag-class="drag" :delay="100" :delay-on-touch-only="true">
                     <template #item="{ element: ejercicio, index: ejercicioIndex }">
                         <transition-group name="v" tag="div">
-                            <div class="ejercicio-container p-2 d-flex flex-column align-items-center gap-3 drag-handle"
+                            <div class="ejercicio-container p-1 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
                                 :key="ejercicio.nombre + '-' + ejercicioIndex">
                                 <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
                                 <!-- Agrega un “handle” visual -->
                                 <div class="row w-100 d-flex flex-column justify-content-center gap-3">
-                                    <div class="w-100 mb-2">
+                                    <div class="w-100 mb-2 px-0 px-md-2">
                                         <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
                                             class="form-label">Ejercicio</label>
                                         <input type="text" v-model="ejercicio.nombre" spellcheck="false"
@@ -121,7 +121,7 @@
                 </Draggable>
                 <div class="btns-set-bloque ">
                     <button v-if="index > 0" type="button" @click="eliminarBloque(index)"
-                        class="btn btn-outline-danger">
+                        class="btn btn-outline-danger mt-1">
                         <i class="bi bi-trash-fill"></i> Bloque
                     </button>
                 </div>
@@ -142,7 +142,7 @@
                     Guardar rutina
                 </button>
 
-                <button type="button" @click="handleCancelar" class="btn btn-danger mt-3">
+                <button type="button" @click="handleCancelar" class="btn btn-danger mt-3 mb-2">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>
             </div>
@@ -389,6 +389,7 @@ const formatTiempo = (segundos) => {
 .ejercicios-list {
     display: flex;
     flex-direction: column;
+    gap: 10px
 }
 
 #descansoBloques,
@@ -472,7 +473,7 @@ select {
 
 .add-routine-form form {
     border-radius: 0px;
-    width: 90%;
+    width: 96%;
 }
 
 .card {

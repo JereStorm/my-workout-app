@@ -8,7 +8,7 @@
                 Descanso entre series: {{ rutina.descansoSeries }}s
             </p>
         </div>
-        <hr>
+        <hr class="text-danger">
         <div v-for="(bloque, indexBloque) in rutina.bloques" :key="indexBloque" class="my-3">
             <div class="d-flex justify-content-between align-items-baseline">
                 <p class="h5 text-lg text-start font-semibold mb-2">{{ indexBloque + 1 }}° Bloque </p>
@@ -36,9 +36,9 @@
 
                     </div>
 
-                    <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="mb-0">
+                    <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-0">
                 </li>
-                <hr class="mb-0">
+                <hr class="mb-0 text-danger">
             </ul>
         </div>
     </div>
