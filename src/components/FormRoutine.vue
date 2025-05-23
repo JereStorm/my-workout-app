@@ -58,65 +58,60 @@
                 </div>
                 <Draggable v-model="nuevaRutina.bloques[index].ejercicios" :group="{ name: 'ejercicios' }"
                     item-key="nombre" handle=".drag-handle" class="ejercicios-list" :animation="200" ghost-class="ghost"
-                    chosen-class="chosen" drag-class="drag" :delay="100" :delay-on-touch-only="true">
+                    :delay="100" :delay-on-touch-only="true">
                     <template #item="{ element: ejercicio, index: ejercicioIndex }">
-                        <transition-group name="v" tag="div">
-                            <div class="ejercicio-container p-1 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
-                                :key="ejercicio.nombre + '-' + ejercicioIndex">
-                                <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
-                                <!-- Agrega un “handle” visual -->
-                                <div class="row w-100 d-flex flex-column justify-content-center gap-3">
-                                    <div class="w-100 mb-2 px-0 px-md-2">
-                                        <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
-                                            class="form-label">Ejercicio</label>
-                                        <input type="text" v-model="ejercicio.nombre" spellcheck="false"
-                                            autocomplete="on" required
-                                            :class="['form-control', inputClass(nuevaRutina.nombre)]"
-                                            :id="'ejercicio-' + index + '-' + ejercicioIndex">
-                                    </div>
-                                </div>
-                                <div class="setting-exercise">
-                                    <div class="col-md-3 mb-2 text-center">
-                                        <label for="reps-{{ index }}-{{ ejercicioIndex }}"
-                                            class="form-label">Reps</label>
-                                        <input type="number" v-model="ejercicio.repeticiones"
-                                            class="form-control input-number"
-                                            :id="'reps-' + index + '-' + ejercicioIndex" min="1">
-                                    </div>
-                                    <div class="col-md-3 text-center">
-                                        <label for="tiempo-{{ index }}-{{ ejercicioIndex }}"
-                                            class="form-label">Tiempo</label>
-                                        <input type="number" v-model="ejercicio.tiempo"
-                                            class="form-control input-number"
-                                            :id="'tiempo-' + index + '-' + ejercicioIndex" min="0">
-                                    </div>
-                                    <div class="col-md-3 text-center">
-                                        <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}"
-                                            class="form-label">Esfuerzo</label>
-                                        <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
-                                            :id="'esfuerzo-' + index + '-' + ejercicioIndex">
-
-                                            <option select value="">-</option> <!-- Opción vacía -->
-                                            <option value="1">RIR 1</option>
-                                            <option value="2">RIR 2</option>
-                                            <option value="3">RIR 3</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="d-flex w-100 justify-content-center gap-2">
-                                    <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
-                                        class="btn btn-outline-info">
-                                        <i class="bi bi-plus-circle-fill"></i> Ejercicio
-                                    </button>
-                                    <button v-if="ejercicioIndex > 0" type="button"
-                                        @click="eliminarEjercicio(index, ejercicioIndex)"
-                                        class="btn btn-outline-danger delete-exercise ">
-                                        <i class="bi bi-trash-fill"></i> Ejercicio
-                                    </button>
-
+                        <div class="ejercicio-container p-1 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle"
+                            :key="ejercicio.nombre + '-' + ejercicioIndex">
+                            <!-- <h6>Ejercicio {{ ejercicioIndex + 1 }}</h6> -->
+                            <!-- Agrega un “handle” visual -->
+                            <div class="row w-100 d-flex flex-column justify-content-center gap-3">
+                                <div class="w-100 mb-2 px-0 px-md-2">
+                                    <label for="ejercicio-{{ index }}-{{ ejercicioIndex }}"
+                                        class="form-label">Ejercicio</label>
+                                    <input type="text" v-model="ejercicio.nombre" spellcheck="false" autocomplete="on"
+                                        required :class="['form-control', inputClass(nuevaRutina.nombre)]"
+                                        :id="'ejercicio-' + index + '-' + ejercicioIndex">
                                 </div>
                             </div>
-                        </transition-group>
+                            <div class="setting-exercise">
+                                <div class="col-md-3 mb-2 text-center">
+                                    <label for="reps-{{ index }}-{{ ejercicioIndex }}" class="form-label">Reps</label>
+                                    <input type="number" v-model="ejercicio.repeticiones"
+                                        class="form-control input-number" :id="'reps-' + index + '-' + ejercicioIndex"
+                                        min="1">
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <label for="tiempo-{{ index }}-{{ ejercicioIndex }}"
+                                        class="form-label">Tiempo</label>
+                                    <input type="number" v-model="ejercicio.tiempo" class="form-control input-number"
+                                        :id="'tiempo-' + index + '-' + ejercicioIndex" min="0">
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <label for="esfuerzo-{{ index }}-{{ ejercicioIndex }}"
+                                        class="form-label">Esfuerzo</label>
+                                    <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
+                                        :id="'esfuerzo-' + index + '-' + ejercicioIndex">
+
+                                        <option select value="">-</option> <!-- Opción vacía -->
+                                        <option value="1">RIR 1</option>
+                                        <option value="2">RIR 2</option>
+                                        <option value="3">RIR 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex w-100 justify-content-center gap-2">
+                                <button type="button" @click="agregarEjercicio(index, ejercicioIndex)"
+                                    class="btn btn-outline-info">
+                                    <i class="bi bi-plus-circle-fill"></i> Ejercicio
+                                </button>
+                                <button v-if="ejercicioIndex > 0" type="button"
+                                    @click="eliminarEjercicio(index, ejercicioIndex)"
+                                    class="btn btn-outline-danger delete-exercise ">
+                                    <i class="bi bi-trash-fill"></i> Ejercicio
+                                </button>
+
+                            </div>
+                        </div>
                     </template>
                 </Draggable>
                 <div class="btns-set-bloque ">
@@ -350,16 +345,11 @@ const formatTiempo = (segundos) => {
 /* Clases para el draggable */
 .ghost {
     opacity: 0.5;
-    background-color: #272727;
-    border: 1px dashed #17a2b8;
-}
-
-.chosen {
-    background-color: #222222;
-}
-
-.drag {
-    cursor: grabbing;
+    background: #474747;
+    border: 2px dashed #00bcd4;
+    height: auto;
+    margin-bottom: 1rem;
+    /* Igual que el spacing entre items reales */
 }
 
 /* Transiciones suaves para mover los ítems */
