@@ -109,12 +109,11 @@
                                     class="btn btn-outline-danger delete-exercise ">
                                     <i class="bi bi-trash-fill"></i> Ejercicio
                                 </button>
-
                             </div>
                         </div>
                     </template>
                 </Draggable>
-                <hr class="mt-0 mt-md-2" v-if="index === 0 && nuevaRutina.bloques.length > 1">
+                <hr class="mt-0 mt-md-2" v-if="index > 0 || (index === 0 && nuevaRutina.bloques.length > 1)">
                 <div class="btns-set-bloque px-5">
                     <button v-if="index > 0 || (index === 0 && nuevaRutina.bloques.length > 1)" type="button"
                         @click="eliminarBloque(index)" class="btn btn-outline-danger mt-1">
