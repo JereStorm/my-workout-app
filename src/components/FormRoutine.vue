@@ -635,4 +635,20 @@ input:-webkit-autofill:active {
     width: 100%;
     height: 1px;
 }
+
+/* Animación para el elemento que se está arrastrando */
+.ejercicio-container.sortable-chosen {
+    transition: opacity 0.3s ease-out;
+    /* Define la transición de opacidad */
+    opacity: 0.5;
+    /* Reduce la opacidad para crear el efecto fade */
+}
+
+/* Opcional: Estilo para el elemento fantasma */
+.ejercicio-container.sortable-ghost {
+    opacity: 0.2;
+    /* Lo hace más transparente */
+    background-color: #f0f0f0;
+    /* Cambia el color de fondo */
+}
 </style>
