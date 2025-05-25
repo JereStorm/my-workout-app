@@ -21,7 +21,6 @@ const routes = [
             { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
             { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
-            { path: '', redirect: { name: 'MyWorkouts' } }
         ],
         meta: { requiresAuth: true },
     },

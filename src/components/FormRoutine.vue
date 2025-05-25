@@ -115,8 +115,7 @@
                         </div>
                     </template>
                 </Draggable>
-                <hr class="divisor m-2" v-if="ejercicioIndex < nuevaRutina.bloques[indexBloque].ejercicios.length - 1">
-                <div class="btns-set-bloque px-5 pt-md-2">
+                <div class="btns-set-bloque px-5 pt-md-2 pt-1">
                     <button v-if="indexBloque > 0 || (indexBloque === 0 && nuevaRutina.bloques.length > 1)"
                         type="button" @click="eliminarBloque(indexBloque)" class="btn btn-outline-danger ">
                         <i class="bi bi-trash-fill"></i> Bloque
