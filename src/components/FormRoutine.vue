@@ -58,8 +58,8 @@
                 </div>
 
                 <Draggable v-model="nuevaRutina.bloques[indexBloque].ejercicios" :group="{ name: 'ejercicios' }"
-                    item-key="nombre" handle=".drag-handle" class="ejercicios-list" :animation="200" ghost-class="ghost"
-                    :delay="100" :delay-on-touch-only="true">
+                    item-key="indexBloque" handle=".drag-handle" class="ejercicios-list" :animation="200"
+                    ghost-class="ghost" :delay="100" :delay-on-touch-only="true">
                     <template #item="{ element: ejercicio, index: ejercicioIndex }">
                         <div
                             class="ejercicio-container p-3 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle">
@@ -347,7 +347,6 @@ const formatTiempo = (segundos) => {
 };
 </script>
 
-
 <style scoped>
 /* Clases para el draggable */
 .ghost {
@@ -501,7 +500,7 @@ select {
 @media only screen and (min-width: 768px) {
     .add-routine-form {
         width: 100%;
-        padding: 20px;
+        padding: 20px 0px 20px 20px;
         padding-left: 160px;
 
     }
