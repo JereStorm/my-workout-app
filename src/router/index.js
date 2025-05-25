@@ -18,6 +18,7 @@ const routes = [
         name: 'Dashboard',
         component: DashboardPage,
         children: [
+            { path: '', name: 'DashboardRedirect', redirect: { name: 'MyWorkouts' } },
             { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
             { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },

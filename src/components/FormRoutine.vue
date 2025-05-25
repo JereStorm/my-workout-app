@@ -205,6 +205,7 @@ function aplicarRutinaSiCorresponde() {
                 isLoadingInfo.value = false;
             } else {
                 console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
+                router.push({ name: "MyWorkouts" });
                 // Aquí podrías redirigir o mostrar un mensaje al usuario
             }
         } catch (error) {
