@@ -2,10 +2,10 @@
     <div class="px-2 py-1 rounded-xl shadow-md">
         <div class="text-start text-sm text-gray-500">
             <p class="mb-1">
-                Descanso entre bloques: {{ rutina.descansoBloques }}s
+                Descanso entre bloques: <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
             </p>
             <p>
-                Descanso entre series: {{ rutina.descansoSeries }}s
+                Descanso entre series: <span>{{ formatTiempo(rutina.descansoSeries) }} Min.</span>
             </p>
         </div>
         <hr class="text-danger">
@@ -43,9 +43,17 @@
         </div>
     </div>
 </template>
-
 <script>
 export default {
-    props: ['rutina']
+    props: ['rutina'],
+    methods: {
+        formatTiempo(segundos) {
+            const m = Math.floor(segundos / 60);
+            const s = segundos % 60;
+            const mm = String(m).padStart(2, '0');
+            const ss = String(s).padStart(2, '0');
+            return `${mm}:${ss}`;
+        }
+    }
 }
 </script>

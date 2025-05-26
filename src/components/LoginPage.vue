@@ -139,7 +139,7 @@ main {
     font-size: small;
     background-image: none !important;
     background-color: #151515 !important;
-    color: fieldtext !important;
+    color: #f5f5f5 !important;
 }
 
 .form-login input::placeholder {
@@ -175,6 +175,20 @@ main {
 
     main {
         margin-top: 100px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    input {
+        background-color: #151515;
+        color: #ffffff;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    input {
+        background-color: #ffffff;
+        color: #000000;
     }
 }
 </style>

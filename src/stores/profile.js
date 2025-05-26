@@ -52,7 +52,7 @@ export const useProfileStore = defineStore('profile', {
                     this.profile = { id: uid, email, nickname: '', routines: [] };
                 }
 
-                this.getRutinas();
+                await this.getRutinas();
             } catch (error) {
                 console.error('Error al cargar o crear el perfil:', error);
                 throw error;

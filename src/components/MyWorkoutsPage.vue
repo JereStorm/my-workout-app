@@ -5,7 +5,7 @@
 
             <div class="text-center mb-3">
                 <RouterLink to="/dashboard/form-routine"
-                    class="btn btn-outline-danger px-5 d-flex gap-2 justify-content-center align-items-baseline"
+                    class="btn btn-outline-success px-5 d-flex gap-2 justify-content-center align-items-baseline"
                     id="add-routine">
                     <i class="bi bi-plus-circle-fill"></i> Agregar Rutina
                 </RouterLink>
