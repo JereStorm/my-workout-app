@@ -30,7 +30,8 @@
                 <transition-group name="fade-item" tag="ul" class="routine-resumen"
                     :class="{ 'column-layout': rutinasMostradas.length > 0 }">
                     <li v-for="routine in sortedRoutines" :key="routine.id" :ref="el => routineRefs.set(routine.id, el)"
-                        class="mb-1 routine-card" :class="{ 'expanded': rutinasMostradas.includes(routine.id) }">
+                        class="mb-1 routine-card" :class="{ 'expanded': rutinasMostradas.includes(routine.id) }"
+                        @click="expandirRutina(routine.id)">
                         <!-- Bloques (esquina superior izquierda) -->
                         <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
                             <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{
@@ -76,9 +77,6 @@
                                 </span>
                                 <transition name="fade-item">
                                     <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
-                                        <li @click="expandirRutina(routine.id)">
-                                            <i class="bi bi-arrows-angle-expand"></i>
-                                        </li>
                                         <li @click.stop="editarRutina(routine)">
                                             <i class="bi bi-pencil-square"></i>
                                         </li>
@@ -92,9 +90,6 @@
                                 </transition>
                             </div>
                             <div v-else class="edit-resume-container">
-                                <span @click="expandirRutina(routine.id)">
-                                    <i class="bi bi-arrows-angle-expand"></i>
-                                </span>
                                 <span @click.stop="editarRutina(routine)">
                                     <i class="bi bi-pencil-square"></i>
                                 </span>
@@ -105,7 +100,6 @@
                                     <i class="bi bi-copy"></i>
                                 </span>
                             </div>
-
                         </div>
                     </li>
                 </transition-group>
@@ -352,6 +346,7 @@ const renderDifficulty = (dificultad) =>
 
 .routine-resumen .routine-card {
     position: relative;
+    cursor: pointer;
     border: 1px solid lightgray;
     padding: 20px 10px;
     border-radius: 8px;
