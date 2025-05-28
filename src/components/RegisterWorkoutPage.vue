@@ -24,7 +24,7 @@
             <div class="progress mb-3" role="progressbar" aria-label="Progreso" :aria-valuenow="progressPercentage"
                 aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar bg-info" :style="{ width: progressPercentage + '%' }">
-                    {{ progressPercentage }}%
+                    <!-- {{ progressPercentage }}% -->
                 </div>
             </div>
             <div class="stepper-wrapper">
@@ -34,9 +34,12 @@
                     <div v-if="step < steps.length" :key="step" class="stepper-container">
                         <!-- Mostrar serie actual del bloque -->
                         <div class="exercise-card p-3 pb-0 mb-3 ">
-                            <div class="d-flex justify-content-between mb-2">
+                            <div class="d-flex justify-content-between mb-3">
                                 <strong>{{ current.stepLabel }}</strong>
-                                <span>Serie {{ current.serie + 1 }} de {{ current.totalSeries }}</span>
+                                <span>Serie <span class="text-info fw-bold">{{ current.serie + 1 }}</span> de <span
+                                        class="text-info fw-bold">{{
+                                            current.totalSeries }}</span>
+                                </span>
                             </div>
 
                             <div v-for="(ej, eIndex) in current.ejercicios" :key="eIndex"
@@ -46,21 +49,22 @@
                                 </label>
                                 <input type="number" :id="`ej-${step}-${eIndex}`"
                                     v-model.number="logs[step].actualReps[eIndex]" min="0"
-                                    class="form-control input-cant" />
+                                    class="form-control input-cant text-aqua" />
                             </div>
                         </div>
 
                         <!-- Navegación -->
                         <div class="navigation-container">
                             <button class="btn btn-outline-secondary" @click="prevStep" :disabled="step === 0">
-                                ← Anterior
+                                <i class="bi bi-arrow-bar-left"></i> Anterior
                             </button>
                             <button class="btn btn-outline-info" @click="nextStep">
-                                {{ step + 1 === steps.length ? 'Finalizar' : 'Siguiente →' }}
+                                {{ step + 1 === steps.length ? 'Finalizar' :
+                                    'Siguiente' }} <i class="bi bi-arrow-bar-right"></i>
                             </button>
                         </div>
-                        <div>
-                            <button type="button" @click="handleCancelar" class="btn btn-danger mt-3 mb-2">
+                        <div class="cancel-container">
+                            <button type="button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-2">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </button>
                         </div>
@@ -74,11 +78,10 @@
                         <div v-if="isSaving" class="loader-form mt-3"></div>
                         <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
                             @after-leave="showNotifier = false" />
-                        <div class="mt-3 text-end">
-                            <button class="btn btn-success" @click="submit">Guardar Registro</button>
-                        </div>
-                        <div>
-                            <button type="button" @click="handleCancelar" class="btn btn-danger mt-3 mb-2">
+
+                        <div class="cancel-container mt-5">
+                            <button class="btn w-100 btn-success" @click="submit">Guardar Registro</button>
+                            <button type=" button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-2">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </button>
                         </div>
@@ -182,8 +185,6 @@ const construirSiCorresponde = async () => {
 
     rutina.value = { ...data };
 
-    isLoadingInfo.value = false;
-
     data.bloques.forEach((bloque, bi) => {
         for (let si = 0; si < bloque.series; si++) {
             steps.value.push({
@@ -199,6 +200,8 @@ const construirSiCorresponde = async () => {
             });
         }
     });
+
+    isLoadingInfo.value = false;
 }
 
 // También si cambia profile.id
@@ -211,22 +214,21 @@ watch(() => profileStore.profile.id, (uid) => {
 const current = computed(() => steps.value[step.value] || {});
 
 //pasos
-function nextStep() {
+const nextStep = () => {
     if (step.value < steps.value.length) {
         direction.value = 'forward';
         step.value++;
     }
 }
 
-function prevStep() {
+const prevStep = () => {
     if (step.value > 0) {
         direction.value = 'backward';
         step.value--;
     }
 }
 
-
-async function submit() {
+const submit = async () => {
     isSaving.value = true;
     try {
         await profileStore.registerWorkout({
@@ -279,11 +281,15 @@ const handleCancelar = () => {
     border-radius: 2px;
 }
 
+.text-aqua {
+    color: aqua;
+}
+
 .stepper-wrapper {
     position: relative;
     overflow: hidden;
     width: 100%;
-    min-height: 350px;
+    min-height: 500px;
     /* o lo que necesites */
 }
 
@@ -325,12 +331,18 @@ const handleCancelar = () => {
     min-width: 75px;
     max-width: 90px;
     text-align: center;
-    background-color: #252525;
+    background-color: transparent;
     color: aqua;
 }
 
 .label-ejercicio {
     width: 80%;
+}
+
+.cancel-container {
+    width: 100%;
+    padding: 0px 3rem;
+    max-width: 400px;
 }
 
 .fade-slide-enter-active,
