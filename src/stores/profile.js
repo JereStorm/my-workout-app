@@ -212,7 +212,7 @@ export const useProfileStore = defineStore('profile', {
      * @param {Array} workoutData.logs  // [{ actualReps: [...] }, …]
      * @param {string} workoutData.notes
      */
-        async registerWorkout({ rutinaId, date, logs, notes }) {
+        async registerWorkout({ rutinaId, date, logs, notes, steps }) {
             if (!this.profile.id) {
                 throw new Error("Usuario no autenticado");
             }
@@ -223,6 +223,7 @@ export const useProfileStore = defineStore('profile', {
                 date,
                 logs,
                 notes,
+                steps,
                 createdAt: new Date().toISOString(),
             };
             console.log("Payload", payload)
@@ -266,6 +267,7 @@ export const useProfileStore = defineStore('profile', {
                     workouts.push({ id: doc.id, ...doc.data() });
                 });
                 this.profile.workouts = workouts;
+                console.log(this.profile.workouts)
             } catch (error) {
                 console.error('Error al obtener los workouts:', error);
                 throw error;

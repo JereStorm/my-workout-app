@@ -70,6 +70,10 @@
                         <label for="workout-notes" class="form-label">Notas del Entrenamiento</label>
                         <textarea id="workout-notes" v-model="notes" class="form-control w-50" rows="4"
                             placeholder="¿Cómo te sentiste hoy?"></textarea>
+                        <!-- Loader / Feedback -->
+                        <div v-if="isSaving" class="loader-form mt-3"></div>
+                        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
+                            @after-leave="showNotifier = false" />
                         <div class="mt-3 text-end">
                             <button class="btn btn-success" @click="submit">Guardar Registro</button>
                         </div>
@@ -82,11 +86,6 @@
 
                 </Transition>
             </div>
-
-            <!-- Loader / Feedback -->
-            <div v-if="isSaving" class="loader-form mt-3"></div>
-            <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
-                @after-leave="showNotifier = false" />
         </div>
     </div>
 </template>
@@ -161,7 +160,6 @@ onMounted(() => {
 
 const construirSiCorresponde = async () => {
     if (!rutinaId) {
-        console.log()
         isLoadingInfo.value = false;
         return;
     }
@@ -234,13 +232,15 @@ async function submit() {
         await profileStore.registerWorkout({
             rutinaId,
             date: workoutDate.value,
+            steps: steps.value,
             logs: logs.value,
             notes: notes.value
         });
         notification.message = 'Entrenamiento guardado correctamente';
         notification.type = 'success';
-        // (Opcional) Redirigir al listado de workouts:
-        router.push({ name: 'MyWorkouts' });
+        // // (Opcional) Redirigir al listado de workouts:
+        // router.push({ name: 'MyWorkouts' });
+
     } catch (err) {
         console.error(err);
         notification.message = 'Error al guardar, intenta de nuevo';
