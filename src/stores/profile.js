@@ -17,6 +17,7 @@ export const useProfileStore = defineStore('profile', {
             email: '',
             nickname: '',
             routines: [],
+            workouts: [],
             charge: false,
         },
     }),
@@ -53,6 +54,7 @@ export const useProfileStore = defineStore('profile', {
                 }
 
                 await this.getRutinas();
+                await this.loadWorkouts();
             } catch (error) {
                 console.error('Error al cargar o crear el perfil:', error);
                 throw error;
@@ -201,6 +203,74 @@ export const useProfileStore = defineStore('profile', {
                 throw error;
             }
         },
+
+        /**
+     * Registra un nuevo workout en Firestore y lo añade al estado local.
+     * @param {object} workoutData
+     * @param {string} workoutData.rutinaId
+     * @param {string} workoutData.date (ISO string)
+     * @param {Array} workoutData.logs  // [{ actualReps: [...] }, …]
+     * @param {string} workoutData.notes
+     */
+        async registerWorkout({ rutinaId, date, logs, notes }) {
+            if (!this.profile.id) {
+                throw new Error("Usuario no autenticado");
+            }
+            // Prepara el payload
+            const payload = {
+                idUser: this.profile.id,
+                rutinaId,
+                date,
+                logs,
+                notes,
+                createdAt: new Date().toISOString(),
+            };
+            console.log("Payload", payload)
+            try {
+                // Guarda en la colección 'workouts'
+                const colRef = collection(db, 'workouts');
+                const docRef = await addDoc(colRef, payload);
+                // Opcionalmente manténlo en cache local
+                if (!this.profile.workouts) {
+                    this.profile.workouts = [];
+                }
+                this.profile.workouts.push({ id: docRef.id, ...payload });
+                return docRef.id;
+            } catch (error) {
+                console.error("Error registrando workout:", error);
+                throw error;
+            }
+        },
+        /**
+         * Obtiene todos los workouts (entrenamientos) del usuario desde Firestore.
+         * Los ordena por fecha descendente.
+         * @throws {Error} Si el usuario no está autenticado.
+         */
+        async loadWorkouts() {
+            console.log("loadWorkouts()")
+            if (!this.profile.id) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            const workoutsRef = collection(db, 'workouts');
+            const q = query(
+                workoutsRef,
+                where('idUser', '==', this.profile.id),
+                orderBy('date', 'desc')
+            );
+
+            try {
+                const snapshot = await getDocs(q);
+                const workouts = [];
+                snapshot.forEach((doc) => {
+                    workouts.push({ id: doc.id, ...doc.data() });
+                });
+                this.profile.workouts = workouts;
+            } catch (error) {
+                console.error('Error al obtener los workouts:', error);
+                throw error;
+            }
+        },
     },
     /**
      * Getters del store. Permiten acceder al estado de forma computada.
@@ -219,5 +289,7 @@ export const useProfileStore = defineStore('profile', {
          * @returns {Array<object>} - La lista de rutinas del usuario.
          */
         getUserRoutines: (state) => state.profile.routines,
+
+        getWorkouts: (state) => state.profile.workouts,
     },
 });

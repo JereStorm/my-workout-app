@@ -28,6 +28,13 @@
                     </li>
                     <hr />
                     <li class="nav-item">
+                        <router-link :to="{ name: 'RegisterWorkout' }"
+                            class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
+                            <i class="bi bi-book"></i> Mis Entrenos
+                        </router-link>
+                    </li>
+                    <hr />
+                    <li class="nav-item">
                         <router-link :to="{ name: 'MyProfile' }"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
                             <i class="bi bi-person-circle"></i> Mi Perfil

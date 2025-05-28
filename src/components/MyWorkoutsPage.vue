@@ -77,6 +77,9 @@
                                 </span>
                                 <transition name="fade-item">
                                     <ul v-if="cardMenuAbierto === routine.id" class="mini-menu">
+                                        <li @click.stop="registrarEntrenamiento(routine)">
+                                            <i class="bi bi-file-earmark-plus"></i>
+                                        </li>
                                         <li @click.stop="editarRutina(routine)">
                                             <i class="bi bi-pencil-square"></i>
                                         </li>
@@ -90,6 +93,10 @@
                                 </transition>
                             </div>
                             <div v-else class="edit-resume-container">
+
+                                <span @click.stop="registrarEntrenamiento(routine)">
+                                    <i class="bi bi-file-earmark-plus"></i>
+                                </span>
                                 <span @click.stop="editarRutina(routine)">
                                     <i class="bi bi-pencil-square"></i>
                                 </span>
@@ -148,6 +155,13 @@ const order = ref('fechaCreacionDesc');
  * Lista original desde el store, reactiva.
  */
 const rawRoutines = computed(() => profileStore.getUserRoutines);
+
+const registrarEntrenamiento = (rutina) => {
+    router.push({
+        name: 'RegisterWorkout',
+        query: { id: rutina.id }
+    });
+}
 
 /**
  * Computed que devuelve `rawRoutines` ordenadas según `order`.

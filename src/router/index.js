@@ -9,6 +9,7 @@ import UnregistredPage from "@/components/UnregistredPage.vue";
 import MyWorkoutsPage from "@/components/MyWorkoutsPage.vue";
 import ProfilePage from "@/components/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
+import RegisterWorkoutPage from "../components/RegisterWorkoutPage.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
@@ -20,6 +21,7 @@ const routes = [
         children: [
             { path: '', name: 'DashboardRedirect', redirect: { name: 'MyWorkouts' } },
             { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
+            { path: 'register-workout', name: 'RegisterWorkout', component: RegisterWorkoutPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
             { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
         ],
