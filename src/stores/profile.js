@@ -245,7 +245,7 @@ export const useProfileStore = defineStore('profile', {
                 if (!this.profile.workouts) {
                     this.profile.workouts = [];
                 }
-                this.profile.workouts.push({ id: docRef.id, ...payload });
+                this.profile.workouts.unshift({ id: docRef.id, ...payload });
                 return docRef.id;
             } catch (error) {
                 console.error("Error registrando workout:", error);

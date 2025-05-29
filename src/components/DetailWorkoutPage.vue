@@ -6,11 +6,11 @@
         <div v-if="workout" class="detail-container">
 
             <!-- Datos generales -->
-            <p class="h5 text-start py-3 px-auto">
-                Fecha: <strong>{{ formatDate(workout.createdAt) }}</strong><br>
-                Rutina: <strong>{{ workout.dataRoutine.nombre }}</strong><br>
-                Notas: <em v-if="workout.notes">{{ workout.notes }}</em>
-                <em v-else class="text-muted">Sin notas</em>
+            <p class="h5 text-start py-3 px-3">
+                Fecha: <strong class="ms-2">{{ formatDate(workout.createdAt) }}</strong><br>
+                Rutina: <strong class="ms-2">{{ workout.dataRoutine.nombre }}</strong><br>
+                Notas: <em class="ms-2" v-if="workout.notes">{{ workout.notes }}</em>
+                <em v-else class="text-muted ms-2">Sin notas</em>
             </p>
 
             <!-- Recorrido por bloques y series -->
