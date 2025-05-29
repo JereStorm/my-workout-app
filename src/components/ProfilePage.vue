@@ -141,7 +141,7 @@ const guardarNickname = async () => {
 }
 
 .info-container {
-    margin-top: 50px;
+    margin-top: 1rem;
     width: 80%;
     height: 100%;
     display: flex;

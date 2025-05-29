@@ -17,6 +17,9 @@
                     </router-link>
                 </p>
             </div>
+            <div v-if="!isLoading && workouts.lenght === 0">
+                <h5>No hay entrenos guardadas aún.</h5>
+            </div>
         </div>
     </div>
 </template>

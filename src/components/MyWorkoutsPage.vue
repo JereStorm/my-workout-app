@@ -11,8 +11,7 @@
                 </RouterLink>
             </div>
 
-            <div v-show="rawRoutines.length > 0"
-                class="d-flex justify-content-center justify-content-md-start ms-md-5 mb-3">
+            <div v-if="!isLoading" class="d-flex justify-content-center justify-content-md-start ms-md-5 mb-3">
                 <div class="d-flex align-items-baseline text-start">
                     <label for="orderBy" class="me-2">Ordenar por</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
@@ -24,9 +23,9 @@
                 </div>
             </div>
 
-            <div v-if="isLoading || (rawRoutines.length === 0 && isLoading)" class="loader"></div>
+            <div v-if="isLoading || isLocalLoading" class="loader"></div>
 
-            <div v-show="sortedRoutines.length > 0">
+            <div v-if="!isLoading && sortedRoutines.length > 0">
                 <transition-group name="fade-item" tag="ul" class="routine-resumen"
                     :class="{ 'column-layout': rutinasMostradas.length > 0 }">
                     <li v-for="routine in sortedRoutines" :key="routine.id" :ref="el => routineRefs.set(routine.id, el)"
@@ -124,9 +123,11 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import RoutineDetail from '@/components/RoutineDetail.vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 const profileStore = useProfileStore();
-const isLoading = ref(true);
+const { isLoading } = storeToRefs(profileStore);
+const isLocalLoading = ref(false)
 const isMobile = ref(window.innerWidth < 768);
 const routineRefs = ref(new Map());
 const rutinasMostradas = ref([]);
@@ -198,30 +199,6 @@ onMounted(async () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// 2) Vigilamos profile.id y cuando exista, cargamos rutinas
-watch(
-    () => profileStore.profile.id,
-    async (uid) => {
-        // console.log("Watch 2")
-        if (!uid) return;
-        // Si aún no hay UID, salimos
-        isLoading.value = true;
-
-        try {
-            //Si no hay rutinas por default, verificamos la BD
-            if (profileStore.getUserRoutines.length === 0)
-                await profileStore.getRutinas();
-            else
-                isLoading.value = false;
-        } catch (err) {
-            console.error('Error al cargar rutinas:', err);
-        } finally {
-            isLoading.value = false;   // Apagamos el loader
-        }
-    },
-    { immediate: true }            // Para que se ejecute de una vez
-);
-
 /**
  * Maneja el estado del mini menu que se encuentra en las cards version mobile
  * @param e 
@@ -268,11 +245,7 @@ async function eliminarRutina(rutinaId) {
         }
 
         await profileStore.deleteRutina(rutinaId);
-        isLoading.value = false;
 
-        // if (profileStore.getUserRoutines.length === 0) {
-        //     isLoading.value = false;
-        // }
     } catch (error) {
         console.log("Error al borrar la rutina.", error);
     }
@@ -294,7 +267,7 @@ function editarRutina(rutina) {
  * @param {Object} rutina 
  */
 async function copiarRutina(rutina) {
-    isLoading.value = true
+    isLocalLoading.value = true
     const copia = {
         ...JSON.parse(JSON.stringify(rutina)),
         nombre: rutina.nombre + ' (copia)'
@@ -303,12 +276,11 @@ async function copiarRutina(rutina) {
     delete copia.fechaCreacion;
     try {
         const docRef = await profileStore.createRutinaFirebase(copia);
-        isLoading.value = false;
+        isLocalLoading.value = false;
         expandirRutina(docRef.id);
     } catch (err) {
         console.error('Error copiando rutina:', err);
-        isLoading.value = false;
-
+        isLocalLoading.value = false;
     }
 }
 
