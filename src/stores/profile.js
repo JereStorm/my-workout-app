@@ -106,6 +106,7 @@ export const useProfileStore = defineStore('profile', {
                     routines.push({ id: document.id, ...document.data() });
                 });
                 this.profile.routines = routines;
+                console.log(this.profile.routines)
             } catch (error) {
                 console.error('Error al obtener las rutinas:', error);
                 throw error;
@@ -212,18 +213,14 @@ export const useProfileStore = defineStore('profile', {
      * @param {Array} workoutData.logs  // [{ actualReps: [...] }, …]
      * @param {string} workoutData.notes
      */
-        async registerWorkout({ rutinaId, date, logs, notes, steps }) {
+        async registerWorkout(data) {
             if (!this.profile.id) {
                 throw new Error("Usuario no autenticado");
             }
             // Prepara el payload
             const payload = {
                 idUser: this.profile.id,
-                rutinaId,
-                date,
-                logs,
-                notes,
-                steps,
+                ...data,
                 createdAt: new Date().toISOString(),
             };
             console.log("Payload", payload)

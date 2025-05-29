@@ -7,12 +7,12 @@
 
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
-            <div class="text-start px-2">
-                <p class="my-4 d-flex gap-2" v-for="w in workouts" :key="w.id">
+            <div class="text-start px-2 d-flex flex-column">
+                <p class="my-4 d-flex gap-2 text-truncate" v-for="w in workouts" :key="w.id">
                     <i class="bi bi-arrow-up-left-square"></i>
                     <!-- <router-link class="text-light" :to="{ name: 'RegisterWorkout', query: { id: w.id } }"> -->
                     {{ formatDate(w.date) }} -
-                    {{ getRoutineName(w.rutinaId) }} :
+                    "{{ w.dataRoutine.nombre }}" :
                     <span v-if="w.notes">
                         "{{ truncate(w.notes, 10) }}"
                     </span>

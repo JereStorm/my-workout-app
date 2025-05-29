@@ -91,7 +91,6 @@ import Notifier from '@/components/NotifierComponent.vue';
 const route = useRoute();
 const router = useRouter();
 const profileStore = useProfileStore();
-const profile = computed(() => profileStore.profile);
 
 const rutinaId = route.query.id;
 const rutina = ref(null);
@@ -117,9 +116,6 @@ const progressPercentage = computed(() => {
 
 //Para animar los steps
 const direction = ref('forward');
-
-// lista de workouts del usuario
-const workouts = computed(() => profileStore.profile.workouts || []);
 
 // formatea YYYY-MM-DD → DD/MM/YYYY
 const formatDate = (iso) => {
@@ -210,6 +206,13 @@ const submit = async () => {
     try {
         await profileStore.registerWorkout({
             rutinaId,
+            dataRoutine: {
+                bloques: rutina.value.bloques,
+                descansoBloques: rutina.value.descansoBloques,
+                descansoSeries: rutina.value.descansoSeries,
+                dificultad: rutina.value.dificultad,
+                nombre: rutina.value.nombre,
+            },
             date: workoutDate.value,
             steps: steps.value,
             logs: logs.value,
