@@ -1,19 +1,7 @@
 <template>
-    <div class="register-workout-container">
-        <h1 class="mb-4 mt-4 mt-md-3">Registro de Entrenamientos</h1>
+    <div class="register-workout-container mt-5 mt-md-0">
+        <h1 class="mb-4 mt-5">Agregar Entreno</h1>
         <div v-if="isLoadingInfo" class="loader"></div>
-        <!-- LIST OF TRAINS -->
-        <div v-if="!isLoadingInfo && !rutinaId" class="info-container">
-            <div class="text-start">
-                <h5 class="my-4" v-for="w in workouts" :key="w.id">
-                    <!-- <router-link class="text-light" :to="{ name: 'RegisterWorkout', query: { id: w.id } }"> -->
-                    {{ formatDate(w.date) }} - {{ getRoutineName(w.rutinaId) }} :
-                    <span v-if="w.notes">"{{ truncate(w.notes, 10) }}"</span>
-                    <!-- </router-link> -->
-                </h5>
-            </div>
-
-        </div>
         <!-- STEPPER -->
         <div v-if="!isLoadingInfo && rutinaId" class="info-container">
             <!-- Fecha -->
@@ -76,15 +64,16 @@
                             placeholder="¿Cómo te sentiste hoy?"></textarea>
                         <!-- Loader / Feedback -->
                         <div v-if="isSaving" class="loader-form mt-3"></div>
-                        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
-                            @after-leave="showNotifier = false" />
 
-                        <div class="cancel-container mt-5">
+
+                        <div class="cancel-container mt-4">
                             <button class="btn w-100 btn-success" @click="submit">Guardar Registro</button>
                             <button type=" button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-2">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </button>
                         </div>
+                        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
+                            @after-leave="showNotifier = false" />
                     </div>
 
                 </Transition>
@@ -132,22 +121,10 @@ const direction = ref('forward');
 // lista de workouts del usuario
 const workouts = computed(() => profileStore.profile.workouts || []);
 
-// helper para sacar nombre de la rutina por ID
-function getRoutineName(rutinaId) {
-    const r = profileStore.getRutinaLocal(rutinaId);
-    return r ? r.nombre : 'Rutina desconocida';
-}
-
 // formatea YYYY-MM-DD → DD/MM/YYYY
-function formatDate(iso) {
+const formatDate = (iso) => {
     const d = new Date(iso);
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-}
-
-// trunca texto a `len` caracteres
-function truncate(text, len = 30) {
-    if (!text) return '';
-    return text.length > len ? text.slice(0, len) + '…' : text;
 }
 
 onMounted(() => {
@@ -250,6 +227,10 @@ const submit = async () => {
     } finally {
         isSaving.value = false;
         showNotifier.value = true;
+
+        setTimeout(() => {
+            router.push({ name: 'DoneWorkouts' })
+        }, 2000);
     }
 }
 
@@ -263,12 +244,10 @@ const handleCancelar = () => {
 .register-workout-container {
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
 }
 
 .info-container {
     position: relative;
-    min-height: 90%;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -289,7 +268,7 @@ const handleCancelar = () => {
     position: relative;
     overflow: hidden;
     width: 100%;
-    min-height: 500px;
+    min-height: 370px;
     /* o lo que necesites */
 }
 
@@ -405,8 +384,8 @@ const handleCancelar = () => {
         padding-left: 160px;
         padding-right: 0px;
         padding-top: 0px;
-        margin-top: 30px;
         width: 100%;
+        height: 100%;
     }
 
     .exercise-card {

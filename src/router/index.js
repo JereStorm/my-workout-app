@@ -10,6 +10,7 @@ import MyWorkoutsPage from "@/components/MyWorkoutsPage.vue";
 import ProfilePage from "@/components/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
 import RegisterWorkoutPage from "../components/RegisterWorkoutPage.vue";
+import DoneWorkoutsPage from "../components/DoneWorkoutsPage.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
@@ -22,6 +23,7 @@ const routes = [
             { path: '', name: 'DashboardRedirect', redirect: { name: 'MyWorkouts' } },
             { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
             { path: 'register-workout', name: 'RegisterWorkout', component: RegisterWorkoutPage },
+            { path: 'done-workouts', name: 'DoneWorkouts', component: DoneWorkoutsPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
             { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
         ],

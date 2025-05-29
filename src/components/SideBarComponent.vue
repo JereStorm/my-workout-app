@@ -18,7 +18,7 @@
                     </div>
 
                 </div>
-                <hr />
+                <hr class="mb-2" />
                 <ul class="nav text-center nav-pills flex-column mb-auto">
                     <li class="nav-item">
                         <router-link :to="{ name: 'MyWorkouts' }"
@@ -26,21 +26,21 @@
                             <i class="bi bi-clipboard-check"></i> Mis Rutinas
                         </router-link>
                     </li>
-                    <hr />
+                    <hr class="my-2" />
                     <li class="nav-item">
-                        <router-link :to="{ name: 'RegisterWorkout' }"
+                        <router-link :to="{ name: 'DoneWorkouts' }"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
                             <i class="bi bi-book"></i> Mis Entrenos
                         </router-link>
                     </li>
-                    <hr />
+                    <hr class="my-2" />
                     <li class="nav-item">
                         <router-link :to="{ name: 'MyProfile' }"
                             class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
                             <i class="bi bi-person-circle"></i> Mi Perfil
                         </router-link>
                     </li>
-                    <hr />
+                    <hr class="my-2" />
                     <li class="nav-item d-flex justify-content-center">
                         <button
                             class="nav-link d-flex flex-column justify-content-center align-items-center text-light px-1"
@@ -128,7 +128,7 @@ onUnmounted(() => {
 .nav-link {
     color: #ffffff;
     cursor: pointer;
-    padding: 0.5rem 1rem;
+    padding: 5px 1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
     font-weight: 500;
