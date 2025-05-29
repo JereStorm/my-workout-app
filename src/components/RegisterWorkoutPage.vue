@@ -1,9 +1,9 @@
 <template>
     <div class="register-workout-container mt-5 mt-md-0">
         <h1 class="mb-4 mt-5">Agregar Entreno</h1>
-        <div v-if="isLoadingInfo" class="loader"></div>
+        <div v-if="isLoading" class="loader"></div>
         <!-- STEPPER -->
-        <div v-if="!isLoadingInfo && rutinaId" class="info-container">
+        <div v-if="!isLoading" class="info-container">
             <!-- Fecha -->
             <div class="mb-2 mt-3 mt-md-4">
                 <p class="h4"><span class="fst-italic">"{{ rutina?.nombre }}" {{ formatDate(workoutDate) }} </span></p>
@@ -85,6 +85,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
+import { storeToRefs } from 'pinia';
 import Notifier from '@/components/NotifierComponent.vue';
 
 const route = useRoute();
@@ -94,9 +95,9 @@ const profileStore = useProfileStore();
 const rutinaId = route.query.id;
 const rutina = ref(null);
 const isSaving = ref(false);
-const isLoadingInfo = ref(false);
+const { isLoading } = storeToRefs(profileStore);
 
-const workoutDate = ref(new Date().toISOString().substr(0, 10));
+const workoutDate = ref(new Date().toISOString());
 const notes = ref('');
 const notification = reactive({ message: '', type: 'success' });
 const showNotifier = ref(false);
@@ -125,7 +126,6 @@ const formatDate = (iso) => {
 onMounted(() => {
     if (!profileStore.profile.id) {
         console.log("No hay usuario")
-        isLoadingInfo.value = true;
         return
     }
 
@@ -135,7 +135,8 @@ onMounted(() => {
 
 const construirSiCorresponde = async () => {
     if (!rutinaId) {
-        isLoadingInfo.value = false;
+        console.log("No hay encontro Rutina");
+        router.push({ name: 'MyWorkouts' });
         return;
     }
 
@@ -172,14 +173,13 @@ const construirSiCorresponde = async () => {
             });
         }
     });
-
-    isLoadingInfo.value = false;
 }
 
-// También si cambia profile.id
-watch(() => profileStore.profile.id, (uid) => {
-    if (!uid) return;
-    construirSiCorresponde();
+// Esperamos a que el perfil este listo
+watch(isLoading, (nuevoValor) => {
+    if (!nuevoValor) {
+        construirSiCorresponde();
+    }
 }, { immediate: true });
 
 // Computed con el paso actual

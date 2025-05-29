@@ -3,7 +3,7 @@
 
         <h1 class="mt-5">Mis Entrenos <i class="bi bi-book"></i></h1>
 
-        <div v-if="isLoadingInfo" class="loader"></div>
+        <div v-if="isLoading" class="loader"></div>
 
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
@@ -22,40 +22,17 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { computed } from 'vue';
 import { useProfileStore } from '@/stores/profile';
-import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 // instancia el store
-const store = useProfileStore();
-const router = useRouter();
+const profileStore = useProfileStore();
 
-const isLoadingInfo = ref(true);
-
-
-// once the profile.id is loaded, hide loader
-watch(
-    () => store.profile.id,
-    (id) => {
-        if (id) {
-            isLoadingInfo.value = false;
-            // opcional: cargar workouts si no lo hiciste aún
-            if (!store.profile.workouts?.length) {
-                store.getWorkouts?.();
-            }
-        }
-    },
-    { immediate: true }
-);
+const { isLoading } = storeToRefs(profileStore);
 
 // lista de workouts
-const workouts = computed(() => store.profile.workouts || []);
-
-// helper para obtener nombre de rutina
-function getRoutineName(rutinaId) {
-    const r = store.getRutinaLocal(rutinaId);
-    return r ? r.nombre : 'Rutina desconocida';
-}
+const workouts = computed(() => profileStore.profile.workouts || []);
 
 // formatear fecha ISO → DD/MM/YYYY
 function formatDate(iso) {
@@ -65,11 +42,6 @@ function formatDate(iso) {
         d.getFullYear();
 }
 
-// truncar texto
-function truncate(text, len = 30) {
-    if (!text) return '';
-    return text.length > len ? text.slice(0, len) + '…' : text;
-}
 </script>
 
 <style scoped>

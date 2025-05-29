@@ -2,11 +2,11 @@
     <div class="contenedor">
         <h1 class="mt-md-5">Detalle de Entreno</h1>
 
-        <div v-if="isLoadingInfo" class="loader"></div>
+        <div v-if="isLoading" class="loader"></div>
         <div v-if="workout" class="detail-container">
 
             <!-- Datos generales -->
-            <p class="h5 text-start py-3">
+            <p class="h5 text-start py-3 px-auto">
                 Fecha: <strong>{{ formatDate(workout.createdAt) }}</strong><br>
                 Rutina: <strong>{{ workout.dataRoutine.nombre }}</strong><br>
                 Notas: <em v-if="workout.notes">{{ workout.notes }}</em>
@@ -35,20 +35,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
+import { storeToRefs } from 'pinia'
 
 // router + store
 const route = useRoute();
 const router = useRouter();
 const profileStore = useProfileStore();
+const workoutId = route.query.id;
+
 
 // estado
 const workout = ref(null);
-const isLoadingInfo = ref(true);
+const { isLoading } = storeToRefs(profileStore);
 
-function formatDate(iso) {
+const formatDate = (iso) => {
     const d = new Date(iso);
     return `${String(d.getDate()).padStart(2, '0')}/` +
         `${String(d.getMonth() + 1).padStart(2, '0')}/` +
@@ -59,7 +62,7 @@ function formatDate(iso) {
  * Dado bloqueIndex y serieIndex, devuelve la posición en
  * workout.logs (que está aplanado por bloque × series).
  */
-function getLogIndex(bloqueIndex, serieIndex) {
+const getLogIndex = (bloqueIndex, serieIndex) => {
     let idx = 0;
     const bloques = workout.value.dataRoutine.bloques;
     // sumar todas las series de los bloques anteriores
@@ -71,18 +74,24 @@ function getLogIndex(bloqueIndex, serieIndex) {
 }
 
 onMounted(async () => {
-    const id = route.query.id;
-    if (!id) {
+    //barrera para controlar la ruta
+    if (!workoutId) {
         router.push({ name: 'DoneWorkouts' });
+        return;
+    }
+
+    //barrera para controlar que el usuario este stetado
+    if (!profileStore.profile.id) {
+        console.log("OM : No hay usuario")
         return;
     }
 
     try {
         // Primero intento local
-        let w = profileStore.getDoneWorkoutLocal(id);
+        let w = profileStore.getDoneWorkoutLocal(workoutId);
         // Si no estaba en cache, lo traigo de Firestore
         if (!w) {
-            w = await profileStore.getDoneWorkout(id);
+            w = await profileStore.getDoneWorkout(workoutId);
             // // y lo guardo en el store para futuras lecturas
             // profileStore.profile.workouts.push(w);
         }
@@ -90,8 +99,12 @@ onMounted(async () => {
     } catch (err) {
         console.error('Detalle workout:', err);
         router.push({ name: 'DoneWorkouts' });
-    } finally {
-        isLoadingInfo.value = false;
+    }
+});
+
+watch(isLoading, (nuevoValor) => {
+    if (!nuevoValor && !workout.value) {
+        workout.value = profileStore.getDoneWorkoutLocal(route.query.id);
     }
 });
 </script>

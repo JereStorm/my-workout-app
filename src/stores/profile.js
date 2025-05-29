@@ -18,8 +18,8 @@ export const useProfileStore = defineStore('profile', {
             nickname: '',
             routines: [],
             workouts: [],
-            charge: false,
         },
+        isLoading: false
     }),
 
     /**
@@ -35,9 +35,9 @@ export const useProfileStore = defineStore('profile', {
          * @throws {Error} Si el UID del usuario es inválido.
          */
         async loadProfile(uid, email) {
-            if (!uid) {
-                throw new Error('UID de usuario inválido');
-            }
+            if (!uid) throw new Error('UID de usuario inválido');
+
+            this.isLoading = true;
 
             const profileRef = doc(db, 'profiles', uid);
             try {
@@ -45,22 +45,35 @@ export const useProfileStore = defineStore('profile', {
 
                 if (snapshot.exists()) {
                     const data = snapshot.data();
-                    this.profile = { id: uid, email: data.email, nickname: data.nickname || '', routines: [] };
+                    this.profile = {
+                        id: uid,
+                        email: data.email,
+                        nickname: data.nickname || '',
+                        routines: [],
+                        workouts: []
+                    };
                 } else {
-                    // Crear perfil inicial
                     const initialProfile = { idUser: uid, email, nickname: '' };
                     await setDoc(profileRef, initialProfile);
-                    this.profile = { id: uid, email, nickname: '', routines: [] };
+                    this.profile = {
+                        id: uid,
+                        email,
+                        nickname: '',
+                        routines: [],
+                        workouts: []
+                    };
                 }
 
                 await this.getRutinas();
                 await this.loadWorkouts();
+
             } catch (error) {
                 console.error('Error al cargar o crear el perfil:', error);
                 throw error;
+            } finally {
+                this.isLoading = false;
             }
         },
-
         /**
          * Actualiza el nickname del usuario tanto en Firestore como en el estado local.
          * @param {string} newNickname - El nuevo nickname del usuario.
@@ -287,6 +300,7 @@ export const useProfileStore = defineStore('profile', {
          * @throws {Error} Si el usuario no está autenticado.
          */
         async getDoneWorkout(workoutId) {
+            console.log("getDoneWorkout FB")
             if (!this.profile.id) {
                 throw new Error('Usuario no autenticado');
             }
