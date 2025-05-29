@@ -8,18 +8,13 @@
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
             <div class="text-start px-2 d-flex flex-column">
-                <p class="my-4 d-flex gap-2 text-truncate" v-for="w in workouts" :key="w.id">
-                    <i class="bi bi-arrow-up-left-square"></i>
-                    <!-- <router-link class="text-light" :to="{ name: 'RegisterWorkout', query: { id: w.id } }"> -->
-                    {{ formatDate(w.date) }} -
-                    "{{ w.dataRoutine.nombre }}" :
-                    <span v-if="w.notes">
-                        "{{ truncate(w.notes, 10) }}"
-                    </span>
-                    <span v-else-if="!w.notes">
-                        -
-                    </span>
-                    <!-- </router-link> -->
+                <p class="my-3 h5" v-for="w in workouts" :key="w.id">
+                    <router-link class="link-info link-offset-2 link-underline-opacity-25
+                        link-underline-opacity-100-hover" :to="{ name: 'DetailWorkout', query: { id: w.id } }">
+                        <i class="bi bi-arrow-up-left-square me-2"></i>
+                        {{ formatDate(w.date) }} -
+                        "{{ w.dataRoutine.nombre }}"
+                    </router-link>
                 </p>
             </div>
         </div>

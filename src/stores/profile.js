@@ -270,6 +270,41 @@ export const useProfileStore = defineStore('profile', {
                 throw error;
             }
         },
+        /**
+         * Busca un workout en el array local de workouts del perfil por su ID.
+         * No realiza ninguna llamada a la base de datos.
+         * @param {string} workoutId - El ID del workout a buscar.
+         * @returns {object|undefined} - El objeto del workout si se encuentra, undefined en caso contrario.
+         */
+        getDoneWorkoutLocal(workoutId) {
+            return this.profile.workouts.find(w => w.id === workoutId);
+        },
+
+        /**
+         * Obtiene un workout específico por su ID desde Firestore.
+         * @param {string} workoutId - El ID del workout a obtener.
+         * @returns {Promise<object|null>} - Un objeto con los datos del workout o null si no se encuentra.
+         * @throws {Error} Si el usuario no está autenticado.
+         */
+        async getDoneWorkout(workoutId) {
+            if (!this.profile.id) {
+                throw new Error('Usuario no autenticado');
+            }
+            try {
+                const docRef = doc(db, 'workouts', workoutId);
+                const snapshot = await getDoc(docRef);
+                if (snapshot.exists()) {
+                    return { id: snapshot.id, ...snapshot.data() };
+                } else {
+                    console.warn(`No se encontró el workout con ID: ${workoutId}`);
+                    return null;
+                }
+            } catch (error) {
+                console.error(`Error al obtener el workout con ID ${workoutId}:`, error);
+                throw error;
+            }
+        },
+
     },
     /**
      * Getters del store. Permiten acceder al estado de forma computada.

@@ -15,15 +15,15 @@
                     <!-- {{ progressPercentage }}% -->
                 </div>
             </div>
-            <div class="stepper-wrapper">
+            <div class="stepper-wrapper bg-transparent">
 
-                <Transition :name="direction === 'forward' ? 'slide-left' : 'slide-right'" mode="out-in" class="w-100">
+                <Transition name="fade-slide" mode="out-in" class="w-100">
                     <!-- Stepper -->
                     <div v-if="step < steps.length" :key="step" class="stepper-container">
                         <!-- Mostrar serie actual del bloque -->
                         <div class="exercise-card p-3 pb-0 mb-3 ">
                             <div class="d-flex justify-content-between mb-3">
-                                <strong>{{ current.stepLabel }}</strong>
+                                <strong class="text-info">{{ current.stepLabel }}</strong>
                                 <span>Serie <span class="text-info fw-bold">{{ current.serie + 1 }}</span> de <span
                                         class="text-info fw-bold">{{
                                             current.totalSeries }}</span>
@@ -64,16 +64,15 @@
                             placeholder="¿Cómo te sentiste hoy?"></textarea>
                         <!-- Loader / Feedback -->
                         <div v-if="isSaving" class="loader-form mt-3"></div>
-
-
+                        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
+                            @after-leave="showNotifier = false" />
                         <div class="cancel-container mt-4">
                             <button class="btn w-100 btn-success" @click="submit">Guardar Registro</button>
-                            <button type=" button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-2">
+                            <button type="button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-5">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </button>
                         </div>
-                        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
-                            @after-leave="showNotifier = false" />
+
                     </div>
 
                 </Transition>
@@ -269,10 +268,10 @@ const handleCancelar = () => {
 
 .stepper-wrapper {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
-    min-height: 370px;
-    /* o lo que necesites */
+    height: auto;
+    transition: height 0.3s ease;
 }
 
 .stepper-container {
@@ -334,43 +333,13 @@ const handleCancelar = () => {
 
 .fade-slide-enter-from {
     opacity: 0;
-    transform: translateX(20px);
+
 }
 
 .fade-slide-leave-to {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(-10px);
 }
-
-.slide-left-enter-active,
-.slide-right-enter-active,
-.slide-left-leave-active,
-.slide-right-leave-active {
-    transition: all 0.3s ease;
-    position: absolute;
-}
-
-.slide-left-enter-from {
-    transform: translateX(20px);
-    opacity: 0;
-}
-
-.slide-left-leave-to {
-    transform: translateX(-20px);
-    opacity: 0;
-}
-
-.slide-right-enter-from {
-    transform: translateX(-20px);
-    opacity: 0;
-}
-
-.slide-right-leave-to {
-    transform: translateX(20px);
-    opacity: 0;
-}
-
-
 
 @keyframes animFw {
     0% {
@@ -388,7 +357,6 @@ const handleCancelar = () => {
         padding-right: 0px;
         padding-top: 0px;
         width: 100%;
-        height: 100%;
     }
 
     .exercise-card {
