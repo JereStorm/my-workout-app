@@ -31,13 +31,26 @@
                             </div>
 
                             <div v-for="(ej, eIndex) in current.ejercicios" :key="eIndex"
-                                class="mb-3 d-flex p-1 align-items-baseline gap-2">
-                                <label class="text-start label-ejercicio" :for="`ej-${step}-${eIndex}`">
+                                class="mb-3 d-flex p-1 align-items-center justify-content-between gap-2">
+                                <p class="text-start mb-0">
                                     {{ eIndex + 1 }}° {{ ej.nombre }}
-                                </label>
-                                <input type="number" :id="`ej-${step}-${eIndex}`"
-                                    v-model.number="logs[step].actualReps[eIndex]" min="0"
-                                    class="form-control input-cant text-aqua" />
+                                </p>
+                                <div class="d-flex">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <label :for="`ej-${step}-${eIndex}-reps`">Reps</label>
+                                        <input type="number" :id="`ej-${step}-${eIndex}-reps`"
+                                            v-model.number="logs[step].actualReps[eIndex]" min="0"
+                                            class="form-control input-cant text-aqua" />
+                                    </div>
+                                    <div v-if="logs[step].actualSegs[eIndex] !== 0"
+                                        class="d-flex flex-column align-items-center">
+                                        <label :for="`ej-${step}-${eIndex}-segs`">Segs</label>
+                                        <input type="number" :id="`ej-${step}-${eIndex}-segs`"
+                                            v-model.number="logs[step].actualSegs[eIndex]" min="0"
+                                            class="form-control input-cant text-aqua" />
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -169,7 +182,8 @@ const construirSiCorresponde = async () => {
             });
             // Inicializamos los logs con el valor por defecto
             logs.value.push({
-                actualReps: bloque.ejercicios.map(e => e.repeticiones)
+                actualReps: bloque.ejercicios.map(e => e.repeticiones),
+                actualSegs: bloque.ejercicios.map(e => e.tiempo),
             });
         }
     });
@@ -219,9 +233,6 @@ const submit = async () => {
         });
         notification.message = 'Entrenamiento guardado correctamente';
         notification.type = 'success';
-        // // (Opcional) Redirigir al listado de workouts:
-        // router.push({ name: 'MyWorkouts' });
-
     } catch (err) {
         console.error(err);
         notification.message = 'Error al guardar, intenta de nuevo';

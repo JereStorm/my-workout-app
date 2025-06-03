@@ -117,6 +117,7 @@ watch(isLoading, (nuevoValor) => {
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-bottom: 3rem;
 }
 
 .detail-container {
