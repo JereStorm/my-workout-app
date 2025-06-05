@@ -79,7 +79,7 @@
                         <div v-if="isSaving" class="loader-form mt-3"></div>
                         <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
                             @after-leave="showNotifier = false" />
-                        <div class="cancel-container mt-4">
+                        <div class="cancel-container my-4">
                             <button class="btn w-100 btn-success" @click="submit">Guardar Registro</button>
                             <button type="button" @click="handleCancelar" class="btn w-100 btn-danger mt-3 mb-5">
                                 <i class="bi bi-x-circle"></i> Cancelar
