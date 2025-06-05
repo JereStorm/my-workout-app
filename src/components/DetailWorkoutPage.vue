@@ -15,16 +15,54 @@
 
             <!-- Recorrido por bloques y series -->
             <div v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-3">
-                <h5>Bloque {{ bi + 1 }} ({{ bloque.series }} series)</h5>
+                <h5 class="d-flex justify-content-between text-info px-3">
+                    <strong>Bloque {{ bi + 1 }}</strong> <small><strong>({{ bloque.series }} series)</strong></small>
+                </h5>
                 <div v-for="si in bloque.series" :key="si" class="px-3 mb-2">
-                    <p class="text-start"><strong>Serie {{ si }}</strong></p>
-                    <ul class="text-start ps-0">
+                    <h5 class="text-center text-info mb-0"><strong>Serie {{ si }}</strong></h5>
+                    <ul class="text-start px-1">
                         <li v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="mt-3 d-flex justify-content-between">
-                            <span class="w-50">{{ ei + 1 }}° {{ ej.nombre }}</span>
+                            <span class="w-50 pe-3">
+                                <strong class="text-info">{{ ei + 1 }}°</strong>
+                                {{ ej.nombre }}
+                            </span>
                             <div class="vr mx-1"></div>
-                            <span class="w-50 text-end fs-justify info-serie">Meta: {{ ej.repeticiones }} reps,
-                                Hecho: {{ workout.logs[getLogIndex(bi, si - 1)].actualReps[ei] }} reps</span>
-
+                            <table class=" table-sm w-100 text-center">
+                                <thead>
+                                    <tr class="text-light">
+                                        <th class="text-start">Meta</th>
+                                        <th>Hecho</th>
+                                        <th class="text-end">Resto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-info text-start">
+                                            {{ ej.repeticiones }} reps
+                                            <span v-if="ej.tiempo"> + {{ ej.tiempo }} segs</span>
+                                        </td>
+                                        <td class="text-info">
+                                            {{ workout.logs[getLogIndex(bi, si - 1)].actualReps[ei] }} reps
+                                            <span v-if="ej.tiempo">
+                                                + {{ workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei] }} segs
+                                            </span>
+                                        </td>
+                                        <td class="text-end" :class="getComparisonClass(
+                                            ej,
+                                            workout.logs[getLogIndex(bi, si - 1)].actualReps[ei],
+                                            workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei]
+                                        )">
+                                            {{
+                                                getComparisonText(
+                                                    ej,
+                                                    workout.logs[getLogIndex(bi, si - 1)].actualReps[ei],
+                                                    workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei]
+                                                )
+                                            }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </li>
                     </ul>
                     <hr>
@@ -107,6 +145,24 @@ watch(isLoading, (nuevoValor) => {
         workout.value = profileStore.getDoneWorkoutLocal(route.query.id);
     }
 });
+
+const getComparisonText = (ej, actualReps, actualSegs) => {
+    const repsDiff = actualReps - ej.repeticiones;
+    const segsDiff = (ej.tiempo ? actualSegs - ej.tiempo : 0);
+    let result = '';
+
+    if (repsDiff !== 0) result += `${repsDiff > 0 ? '+' : ''}${repsDiff} reps `;
+    if (ej.tiempo && segsDiff !== 0) result += `${segsDiff > 0 ? '+' : ''}${segsDiff} segs`;
+
+    return result.trim() || 'Igual';
+}
+
+const getComparisonClass = (ej, actualReps, actualSegs) => {
+    const repsOk = actualReps >= ej.repeticiones;
+    const segsOk = ej.tiempo ? actualSegs >= ej.tiempo : true;
+    return (repsOk && segsOk) ? 'text-didit' : 'text-danger';
+}
+
 </script>
 
 <style scoped>
@@ -122,6 +178,14 @@ watch(isLoading, (nuevoValor) => {
 
 .detail-container {
     width: 100%;
+}
+
+.text-didit {
+    color: rgb(52, 228, 52);
+}
+
+tbody td {
+    width: 28%;
 }
 
 @media only screen and (min-width: 768px) {
