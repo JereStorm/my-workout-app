@@ -6,7 +6,7 @@
         <div v-if="workout" class="detail-container">
 
             <!-- Datos generales -->
-            <p class="h5 text-start py-3 px-3">
+            <p class="h5 text-start py-3 px-1">
                 Fecha: <strong class="ms-2">{{ formatDate(workout.createdAt) }}</strong><br>
                 Rutina: <strong class="ms-2">{{ workout.dataRoutine.nombre }}</strong><br>
                 Notas: <em class="ms-2" v-if="workout.notes">{{ workout.notes }}</em>
@@ -15,10 +15,10 @@
 
             <!-- Recorrido por bloques y series -->
             <div v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-3">
-                <h5 class="d-flex justify-content-between text-info px-3">
+                <h5 class="d-flex justify-content-between text-info px-1">
                     <strong>Bloque {{ bi + 1 }}</strong> <small><strong>({{ bloque.series }} series)</strong></small>
                 </h5>
-                <div v-for="si in bloque.series" :key="si" class="px-3 mb-2">
+                <div v-for="si in bloque.series" :key="si" class="px-1 mb-2">
                     <h5 class="text-center text-info mb-0"><strong>Serie {{ si }}</strong></h5>
                     <ul class="text-start px-1">
                         <li v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="mt-3 d-flex justify-content-between">

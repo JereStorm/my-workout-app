@@ -8,19 +8,22 @@
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
             <div class="text-start px-1 d-flex flex-column">
-                <div class="my-3" v-for="w in workouts" :key="w.id">
-                    <h4 class="h4 mt-3 mb-3">{{ formatDate(w.date) }}</h4>
-                    <router-link class="ms-5 link-info link-offset-2 link-underline-opacity-25
+                <div class="mt-5 pb-5 pt-2 px-2 card-workout" v-for="w in workouts" :key="w.id">
+                    <h4 class="h4 mt-0 mb-3">{{ formatDate(w.date) }}</h4>
+                    <div class="text-center">
+                        <router-link class="link-info link-train h4 link-offset-2 link-underline-opacity-25
                         link-underline-opacity-100-hover" :to="{ name: 'DetailWorkout', query: { id: w.id } }">
-                        <i class="bi bi-arrow-up-left-square me-2"></i>
-                        "{{ w.dataRoutine.nombre }}"
-                    </router-link>
+                            <i class="bi bi-arrow-up-left-square me-2"></i>
+                            "{{ w.dataRoutine.nombre }}"
+                        </router-link>
+                    </div>
                 </div>
             </div>
             <div v-if="!isLoading && workouts.length === 0">
                 <h5>No hay entrenos guardadas aún.</h5>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -59,6 +62,21 @@ function formatDate(iso) {
 .info-container {
     margin-top: 1rem;
     margin-bottom: auto;
+    width: 100%;
+    padding: 0px 10px;
+}
+
+.link-train {
+    width: 100%;
+    text-align: center;
+}
+
+.card-workout {
+    border: 1px solid grey;
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+    background-color: rgba(32, 32, 32, 0.493);
 }
 
 @media only screen and (min-width: 768px) {
@@ -67,5 +85,11 @@ function formatDate(iso) {
         padding-top: 0px;
         padding-right: 0px;
     }
+
+    .info-container {
+        width: 90%;
+        padding: 0px 100px;
+    }
+
 }
 </style>
