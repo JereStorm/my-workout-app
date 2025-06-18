@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div v-if="!isLoading && workouts.length === 0">
+            <div class="mt-5" v-if="!isLoading && workouts.length === 0">
                 <h5>No hay entrenos guardadas aún.</h5>
             </div>
         </div>
@@ -106,12 +106,14 @@ async function eliminarWorkout(workout) {
         return;
     }
     try {
-
+        isLoading.value = true;
         await profileStore.deleteDoneWorkout(workout.id);
 
     } catch (error) {
         console.log("Error al borrar la rutina.", error);
     }
+
+    isLoading.value = false;
 }
 
 </script>
