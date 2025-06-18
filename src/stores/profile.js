@@ -318,6 +318,31 @@ export const useProfileStore = defineStore('profile', {
                 throw error;
             }
         },
+        /**
+         * Elimina un workout (entreno) del usuario desde Firestore
+         * y lo elimina también del array local del estado.
+         * @param {string} workoutId - El ID del workout a eliminar.
+         * @throws {Error} Si el usuario no está autenticado o si falla la operación en Firestore.
+         */
+        async deleteDoneWorkout(workoutId) {
+            if (!this.profile.id) {
+                throw new Error('Usuario no autenticado');
+            }
+
+            try {
+                // Eliminar de Firestore
+                const workoutRef = doc(db, 'workouts', workoutId);
+                await deleteDoc(workoutRef);
+
+                // Eliminar del estado local
+                this.profile.workouts = this.profile.workouts.filter(w => w.id !== workoutId);
+
+                console.log(`Workout ${workoutId} eliminado correctamente.`);
+            } catch (error) {
+                console.error(`Error al eliminar el workout ${workoutId}:`, error);
+                throw error;
+            }
+        },
 
     },
     /**
