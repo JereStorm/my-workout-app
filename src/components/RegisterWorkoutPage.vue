@@ -248,7 +248,7 @@ const submit = async () => {
 }
 
 const handleCancelar = () => {
-    router.push({ name: "MyWorkouts" });
+    router.back();
 }
 
 </script>

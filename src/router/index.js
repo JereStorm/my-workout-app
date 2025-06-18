@@ -12,6 +12,7 @@ import FormRoutine from "@/components/FormRoutine.vue";
 import RegisterWorkoutPage from "../components/RegisterWorkoutPage.vue";
 import DoneWorkoutsPage from "../components/DoneWorkoutsPage.vue";
 import DetailWorkoutPage from "../components/DetailWorkoutPage.vue";
+import SelectRoutinePage from "../components/SelectRoutinePage.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
@@ -28,6 +29,7 @@ const routes = [
             { path: 'done-workouts/detail', name: 'DetailWorkout', component: DetailWorkoutPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
             { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
+            { path: 'select-routine', name: 'SelectRoutine', component: SelectRoutinePage },
         ],
         meta: { requiresAuth: true },
     },

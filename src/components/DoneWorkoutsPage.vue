@@ -1,7 +1,15 @@
 <template>
     <div class="done-workouts-page">
 
-        <h1 class="mt-5">Mis Entrenos <i class="bi bi-book"></i></h1>
+        <h1 class="mt-5 my-md-5 mb-3">Mis Entrenos <i class="bi bi-book"></i></h1>
+
+        <div class="text-center mb-3">
+            <RouterLink to="/dashboard/select-routine"
+                class="btn btn-outline-success px-5 d-flex gap-2 justify-content-center align-items-baseline"
+                id="add-workout">
+                <i class="bi bi-plus-circle-fill"></i> Agregar Entreno
+            </RouterLink>
+        </div>
 
         <div v-if="isLoading" class="loader"></div>
 

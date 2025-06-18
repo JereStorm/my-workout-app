@@ -259,7 +259,7 @@ const resetFormulario = () => {
  * Navega a la vista de rutinas del usuario.
  */
 const handleCancelar = () => {
-    router.push({ name: "MyWorkouts" });
+    router.back();
 };
 
 /**
