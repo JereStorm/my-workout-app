@@ -31,7 +31,7 @@
             <h5>Aun no tienes rutinas, crea una primero.</h5>
         </div>
 
-        <div class="text-center mt-5">
+        <div class="text-center mt-3 mb-5">
             <RouterLink to="/dashboard/form-routine"
                 class="btn btn-outline-success px-5 d-flex gap-2 justify-content-center align-items-baseline"
                 id="add-routine">

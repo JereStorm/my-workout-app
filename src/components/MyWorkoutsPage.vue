@@ -68,8 +68,11 @@
                                 </span>
                             </h6>
 
-                            <div v-if="isMobile && !rutinasMostradas.includes(routine.id)"
-                                class="dropdown-menu-container" @click.stop>
+                            <div class="dropdown-menu-container" @click.stop>
+                                <span class="me-1" @click.stop="toggleFavorito(routine)" title="Marcar como favorita">
+                                    <i class="bi fs-sm"
+                                        :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                                </span>
                                 <span
                                     @click.stop="cardMenuAbierto = cardMenuAbierto === routine.id ? null : routine.id">
                                     <i class="bi bi-three-dots-vertical"></i>
@@ -90,21 +93,6 @@
                                         </li>
                                     </ul>
                                 </transition>
-                            </div>
-                            <div v-else class="edit-resume-container">
-
-                                <span @click.stop="registrarEntrenamiento(routine)">
-                                    <i class="bi bi-file-earmark-plus"></i>
-                                </span>
-                                <span @click.stop="editarRutina(routine)">
-                                    <i class="bi bi-pencil-square"></i>
-                                </span>
-                                <span @click.stop="eliminarRutina(routine.id)">
-                                    <i class="bi bi-trash3"></i>
-                                </span>
-                                <span @click.stop="copiarRutina(routine)">
-                                    <i class="bi bi-copy"></i>
-                                </span>
                             </div>
                         </div>
                     </li>
@@ -157,6 +145,10 @@ const order = ref('fechaCreacionDesc');
  */
 const rawRoutines = computed(() => profileStore.getUserRoutines);
 
+const toggleFavorito = (rutina) => {
+    profileStore.toggleFavorita(rutina.id, rutina.favorita);
+};
+
 const registrarEntrenamiento = (rutina) => {
     router.push({
         name: 'RegisterWorkout',
@@ -169,6 +161,10 @@ const registrarEntrenamiento = (rutina) => {
  */
 const sortedRoutines = computed(() => {
     return [...rawRoutines.value].sort((a, b) => {
+        if (a.favorita && !b.favorita) return -1;
+        if (!a.favorita && b.favorita) return 1;
+
+        // Orden por dificultad o fecha después
         if (order.value === 'fechaCreacionDesc') {
             return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
         } else if (order.value === 'fechaCreacionAsc') {
@@ -180,6 +176,7 @@ const sortedRoutines = computed(() => {
         }
     });
 });
+
 
 /**
  * Observamos el estado cardMenuAbierto y manejamos los listeners
@@ -503,7 +500,7 @@ const renderDifficulty = (dificultad) =>
 .dropdown-menu-container {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: center;
 }
 

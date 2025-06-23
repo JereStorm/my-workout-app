@@ -204,6 +204,7 @@ export const useProfileStore = defineStore('profile', {
             const payload = {
                 ...rutinaData,
                 fechaCreacion: new Date().toISOString(),
+                favorita: false,
                 idUser: this.profile.id,
             };
 
@@ -215,6 +216,22 @@ export const useProfileStore = defineStore('profile', {
             } catch (error) {
                 console.error('Error al crear la rutina en Firebase:', error);
                 throw error;
+            }
+        },
+        async toggleFavorita(rutinaId, valorActual) {
+            // Localmente actualizar la rutina también
+            const rutina = this.profile.routines.find(r => r.id === rutinaId);
+            if (rutina) rutina.favorita = !valorActual;
+            try {
+                const rutinaRef = doc(db, 'routines', rutinaId);
+                await updateDoc(rutinaRef, {
+                    favorita: !valorActual,
+                    idUser: this.profile.id,
+                });
+
+
+            } catch (err) {
+                console.error('Error al cambiar favorita:', err);
             }
         },
 
