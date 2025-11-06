@@ -84,7 +84,7 @@ watch(
 
 <style scoped>
 .routine-detail-page {
-    padding-top: 20px;
+    padding-top: 80px;
     padding-right: 0px;
     display: flex;
     flex-direction: column;
@@ -93,6 +93,7 @@ watch(
 @media (min-width: 768px) {
     .routine-detail-page {
         padding-left: 160px;
+        padding-top: 20px;
     }
 }
 </style>

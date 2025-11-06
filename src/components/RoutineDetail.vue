@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 py-1 pb-3 rounded-xl shadow-md w-100 routine-detail">
+    <div class="px-3 md-px-5 py-1 py-3 rounded-xl shadow-md w-100 routine-detail">
         <!-- Header: nombre, dificultad, favorita, fecha y totales -->
         <div class="d-flex justify-content-between">
             <h2 class="h3 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
@@ -21,15 +21,16 @@
             </div>
 
 
-            <div class="d-flex justify-content-between flex-column text-sm text-end text-gray-500">
+            <div
+                class="d-flex justify-content-between mt-3 gap-3 mx-auto ms-md-auto flex-md-column text-sm text-md-end  text-gray-500">
                 <div>
-                    Bloques (<strong>{{ rutina.bloques?.length ?? 0 }}</strong>)
+                    <strong>Bloques</strong> ({{ rutina.bloques?.length ?? 0 }})
                 </div>
                 <div>
-                    Series (<strong>{{ totalSeries }}</strong>)
+                    <strong>Series</strong> ({{ totalSeries }})
                 </div>
                 <div>
-                    Ejercicios (<strong>{{ totalExercises }}</strong>)
+                    <strong>Ejercicios</strong> ({{ totalExercises }})
                 </div>
             </div>
         </div>
