@@ -212,18 +212,22 @@ const handleClickOutside = (e) => {
  * @param {string} rutinaId 
  */
 function expandirRutina(rutinaId) {
-    const index = rutinasMostradas.value.indexOf(rutinaId);
-    if (index !== -1) {
-        rutinasMostradas.value.splice(index, 1);
-    } else {
-        rutinasMostradas.value.push(rutinaId);
-        nextTick(() => {
-            setTimeout(() => {
-                const el = routineRefs.value.get(rutinaId);
-                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 300);
-        });
-    }
+    router.push({
+        name: 'DetailRoutine',
+        query: { id: rutinaId }
+    });
+    // const index = rutinasMostradas.value.indexOf(rutinaId);
+    // if (index !== -1) {
+    //     rutinasMostradas.value.splice(index, 1);
+    // } else {
+    //     rutinasMostradas.value.push(rutinaId);
+    //     nextTick(() => {
+    //         setTimeout(() => {
+    //             const el = routineRefs.value.get(rutinaId);
+    //             el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //         }, 300);
+    //     });
+    // }
 }
 
 /**
