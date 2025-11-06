@@ -46,9 +46,6 @@
                             </h3>
                         </div>
 
-                        <transition name="expand-fade">
-                            <RoutineDetail v-show="rutinasMostradas.includes(routine.id)" :rutina="routine" />
-                        </transition>
 
                         <!-- Dificultad abajo -->
                         <div class="d-flex justify-content-between align-items-center text-gray-700 ">

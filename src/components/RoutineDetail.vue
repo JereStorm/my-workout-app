@@ -4,9 +4,8 @@
         <div class="d-flex justify-content-between">
             <h2 class="h2 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
             <div class="mb-2">
-                <button class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita"
-                    style="background:transparent;border:none;cursor:default">
-                    <span v-if="rutina.favorita" style="color:#ef4444;font-size:1.2rem">❤️</span>
+                <button @click.stop="toggleFavorito()" class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita">
+                    <span v-if="rutina.favorita">❤️</span>
                     <span v-else style="font-size:1.2rem">🤍</span>
                 </button>
             </div>
@@ -19,7 +18,6 @@
                 </span>
                 <span class=""><strong>Creada:</strong> {{ formattedDate }}</span>
             </div>
-
 
             <div
                 class="d-flex justify-content-between mt-3 gap-3 mx-auto ms-md-auto me-md-0 flex-md-column text-sm text-md-end  text-gray-500">
@@ -91,10 +89,13 @@
                 <hr class="mb-0 text-danger">
             </ul>
         </div>
+
     </div>
 </template>
 
 <script>
+import { useProfileStore } from '@/stores/profile';
+
 export default {
     props: ['rutina'],
     computed: {
@@ -137,6 +138,10 @@ export default {
             const mm = String(m).padStart(2, '0');
             const ss = String(s).padStart(2, '0');
             return `${mm}:${ss}`;
+        },
+        toggleFavorito() {
+            const profileStore = useProfileStore();
+            profileStore.toggleFavorita(this.rutina.id, this.rutina.favorita);
         }
     }
 }
@@ -144,5 +149,17 @@ export default {
 <style scoped>
 .routine-detail {
     max-width: 800px;
+}
+
+.fav-btn {
+    background-color: transparent;
+    border: none;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+}
+
+.fav-btn:hover {
+    transform: scale(1.2);
+    cursor: pointer;
 }
 </style>

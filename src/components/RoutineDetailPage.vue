@@ -2,84 +2,114 @@
     <div class="routine-detail-page">
         <h1 class="my-md-5">Detalle Rutina <i class="bi bi-clipboard2-fill"></i></h1>
 
-        <div v-if="isLoadingInfo" class="loader"></div>
-        <div v-else-if="!rutina && !isLoadingInfo">Rutina no encontrada.</div>
-        <RoutineDetail v-else :rutina="rutina" />
+        <div v-if="isLoading" class="loader"></div>
+
+        <div v-else>
+            <RoutineDetail :rutina="rutina" />
+            <ul class="mini-menu pb-3">
+                <li @click.stop="registrarEntrenamiento(rutina)">
+                    <i class="bi bi-file-earmark-plus"></i>
+                </li>
+                <li @click.stop="editarRutina(rutina)">
+                    <i class="bi bi-pencil-square"></i>
+                </li>
+                <li @click.stop="eliminarRutina(rutina.id)">
+                    <i class="bi bi-trash3"></i>
+                </li>
+                <li @click.stop="copiarRutina(rutina)">
+                    <i class="bi bi-copy"></i>
+                </li>
+            </ul>
+
+        </div>
+        <div class="mt-5" v-if="!isLoading && !rutina">
+            <h5>Rutina guardadas aún.</h5>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import RoutineDetail from '@/components/RoutineDetail.vue';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
+const router = useRouter();
+
+// instancia el store
 const profileStore = useProfileStore();
 
-// igual que en ProfilePage: isLoadingInfo inicial true
-const isLoadingInfo = ref(true);
-
+const { isLoading } = storeToRefs(profileStore);
 const id = computed(() => route.params.id || route.query.id);
 
 const rutina = computed(() => {
     return profileStore.getUserRoutines?.find(r => r.id === id.value) || null;
 });
 
-async function loadRoutine() {
-    // sin id, no hay nada que buscar → no loader
-    if (!id.value) {
-        isLoadingInfo.value = false;
+
+/**
+ * Elimina una rutina tras confirmación del usuario.
+ * @param {string} rutinaId 
+ */
+async function eliminarRutina(rutinaId) {
+    if (!confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
+        console.log("Eliminar cancelado")
         return;
     }
-
-    // arrancamos loader: permanecerá true hasta que:
-    //  1) la rutina aparezca en el store (watch sobre `rutina`) o
-    //  2) terminemos la petición y comprobemos que no existe
-    isLoadingInfo.value = true;
-
     try {
-        if (typeof profileStore.fetchRutinaById === 'function') {
-            await profileStore.fetchRutinaById(id.value);
-        } else if (typeof profileStore.fetchUserRoutines === 'function') {
-            await profileStore.fetchUserRoutines();
+        const index = rutinasMostradas.value.indexOf(rutinaId);
+        if (index !== -1) {
+            rutinasMostradas.value.splice(index, 1);
         }
-    } catch (e) {
-        console.error('Error cargando rutina:', e);
-        // en caso de error dejamos que el componente muestre "no encontrada"
-    }
 
-    // después de la carga, si la rutina ya está en el store el watcher la detectará
-    // Si no está, quitamos el loader para mostrar "no encontrada"
-    if (!rutina.value) {
-        isLoadingInfo.value = false;
+        await profileStore.deleteRutina(rutinaId);
+
+    } catch (error) {
+        console.log("Error al borrar la rutina.", error);
     }
 }
 
-onMounted(async () => {
-    // si ya está en el store, cancelar loader inmediatamente (igual que ProfilePage)
-    if (rutina.value) {
-        isLoadingInfo.value = false;
-        return;
-    }
-    await loadRoutine();
-});
+/**
+ * Prepara el formulario para editar una rutina existente.
+ * @param {Object} rutina 
+ */
+function editarRutina(rutina) {
+    router.push({
+        name: 'FormRoutine',
+        query: { id: rutina.id }
+    });
+}
 
-// reintenta cuando cambia el id de la ruta
-watch(id, async (newId, oldId) => {
-    if (newId !== oldId) {
-        await loadRoutine();
+/**
+ * Copia una rutina y la agrega al inicio de la lista.
+ * @param {Object} rutina 
+ */
+async function copiarRutina(rutina) {
+    isLocalLoading.value = true
+    const copia = {
+        ...JSON.parse(JSON.stringify(rutina)),
+        nombre: rutina.nombre + ' (copia)'
+    };
+    delete copia.id;
+    delete copia.fechaCreacion;
+    try {
+        const docRef = await profileStore.createRutinaFirebase(copia);
+        isLocalLoading.value = false;
+        expandirRutina(docRef.id);
+    } catch (err) {
+        console.error('Error copiando rutina:', err);
+        isLocalLoading.value = false;
     }
-});
+}
+const registrarEntrenamiento = (rutina) => {
+    router.push({
+        name: 'RegisterWorkout',
+        query: { id: rutina.id }
+    });
+}
 
-// si la rutina aparece/actualiza en el store, aseguramos isLoadingInfo=false
-watch(
-    rutina,
-    (val) => {
-        if (val) isLoadingInfo.value = false;
-    },
-    { immediate: true }
-);
 </script>
 
 <style scoped>
@@ -88,6 +118,25 @@ watch(
     padding-right: 0px;
     display: flex;
     flex-direction: column;
+}
+
+.mini-menu {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    justify-content: center;
+    padding-left: 0;
+}
+
+.mini-menu li {
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+}
+
+.mini-menu li:hover {
+    color: aqua;
+    font-weight: bold;
 }
 
 @media (min-width: 768px) {
