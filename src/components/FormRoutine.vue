@@ -129,7 +129,8 @@
                         v-model="nuevaRutina.bloques[indexBloque].notas" class=" form-control text-notas mt-2" rows="2"
                         placeholder="Notas generales para todo el bloque (objetivo, tempo, etc.)"></textarea>
                     <!-- NOTAS BLOQUE -->
-                    <div class="col-md-3 mb-2 text-center d-flex flex-column align-items-center justify-content-center">
+                    <div
+                        class="col-md-3 mb-2 ms-3 text-center d-flex flex-column align-items-center justify-content-center">
                         <label :for="'notas-bloque-' + indexBloque" class="form-label">Notas</label>
                         <div>
                             <button @click.prevent="toggleNotaBloque(indexBloque)" class="btn-nota btn-outline-info">
@@ -569,7 +570,6 @@ select {
 
 .text-notas {
     background: transparent;
-    width: 300px;
     color: aqua;
 }
 

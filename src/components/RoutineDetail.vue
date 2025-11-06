@@ -82,6 +82,12 @@
 
                     <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-3">
                 </li>
+                <div v-if="bloque.notas" class="text-start">
+                    <hr class="my-3 mx-3">
+                    <div class="text-sm d-flex">
+                        <p class="mb-0 mx-md-3"><strong>Notas: </strong>{{ bloque.notas }}</p>
+                    </div>
+                </div>
                 <hr class="mb-0 text-danger">
             </ul>
         </div>
