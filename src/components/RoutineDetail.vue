@@ -1,40 +1,45 @@
 <template>
-    <div class="px-5 py-1 rounded-xl shadow-md w-100 routine-detail">
+    <div class="px-5 py-1 pb-3 rounded-xl shadow-md w-100 routine-detail">
         <!-- Header: nombre, dificultad, favorita, fecha y totales -->
-        <div class="d-flex justify-content-between align-items-start mt-3">
-            <div class="text-start d-flex flex-column">
-                <h3 class="h4 text-lg font-semibold mb-1">{{ rutina.nombre }}</h3>
-                <div class="text-sm text-gray-500 d-flex flex-column mt-5 mb-3">
-                    <span class="mr-3"><strong>Dificultad:</strong>
-                        <span v-html="difficultyIcons"></span>
-                        <span class="ml-1">({{ rutina.dificultad }})</span>
-                    </span>
-                    <span class="ml-3"><strong>Creada:</strong> {{ formattedDate }}</span>
-                </div>
+        <div class="d-flex justify-content-between">
+            <h2 class="h3 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
+            <div class="mb-2">
+                <button class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita"
+                    style="background:transparent;border:none;cursor:default">
+                    <span v-if="rutina.favorita" style="color:#ef4444;font-size:1.2rem">❤️</span>
+                    <span v-else style="font-size:1.2rem">🤍</span>
+                </button>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center my-3">
+            <div class="text-sm text-gray-500 d-flex flex-column align-items-start">
+                <span class=""><strong>Dificultad:</strong>
+                    <span v-html="difficultyIcons"></span>
+                    <span class="ml-1">({{ rutina.dificultad }})</span>
+                </span>
+                <span class=""><strong>Creada:</strong> {{ formattedDate }}</span>
             </div>
 
-            <div class="text-end">
-                <div class="mb-2">
-                    <button class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita"
-                        style="background:transparent;border:none;cursor:default">
-                        <span v-if="rutina.favorita" style="color:#ef4444;font-size:1.2rem">❤️</span>
-                        <span v-else style="font-size:1.2rem">🤍</span>
-                    </button>
+
+            <div class="d-flex justify-content-between flex-column text-sm text-end text-gray-500">
+                <div>
+                    Bloques (<strong>{{ rutina.bloques?.length ?? 0 }}</strong>)
                 </div>
-                <div class="text-sm text-gray-500 mt-5 mb-3">
-                    <div>Total bloques: <strong>{{ rutina.bloques?.length ?? 0 }}</strong></div>
-                    <div>Total series: <strong>{{ totalSeries }}</strong></div>
-                    <div>Total ejercicios: <strong>{{ totalExercises }}</strong></div>
+                <div>
+                    Series (<strong>{{ totalSeries }}</strong>)
+                </div>
+                <div>
+                    Ejercicios (<strong>{{ totalExercises }}</strong>)
                 </div>
             </div>
         </div>
 
         <div class="text-start text-sm text-gray-500">
             <p class="mb-1">
-                Descanso entre bloques: <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
+                <strong>Descanso entre bloques:</strong> <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
             </p>
             <p>
-                Descanso entre series: <span>{{ formatTiempo(rutina.descansoSeries) }} Min.</span>
+                <strong>Descanso entre series:</strong> <span>{{ formatTiempo(rutina.descansoSeries) }} Min.</span>
             </p>
         </div>
         <hr class="text-danger">
@@ -44,11 +49,12 @@
                 <p class="h5 text-sm text-end text-gray-400 mb-2">{{ bloque.series }} Series</p>
             </div>
             <ul class="space-y-2 list-unstyled">
-                <li v-for="(ejercicio, indexEjercicio) in bloque.ejercicios" :key="indexEjercicio" class="p-3 rounded">
-                    <div class="font-medium mb-4">
-                        <h4 class="mb-1">{{ ejercicio.nombre }}</h4>
+                <li v-for="(ejercicio, indexEjercicio) in bloque.ejercicios" :key="indexEjercicio"
+                    class="p-3 pt-1 pb-0 rounded">
+                    <div class="font-medium mb-3">
+                        <h4 class="mb-0">{{ ejercicio.nombre }}</h4>
                     </div>
-                    <div class="text-sm mt-2 d-flex justify-content-center gap-5 align-items-baseline">
+                    <div class="text-sm d-flex justify-content-center gap-5 align-items-baseline">
                         <div class="d-flex flex-column">
                             <span>Reps</span> <span>{{ ejercicio.repeticiones ?? '-' }}</span>
                         </div>
@@ -58,13 +64,20 @@
                             <span v-else>-</span>
                         </div>
 
-                        <div class="d-flex flex-column">
+                        <!-- <div class="d-flex flex-column">
                             <span>Esfuerzo</span>
                             <span v-if="ejercicio.esfuerzo && ejercicio.esfuerzo > 0">{{ ejercicio.esfuerzo }}
                                 RIR</span>
                             <span v-else>-</span>
-                        </div>
+                        </div> -->
 
+                    </div>
+                    <div v-if="ejercicio.notas">
+                        <hr class="my-3">
+                        <div class="text-sm d-flex gap-1">
+
+                            <p class="mb-0"><strong>Notas: </strong>{{ ejercicio.notas }}</p>
+                        </div>
                     </div>
 
                     <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-0">

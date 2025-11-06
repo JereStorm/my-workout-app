@@ -89,17 +89,22 @@
                                         :id="'tiempo-' + indexBloque + '-' + ejercicioIndex" min="0" />
                                 </div>
 
+                                <!-- NOTAS EJERCICIO-->
                                 <div class="col-md-3 mb-2 text-center">
-                                    <label :for="'esfuerzo-' + indexBloque + '-' + ejercicioIndex"
-                                        class="form-label">Esfuerzo</label>
-                                    <select v-model="ejercicio.esfuerzo" class="form-select text-info input-rir"
-                                        :id="'esfuerzo-' + indexBloque + '-' + ejercicioIndex">
-                                        <option value="">-</option>
-                                        <option value="1">RIR 1</option>
-                                        <option value="2">RIR 2</option>
-                                        <option value="3">RIR 3</option>
-                                    </select>
+                                    <label :for="'notas-' + indexBloque + '-' + ejercicioIndex"
+                                        class="form-label">Notas</label>
+                                    <div>
+                                        <button @click.prevent="toggleNotaEjercicio(indexBloque, ejercicioIndex)"
+                                            class="btn-nota btn-outline-info">
+                                            <i class="bi bi-plus-circle-fill"></i>
+                                        </button>
+                                    </div>
                                 </div>
+                                <textarea v-if="hasNotaEjercicio(indexBloque, ejercicioIndex)"
+                                    :id="'notas-' + indexBloque + '-' + ejercicioIndex" v-model="ejercicio.notas"
+                                    class="form-control text-notas mt-2" rows="2"
+                                    placeholder="Opcional: técnica, ajustes, variantes..."></textarea>
+
                             </div>
 
                             <div class="d-flex w-100 justify-content-center gap-2 px-5">
@@ -119,6 +124,20 @@
                         </div>
                     </template>
                 </Draggable>
+                <div class="d-flex justify-content-center gap-auto mb-3">
+                    <textarea v-if="hasNotaBloque(indexBloque)" :id="'notas-bloque-' + indexBloque"
+                        v-model="nuevaRutina.bloques[indexBloque].notas" class=" form-control text-notas mt-2" rows="2"
+                        placeholder="Notas generales para todo el bloque (objetivo, tempo, etc.)"></textarea>
+                    <!-- NOTAS BLOQUE -->
+                    <div class="col-md-3 mb-2 text-center d-flex flex-column align-items-center justify-content-center">
+                        <label :for="'notas-bloque-' + indexBloque" class="form-label">Notas</label>
+                        <div>
+                            <button @click.prevent="toggleNotaBloque(indexBloque)" class="btn-nota btn-outline-info">
+                                <i class="bi bi-plus-circle-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="btns-set-bloque px-5 pt-md-2 pt-1">
                     <button v-if="indexBloque > 0 || (indexBloque === 0 && nuevaRutina.bloques.length > 1)"
@@ -128,6 +147,8 @@
                     <button type="button" @click="agregarBloque(indexBloque)" class="btn btn-outline-info">
                         <i class="bi bi-plus-circle-fill"></i> Bloque
                     </button>
+
+
                 </div>
             </div>
 
@@ -184,10 +205,36 @@ const nuevaRutina = reactive({
     bloques: [{
         series: 3,
         ejercicios: [
-            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 }
-        ]
+            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+        ],
+        notas: ''
     }]
 });
+
+// Mostrar/ocultar notas (por ejercicio y por bloque)
+const showNotasEjercicio = ref(new Set());
+const showNotasBloque = ref(new Set());
+
+const toggleNotaEjercicio = (bloqueIndex, ejercicioIndex) => {
+    const key = `${bloqueIndex}-${ejercicioIndex}`;
+    if (showNotasEjercicio.value.has(key)) showNotasEjercicio.value.delete(key);
+    else showNotasEjercicio.value.add(key);
+};
+
+const toggleNotaBloque = (bloqueIndex) => {
+    const key = String(bloqueIndex);
+    if (showNotasBloque.value.has(key)) showNotasBloque.value.delete(key);
+    else showNotasBloque.value.add(key);
+};
+
+const hasNotaEjercicio = (bloqueIndex, ejercicioIndex) => {
+    return showNotasEjercicio.value.has(`${bloqueIndex}-${ejercicioIndex}`);
+};
+
+const hasNotaBloque = (bloqueIndex) => {
+    return showNotasBloque.value.has(String(bloqueIndex));
+};
+
 
 /**
  * Intenta cargar la rutina en función del query.id
@@ -249,10 +296,14 @@ const resetFormulario = () => {
         bloques: [{
             series: 3,
             ejercicios: [
-                { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 }
-            ]
+                { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+            ],
+            notas: ''
         }]
     });
+    // limpiar toggles de notas
+    showNotasEjercicio.value = new Set();
+    showNotasBloque.value = new Set();
 };
 
 /**
@@ -292,8 +343,9 @@ const agregarBloque = (bloqueIndex) => {
     nuevaRutina.bloques.splice(bloqueIndex + 1, 0, {
         series: 3,
         ejercicios: [
-            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0 }
-        ]
+            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+        ],
+        notas: ''
     });
 };
 
@@ -316,7 +368,8 @@ const agregarEjercicio = (bloqueIndex, ejercicioIndex) => {
         nombre: '',
         repeticiones: 1,
         tiempo: 0,
-        esfuerzo: 0
+        esfuerzo: 0,
+        notas: ''
     });
 };
 
@@ -448,12 +501,15 @@ select {
 .btns-set-bloque {
     width: 100%;
     display: flex;
+    align-items: end;
+    justify-content: center;
     gap: 10px;
 }
 
 .btns-set-bloque button {
     padding: 5px 10px;
     width: 80%;
+    height: min-content;
     margin: 0px auto;
 }
 
@@ -490,6 +546,35 @@ select {
     padding: 4px 12px;
     width: 80%;
     gap: 10px;
+}
+
+.btn-nota {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    padding: 6px 12px;
+    gap: 10px;
+    border-radius: 5px;
+    border: 1px solid aquamarine;
+    width: 70px;
+    text-align: center;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-nota:hover {
+    background-color: aqua;
+    cursor: pointer;
+}
+
+.text-notas {
+    background: transparent;
+    width: 300px;
+    color: aqua;
+}
+
+.text-notas::placeholder {
+    color: #007575;
 }
 
 .descanso-min {
