@@ -2,7 +2,7 @@
     <div class="px-3 md-px-5 py-1 py-3 rounded-xl shadow-md w-100 routine-detail">
         <!-- Header: nombre, dificultad, favorita, fecha y totales -->
         <div class="d-flex justify-content-between">
-            <h2 class="h3 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
+            <h2 class="h2 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
             <div class="mb-2">
                 <button class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita"
                     style="background:transparent;border:none;cursor:default">
@@ -11,7 +11,7 @@
                 </button>
             </div>
         </div>
-        <div class="d-flex flex-wrap justify-content-between align-items-center my-3">
+        <div class="px-2 px-md-5 d-flex flex-wrap justify-content-between align-items-center my-3">
             <div class="text-sm text-gray-500 d-flex flex-column align-items-start">
                 <span class=""><strong>Dificultad:</strong>
                     <span v-html="difficultyIcons"></span>
@@ -22,7 +22,7 @@
 
 
             <div
-                class="d-flex justify-content-between mt-3 gap-3 mx-auto ms-md-auto flex-md-column text-sm text-md-end  text-gray-500">
+                class="d-flex justify-content-between mt-3 gap-3 mx-auto ms-md-auto me-md-0 flex-md-column text-sm text-md-end  text-gray-500">
                 <div>
                     <strong>Bloques</strong> ({{ rutina.bloques?.length ?? 0 }})
                 </div>
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="text-start text-sm text-gray-500">
+        <div class="px-2 px-md-5 text-start text-sm text-gray-500">
             <p class="mb-1">
                 <strong>Descanso entre bloques:</strong> <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
             </p>
@@ -74,14 +74,13 @@
 
                     </div>
                     <div v-if="ejercicio.notas">
-                        <hr class="my-3">
+                        <hr class="my-3 mx-3">
                         <div class="text-sm d-flex gap-1">
-
-                            <p class="mb-0"><strong>Notas: </strong>{{ ejercicio.notas }}</p>
+                            <p class="mb-0 mx-md-3"><strong>Notas: </strong>{{ ejercicio.notas }}</p>
                         </div>
                     </div>
 
-                    <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-0">
+                    <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-3">
                 </li>
                 <hr class="mb-0 text-danger">
             </ul>
