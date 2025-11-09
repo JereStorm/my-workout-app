@@ -5,31 +5,31 @@
         <div v-if="isLoading" class="loader"></div>
 
         <div v-else>
-            <RoutineDetail :rutina="rutina" />
+            <RoutineDetail :rutina="rutinaLocal" />
             <ul class="mini-menu pb-3">
-                <li @click.stop="registrarEntrenamiento(rutina)">
+                <li @click.stop="registrarEntrenamiento(rutinaLocal)">
                     <i class="bi bi-file-earmark-plus"></i>
                 </li>
-                <li @click.stop="editarRutina(rutina)">
+                <li @click.stop="editarRutina(rutinaLocal)">
                     <i class="bi bi-pencil-square"></i>
                 </li>
-                <li @click.stop="eliminarRutina(rutina.id)">
+                <li @click.stop="eliminarRutina(rutinaLocal?.id)">
                     <i class="bi bi-trash3"></i>
                 </li>
-                <li @click.stop="copiarRutina(rutina)">
+                <li @click.stop="copiarRutina(rutinaLocal)">
                     <i class="bi bi-copy"></i>
                 </li>
             </ul>
 
         </div>
-        <div class="mt-5" v-if="!isLoading && !rutina">
+        <div class="mt-5" v-if="!isLoading && !rutinaLocal">
             <h5>Rutina guardadas aún.</h5>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import RoutineDetail from '@/components/RoutineDetail.vue';
@@ -48,6 +48,16 @@ const rutina = computed(() => {
     return profileStore.getUserRoutines?.find(r => r.id === id.value) || null;
 });
 
+// Mantener una copia local (deep copy) para evitar que la UI quede sin datos
+const rutinaLocal = ref(null);
+const deepCopy = (v) => v ? JSON.parse(JSON.stringify(v)) : null;
+
+// Solo actualizar la copia cuando la rutina exista; si pasa a null por borrado,
+// mantenemos la copia hasta redirigir.
+watch(rutina, (val) => {
+    if (val) rutinaLocal.value = deepCopy(val);
+}, { immediate: true });
+
 
 /**
  * Elimina una rutina tras confirmación del usuario.
@@ -58,14 +68,12 @@ async function eliminarRutina(rutinaId) {
         console.log("Eliminar cancelado")
         return;
     }
+    // usar id seguro (parámetro o copia local)
+    const idToDelete = rutinaId || rutinaLocal.value?.id;
+    if (!idToDelete) return;
     try {
-        const index = rutinasMostradas.value.indexOf(rutinaId);
-        if (index !== -1) {
-            rutinasMostradas.value.splice(index, 1);
-        }
-
-        await profileStore.deleteRutina(rutinaId);
-
+        await profileStore.deleteRutina(idToDelete);
+        router.push({ name: 'MyWorkouts' });
     } catch (error) {
         console.log("Error al borrar la rutina.", error);
     }
@@ -87,7 +95,7 @@ function editarRutina(rutina) {
  * @param {Object} rutina 
  */
 async function copiarRutina(rutina) {
-    isLocalLoading.value = true
+    isLoading.value = true
     const copia = {
         ...JSON.parse(JSON.stringify(rutina)),
         nombre: rutina.nombre + ' (copia)'
@@ -96,11 +104,14 @@ async function copiarRutina(rutina) {
     delete copia.fechaCreacion;
     try {
         const docRef = await profileStore.createRutinaFirebase(copia);
-        isLocalLoading.value = false;
-        expandirRutina(docRef.id);
+        isLoading.value = false;
+        router.push({
+            name: 'DetailRoutine',
+            query: { id: docRef.id }
+        });
     } catch (err) {
         console.error('Error copiando rutina:', err);
-        isLocalLoading.value = false;
+        isLoading.value = false;
     }
 }
 const registrarEntrenamiento = (rutina) => {

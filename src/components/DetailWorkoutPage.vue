@@ -22,9 +22,13 @@
                     <h5 class="text-center text-info mb-0"><strong>Serie {{ si }}</strong></h5>
                     <ul class="text-start px-1">
                         <li v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="mt-3 d-flex justify-content-between">
-                            <div class="w-50 d-flex align-items-center">
-                                <strong class="text-info text-top me-2">{{ ei + 1 }}°</strong>
-                                <span>{{ ej.nombre }}</span>
+                            <div class="w-50 flex-column d-flex align-items-center">
+                                <p><strong class="text-info text-top me-2">{{ ei + 1 }}°</strong>
+                                    <span>{{ ej.nombre }}</span>
+                                </p>
+                                <p>
+                                    <span v-if="ej.notas"><strong>Notas</strong>: {{ ej.notas }}</span>
+                                </p>
                             </div>
                             <div class="vr mx-1"></div>
                             <table class=" table-sm w-100 text-center">

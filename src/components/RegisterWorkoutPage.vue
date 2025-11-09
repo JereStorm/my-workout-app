@@ -33,9 +33,11 @@
                             <div v-for="(ej, eIndex) in current.ejercicios" :key="eIndex"
                                 class="mb-3 d-flex p-1 align-items-center justify-content-between gap-2">
                                 <p class="text-start mb-0">
-                                    {{ eIndex + 1 }}° {{ ej.nombre }}
+                                    {{ eIndex + 1 }}° {{ ej.nombre }} <span v-if="ej.notas">({{
+                                        ej.notas }})</span>
                                 </p>
-                                <div class="d-flex">
+
+                                <div class="d-flex gap-md-3 gap-2">
                                     <div class="d-flex flex-column align-items-center">
                                         <label :for="`ej-${step}-${eIndex}-reps`">Reps</label>
                                         <input type="number" :id="`ej-${step}-${eIndex}-reps`"
