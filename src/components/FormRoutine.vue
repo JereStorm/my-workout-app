@@ -100,23 +100,25 @@
                                         </button>
                                     </div>
                                 </div>
-                                <textarea v-if="hasNotaEjercicio(indexBloque, ejercicioIndex)"
-                                    :id="'notas-' + indexBloque + '-' + ejercicioIndex" v-model="ejercicio.notas"
-                                    class="form-control text-notas mt-2" rows="2"
-                                    placeholder="Opcional: técnica, ajustes, variantes..."></textarea>
+                                <transition name="slide-fade">
+                                    <textarea v-if="hasNotaEjercicio(indexBloque, ejercicioIndex)"
+                                        :id="'notas-' + indexBloque + '-' + ejercicioIndex" v-model="ejercicio.notas"
+                                        class="form-control text-notas mt-2" rows="2"
+                                        placeholder="Opcional: técnica, ajustes, variantes..."></textarea>
+                                </transition>
 
                             </div>
 
                             <div class="d-flex w-100 justify-content-center gap-2 px-5">
                                 <button type="button" @click="agregarEjercicio(indexBloque, ejercicioIndex)"
                                     class="btn btn-outline-info w-auto">
-                                    <i class="bi bi-plus-circle-fill"></i> {{ isMobile ? "" : "Ejercicio" }}
+                                    <i class="bi bi-plus-circle-fill"></i> Ejercicio
                                 </button>
                                 <button
                                     v-if="ejercicioIndex > 0 || (ejercicioIndex === 0 && nuevaRutina.bloques[indexBloque].ejercicios.length > 1)"
                                     type="button" @click="eliminarEjercicio(indexBloque, ejercicioIndex)"
                                     class="btn btn-outline-danger w-auto delete-exercise">
-                                    <i class="bi bi-trash-fill"></i> {{ isMobile ? "" : "Ejercicio" }}
+                                    <i class="bi bi-trash-fill"></i> Ejercicio
                                 </button>
                             </div>
 
@@ -125,12 +127,14 @@
                     </template>
                 </Draggable>
                 <div class="d-flex justify-content-center gap-auto mb-3">
-                    <textarea v-if="hasNotaBloque(indexBloque)" :id="'notas-bloque-' + indexBloque"
-                        v-model="nuevaRutina.bloques[indexBloque].notas" class=" form-control text-notas mt-2" rows="2"
-                        placeholder="Notas generales para todo el bloque (objetivo, tempo, etc.)"></textarea>
+                    <transition name="slide-fade">
+                        <textarea v-if="hasNotaBloque(indexBloque)" :id="'notas-bloque-' + indexBloque"
+                            v-model="nuevaRutina.bloques[indexBloque].notas" class=" form-control text-notas mt-2 me-2"
+                            rows="2"
+                            placeholder="Notas generales para todo el bloque (objetivo, tempo, etc.)"></textarea>
+                    </transition>
                     <!-- NOTAS BLOQUE -->
-                    <div
-                        class="col-md-3 mb-2 ms-3 text-center d-flex flex-column align-items-center justify-content-center">
+                    <div class="col-md-3 mb-2 text-center d-flex flex-column align-items-center justify-content-center">
                         <label :for="'notas-bloque-' + indexBloque" class="form-label">Notas</label>
                         <div>
                             <button @click.prevent="toggleNotaBloque(indexBloque)" class="btn-nota btn-outline-info">
@@ -571,6 +575,7 @@ select {
 .text-notas {
     background: transparent;
     color: aqua;
+    width: 300px;
 }
 
 .text-notas::placeholder {
@@ -667,5 +672,35 @@ input:-webkit-autofill:active {
     /* Lo hace más transparente */
     background-color: #f0f0f0;
     /* Cambia el color de fondo */
+}
+
+/* Transición para aparición/desaparición de notas */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+    transition: all 200ms ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-20px);
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 300px;
+    /* suficiente para el textarea */
+}
+
+/* mejora para evitar salto en el layout */
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+    overflow: hidden;
 }
 </style>
