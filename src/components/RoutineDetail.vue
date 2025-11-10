@@ -5,8 +5,8 @@
             <h2 class="h2 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
             <div class="mb-2">
                 <button @click.stop="toggleFavorito()" class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita">
-                    <span v-if="rutina.favorita">❤️</span>
-                    <span v-else style="font-size:1.2rem">🤍</span>
+                    <span>{{ rutina?.favorita ? "❤️" : "🤍" }}</span>
+
                 </button>
             </div>
         </div>
@@ -142,6 +142,7 @@ export default {
         toggleFavorito() {
             const profileStore = useProfileStore();
             profileStore.toggleFavorita(this.rutina.id, this.rutina.favorita);
+            this.rutina.favorita = !this.rutina.favorita;
         }
     }
 }
