@@ -1,5 +1,5 @@
 <template>
-    <main class="w-100 mb-auto mt-auto mx-auto d-flex justify-content-center align-items-center">
+    <main class="w-100 h-100 mb-auto mt-auto mx-auto d-flex justify-content-center align-items-center">
         <transition name="fade-slide-register" mode="out-in">
             <form v-show="showForm" class="form-register p-4 rounded shadow" @submit.prevent="register">
                 <div class="d-flex justify-content-between">
