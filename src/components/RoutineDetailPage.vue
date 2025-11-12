@@ -8,16 +8,16 @@
             <RoutineDetail :rutina="rutinaLocal" />
             <ul class="mini-menu pb-3">
                 <li @click.stop="registrarEntrenamiento(rutinaLocal)">
-                    <i class="bi bi-file-earmark-plus"></i>
+                    <span><i class="bi bi-file-earmark-plus"></i>Entrenar</span>
                 </li>
                 <li @click.stop="editarRutina(rutinaLocal)">
-                    <i class="bi bi-pencil-square"></i>
+                    <span><i class="bi bi-pencil-square"></i>Editar</span>
                 </li>
                 <li @click.stop="eliminarRutina(rutinaLocal?.id)">
-                    <i class="bi bi-trash3"></i>
+                    <span><i class="bi bi-trash3"></i>Eliminar</span>
                 </li>
                 <li @click.stop="copiarRutina(rutinaLocal)">
-                    <i class="bi bi-copy"></i>
+                    <span><i class="bi bi-copy"></i>Copiar</span>
                 </li>
             </ul>
 
@@ -134,26 +134,38 @@ const registrarEntrenamiento = (rutina) => {
 .mini-menu {
     display: flex;
     list-style: none;
-    gap: 20px;
+    gap: 10px;
     justify-content: center;
     padding-left: 0;
 }
 
-.mini-menu li {
+.mini-menu li span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #ffffff;
     cursor: pointer;
-    font-size: 1.3rem;
+    padding: 5px 1rem;
+    border-radius: 8px;
     transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-.mini-menu li:hover {
-    color: aqua;
-    font-weight: bold;
+.mini-menu li span:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    transform: translateY(-2px);
 }
 
 @media (min-width: 768px) {
     .routine-detail-page {
         padding-left: 160px;
         padding-top: 20px;
+    }
+
+    .mini-menu {
+        gap: 20px;
     }
 }
 </style>
