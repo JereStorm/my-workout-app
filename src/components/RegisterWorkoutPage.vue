@@ -341,7 +341,7 @@ const handleCancelar = () => {
     width: 100%;
     display: flex;
     justify-content: center;
-    gap: 50px;
+    gap: 10px;
 }
 
 .stepper-header {
