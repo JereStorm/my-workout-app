@@ -16,36 +16,35 @@
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
             <div class="workouts-container">
-                <div class="mt-5 pt-1 py-3 ps-2 pe-1 card-workout" v-for="w in workouts" :key="w.id">
-                    <h5 class="h5 mt-0 mb-3 d-flex justify-content-between"><span>{{ formatDate(w.date) }}</span>
-                        <div class="dropdown-menu-container">
-                            <span @click.stop="cardMenuAbierto = cardMenuAbierto === w.id ? null : w.id">
-                                <i class="bi bi-three-dots-vertical"></i>
+                <div class="timeline position-relative border-start border-2 ps-4">
+                    <div v-for="workout in workouts" :key="workout.id" class="timeline-item mb-4 position-relative">
+                        <!-- Punto del timeline -->
+                        <div class="timeline-dot bg-primary position-absolute top-0 start-0 translate-middle"></div>
+
+                        <!-- Contenido -->
+                        <div class="timeline-content px-1 pt-2 pb-3">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="text-info">{{ formatDate(workout.date) }}</h6>
+
+
+                                <span class="text-light">{{
+                                    difficultyIcons(workout.dataRoutine.dificultad) }} ({{
+                                        workout.dataRoutine.dificultad }})</span>
+                            </div>
+                            <h5 class="fw-semibold mb-1">{{ workout.dataRoutine.nombre }}</h5>
+
+                            <p class="mt-2 mb-1 text-secondary small">
+                                {{ getSummary(workout) }}
+                            </p>
+
+                            <span v-if="workout.notes" class="text-info fst-italic small">
+                                "{{ workout.notes }}"
                             </span>
-                            <transition name="fade-item">
-                                <ul v-if="cardMenuAbierto === w.id" class="mini-menu">
-                                    <!-- <li @click.stop="registrarEntrenamiento(w)">
-                                        <i class="bi bi-file-earmark-plus"></i>
-                                    </li>
-                                    <li @click.stop="editarRutina(w)">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </li> -->
-                                    <li @click.stop="eliminarWorkout(w)">
-                                        <i class="bi bi-trash3"></i>
-                                    </li>
-                                    <!-- <li @click.stop="copiarRutina(w)">
-                                        <i class="bi bi-copy"></i>
-                                    </li> -->
-                                </ul>
-                            </transition>
+
+                            <button v-on:click="redirect(workout)" class="btn">
+                                <i class="bi bi-chevron-double-down"></i>
+                            </button>
                         </div>
-                    </h5>
-                    <div class="text-center">
-                        <router-link class="link-info link-train h4 link-offset-2 link-underline-opacity-25
-                        link-underline-opacity-100-hover" :to="{ name: 'DetailWorkout', query: { id: w.id } }">
-                            <i class="bi bi-arrow-up-left-square me-2"></i>
-                            "{{ w.dataRoutine.nombre }}"
-                        </router-link>
                     </div>
                 </div>
             </div>
@@ -58,9 +57,15 @@
 </template>
 
 <script setup>
+
 import { computed, ref, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
+
+/** Acceso al enrutador y a la ruta actual */
+const route = useRoute();
+const router = useRouter();
 
 // instancia el store
 const profileStore = useProfileStore();
@@ -77,11 +82,40 @@ const cardMenuAbierto = ref(null);
  */
 watch(cardMenuAbierto, (nuevoValor) => {
     if (nuevoValor !== null) {
+        console.log(workouts.value);
+
         window.addEventListener('click', handleClickOutside);
     } else {
+        console.log(workouts.value);
+
         window.removeEventListener('click', handleClickOutside);
     }
 });
+
+function difficultyIcons(dificultad) {
+    const map = {
+        'Muy facil': 1,
+        'Facil': 2,
+        'Intermedia': 3,
+        'Dificil': 4,
+        'Muy dificil': 5
+    };
+    const count = map[dificultad] || 0;
+    return '⚡'.repeat(count) || '';
+}
+
+function redirect(workout) {
+    console.log(workout)
+    router.push({ name: 'DetailWorkout', query: { id: workout.id } });
+}
+
+function getSummary(workout) {
+    const bloques = workout.dataRoutine.bloques
+    const totalSeries = bloques.reduce((acc, b) => acc + b.series, 0)
+    const ejercicios = bloques.flatMap(b => b.ejercicios.map(e => e.nombre))
+    const destacados = ejercicios.slice(0, 3).join(', ')
+    return `${bloques.length} bloques • ${totalSeries} series • Ejercicios: ${destacados}${ejercicios.length > 3 ? '...' : ''}`
+}
 
 /**
  * Maneja el estado del mini menu que se encuentra en las cards version mobile
@@ -243,5 +277,42 @@ async function eliminarWorkout(workout) {
 
 .mini-menu li:hover {
     color: aqua;
+}
+
+.timeline {
+    border-color: var(--bs-primary);
+}
+
+.timeline-item {
+    padding-left: 1rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+}
+
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    left: -6px;
+}
+
+.timeline-content {
+    background-color: transparent;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.timeline-content .btn {
+    border: 1px solid rgb(0, 143, 143);
+    width: 50px;
+    transition: all .2s ease;
+}
+
+.timeline-content .btn:hover {
+    transform: scale(1.1);
+    border: 1px solid aqua;
 }
 </style>
