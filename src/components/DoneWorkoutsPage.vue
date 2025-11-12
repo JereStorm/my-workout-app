@@ -16,15 +16,17 @@
         <!-- LIST OF TRAINS -->
         <div v-else class="info-container">
             <div class="workouts-container">
-                <div class="timeline position-relative border-start border-2 ps-4">
+                <div class="timeline position-relative ps-4 mt-5">
                     <div v-for="workout in workouts" :key="workout.id" class="timeline-item mb-4 position-relative">
                         <!-- Punto del timeline -->
-                        <div class="timeline-dot bg-primary position-absolute top-0 start-0 translate-middle"></div>
+                        <div class="timeline-dot position-absolute top-0 start-0 translate-middle">
+                            <h6 class="text-light mt-2">{{ formatDate(workout.date) }}</h6>
+
+                        </div>
 
                         <!-- Contenido -->
                         <div class="timeline-content px-1 pt-2 pb-3">
-                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                <h6 class="text-info">{{ formatDate(workout.date) }}</h6>
+                            <div class="d-flex w-100 justify-content-end align-items-center">
 
 
                                 <span class="text-light">{{
@@ -280,7 +282,7 @@ async function eliminarWorkout(workout) {
 }
 
 .timeline {
-    border-color: var(--bs-primary);
+    border-left: 2px solid aqua;
 }
 
 .timeline-item {
@@ -289,9 +291,9 @@ async function eliminarWorkout(workout) {
 }
 
 .timeline-dot {
+    padding-left: 5px;
     width: 12px;
     height: 12px;
-    border-radius: 50%;
     left: -6px;
 }
 
