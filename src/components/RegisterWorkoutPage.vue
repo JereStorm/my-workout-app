@@ -103,7 +103,8 @@
                 </Transition>
                 <!-- Timer ref: el padre controla startWith() -->
                 <Transition name="fade-slide" mode="out-in" duration="200">
-                    <Timer v-show="isResting" ref="timerRef" @finished="onTimerFinished" @tick="onTimerTick" />
+                    <Timer v-show="isResting" ref="timerRef" @canceled="onTimerCanceled" @finished="onTimerFinished"
+                        @tick="onTimerTick" />
                 </Transition>
             </div>
         </div>
@@ -249,8 +250,12 @@ const startRest = () => {
 // manejadores del timer
 const onTimerFinished = () => {
     isResting.value = false;
-    // avanzar automáticamente
-    // nextStep();
+    nextStep();
+};
+
+// manejadores del timer
+const onTimerCanceled = () => {
+    isResting.value = false;
 };
 
 const onTimerTick = (secondsLeft) => {

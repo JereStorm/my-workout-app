@@ -7,7 +7,7 @@ const props = defineProps({
     autoStart: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['tick', 'finished']);
+const emit = defineEmits(['tick', 'finished', 'canceled']);
 
 const secondsLeft = ref(props.initialSeconds || 0);
 const intervalId = ref(null);
@@ -49,7 +49,8 @@ function pause() {
 }
 
 function reset() {
-    stopInternal(true);
+    pause();
+    emit('canceled');
 }
 
 function resetInternal(emitFinished = false) {
@@ -89,8 +90,8 @@ if (props.autoStart && props.initialSeconds > 0) {
 </script>
 
 <template>
-    <div class="card shadow-sm border-0 p-4 text-center mx-auto" style="max-width: 300px;">
-        <h5 class="mb-3 fw-semibold text-light">⏱ Timer</h5>
+    <div class="card shadow-sm mb-3 p-4 text-center mx-auto" style="max-width: 300px;">
+        <h5 class="mb-3 fw-semibold text-light"><i style="font-size: 30px;" class="bi bi-stopwatch"></i></h5>
 
         <!-- Display del tiempo -->
         <h1 class="display-5 fw-bold mb-3 text-light">
@@ -99,15 +100,15 @@ if (props.autoStart && props.initialSeconds > 0) {
 
         <!-- Controles (opcionales, el padre puede controlar via ref) -->
         <div class="d-flex justify-content-center gap-2">
-            <button v-if="!isRunning" class="btn btn-primary px-3" @click="start">
-                <i class="bi bi-play-fill"></i>
+            <button v-if="!isRunning" class="btn btn-primary px-3 text-center" @click="start">
+                <i class="bi me-0 bi-play-fill"></i>
             </button>
 
-            <button v-else class="btn btn-warning px-3" @click="pause">
-                <i class="bi bi-pause-fill"></i>
+            <button v-else class="btn btn-warning px-3 text-center" @click="pause">
+                <i class="bi me-0 bi-pause-fill"></i>
             </button>
-            <button class="btn btn-danger px-3" @click="reset">
-                <i class="bi bi-ban"></i>
+            <button class="btn btn-danger px-3 d-flex justify-content-center align-items-center" @click="reset">
+                <i class="bi me-0 bi-ban"></i>
             </button>
         </div>
     </div>
@@ -117,6 +118,7 @@ if (props.autoStart && props.initialSeconds > 0) {
 .card {
     background-color: transparent;
     border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 button i {
