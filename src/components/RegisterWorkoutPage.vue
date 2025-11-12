@@ -58,12 +58,22 @@
 
                         <!-- Navegación -->
                         <div class="navigation-container">
-                            <button class="btn btn-outline-secondary" @click="prevStep" :disabled="step === 0">
+                            <button class="btn btn-outline-secondary" @click="prevStep"
+                                :disabled="step === 0 || isResting">
                                 <i class="bi bi-arrow-bar-left"></i> Anterior
                             </button>
-                            <button class="btn btn-outline-info" @click="nextStep">
-                                {{ step + 1 === steps.length ? 'Finalizar' :
-                                    'Siguiente' }} <i class="bi bi-arrow-bar-right"></i>
+
+                            <!-- DESCANSO: inicia countdown y avanza al terminar -->
+                            <button class="btn btn-outline-info" @click="startRest"
+                                :disabled="isResting || step + 1 >= steps.length || !rutina">
+                                <i class="bi bi-clock-history"></i>
+                                <span v-if="!isResting"> Descanso</span>
+                                <span v-else> Descansando...</span>
+                            </button>
+
+                            <button class="btn btn-outline-info" @click="nextStep" :disabled="isResting">
+                                {{ step + 1 === steps.length ? 'Finalizar' : 'Siguiente' }} <i
+                                    class="bi bi-arrow-bar-right"></i>
                             </button>
                         </div>
                         <div class="cancel-container">
@@ -91,6 +101,10 @@
                     </div>
 
                 </Transition>
+                <!-- Timer ref: el padre controla startWith() -->
+                <Transition name="fade-slide" mode="out-in" duration="200">
+                    <Timer v-show="isResting" ref="timerRef" @finished="onTimerFinished" @tick="onTimerTick" />
+                </Transition>
             </div>
         </div>
     </div>
@@ -102,6 +116,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import Notifier from '@/components/NotifierComponent.vue';
+import Timer from './Timer.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -123,16 +138,17 @@ const steps = ref([]);
 const logs = ref([]);
 const step = ref(0);
 
-//Maenja el porcentaje de la barra de progreso
+// Timer ref + estado de descanso
+const timerRef = ref(null);
+const isResting = ref(false);
+
 const progressPercentage = computed(() => {
     if (steps.value.length === 0) return 0;
     return Math.floor((step.value / steps.value.length) * 100);
 });
 
-//Para animar los steps
 const direction = ref('forward');
 
-// formatea YYYY-MM-DD → DD/MM/YYYY
 const formatDate = (iso) => {
     const d = new Date(iso);
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -145,7 +161,6 @@ onMounted(() => {
     }
 
     // Construir steps: por cada bloque y cada serie
-    // construirSiCorresponde();
 });
 
 const construirSiCorresponde = async () => {
@@ -182,7 +197,6 @@ const construirSiCorresponde = async () => {
                 stepLabel: `Bloque ${bi + 1}`,
                 ejercicios: bloque.ejercicios.map(e => ({ ...e }))
             });
-            // Inicializamos los logs con el valor por defecto
             logs.value.push({
                 actualReps: bloque.ejercicios.map(e => e.repeticiones),
                 actualSegs: bloque.ejercicios.map(e => e.tiempo),
@@ -191,17 +205,15 @@ const construirSiCorresponde = async () => {
     });
 }
 
-// Esperamos a que el perfil este listo
 watch(isLoading, (nuevoValor) => {
     if (!nuevoValor) {
         construirSiCorresponde();
     }
 }, { immediate: true });
 
-// Computed con el paso actual
 const current = computed(() => steps.value[step.value] || {});
 
-//pasos
+// navegación
 const nextStep = () => {
     if (step.value < steps.value.length) {
         direction.value = 'forward';
@@ -215,6 +227,35 @@ const prevStep = () => {
         step.value--;
     }
 }
+
+// Inicia descanso acorde al tipo entre current y siguiente step
+const startRest = () => {
+    if (isResting.value) return;
+    if (!rutina.value) return;
+    if (step.value + 1 >= steps.value.length) return; // no hay siguiente
+
+    const next = steps.value[step.value + 1];
+    const currentStep = steps.value[step.value];
+    const sameBlock = next && currentStep && next.bloqueIndex === currentStep.bloqueIndex;
+    const restSeconds = sameBlock ? (rutina.value.descansoSeries ?? 60) : (rutina.value.descansoBloques ?? 60);
+
+    // iniciar timer con segundos
+    if (timerRef.value && typeof timerRef.value.startWith === 'function') {
+        isResting.value = true;
+        timerRef.value.startWith(restSeconds);
+    }
+};
+
+// manejadores del timer
+const onTimerFinished = () => {
+    isResting.value = false;
+    // avanzar automáticamente
+    // nextStep();
+};
+
+const onTimerTick = (secondsLeft) => {
+    // opcional: podrías mostrar segundosLeft en UI o usar para animaciones
+};
 
 const submit = async () => {
     isSaving.value = true;
