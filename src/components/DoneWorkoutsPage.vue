@@ -175,7 +175,7 @@ async function eliminarWorkout(workout) {
     margin-top: 1rem;
     margin-bottom: auto;
     width: 100%;
-    padding: 0px 10px;
+    padding: 0px 10px 0px 0px;
 }
 
 .link-train {

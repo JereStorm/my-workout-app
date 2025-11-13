@@ -9,8 +9,8 @@
             <p class="h5 text-start py-3 px-1">
                 Fecha: <strong class="ms-2">{{ formatDate(workout.createdAt) }}</strong><br>
                 Rutina: <strong class="ms-2">{{ workout.dataRoutine.nombre }}</strong><br>
-                Notas: <em class="ms-2" v-if="workout.notes">{{ workout.notes }}</em>
-                <em v-else class="text-muted ms-2">Sin notas</em>
+                Comentarios: <em class="ms-2" v-if="workout.notes">{{ workout.notes }}</em>
+                <em v-else class="text-muted ms-2">Sin comentarios</em>
             </p>
 
             <!-- Recorrido por bloques y series -->
@@ -200,7 +200,7 @@ tbody td {
 
     .detail-container {
         width: 90%;
-        max-width: 700px;
+        max-width: 800px;
     }
 }
 </style>
