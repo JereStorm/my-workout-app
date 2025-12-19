@@ -263,3 +263,16 @@ form {
     opacity: 0.7;
   }
 }
+
+.border-cards {
+  border: 1px solid #80808067;
+  border-radius: 0.5rem;
+}
+
+.bg-exercise {
+  background-color: #1e1e1e;
+}
+
+.bg-block {
+  background-color: #1e1e1e8a;
+}

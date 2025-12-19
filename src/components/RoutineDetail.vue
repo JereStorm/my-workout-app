@@ -3,53 +3,51 @@
         <!-- Header: nombre, dificultad, favorita, fecha y totales -->
         <div class="d-flex justify-content-between">
             <h2 class="h2 text-lg font-semibold mb-1">{{ rutina.nombre }}</h2>
-            <div class="mb-2">
+            <div class="mb-2 d-flex align-items-baseline gap-3">
+                <span class="d-flex">
+                    <span class="ml-1 h5 me-2">{{ rutina.dificultad }}</span>
+                    <span v-html="difficultyIcons"></span>
+                </span>
                 <button @click.stop="toggleFavorito()" class="fav-btn" :aria-pressed="rutina.favorita" title="Favorita">
                     <span>{{ rutina?.favorita ? "❤️" : "🤍" }}</span>
-
                 </button>
             </div>
         </div>
-        <div class="px-2 px-md-5 d-flex flex-wrap justify-content-between align-items-center my-3">
-            <div class="text-sm text-gray-500 d-flex flex-column align-items-start">
-                <span class=""><strong>Dificultad:</strong>
-                    <span v-html="difficultyIcons"></span>
-                    <span class="ml-1">({{ rutina.dificultad }})</span>
-                </span>
-                <span class=""><strong>Creada:</strong> {{ formattedDate }}</span>
+        <div class="px-2 px-md-5 d-flex flex-column align-items-center my-3">
+            <div class="text-gray-500 d-flex flex-column align-items-start">
+
             </div>
 
-            <div
-                class="d-flex justify-content-between mt-3 gap-3 mx-auto ms-md-auto me-md-0 flex-md-column text-sm text-md-end  text-gray-500">
-                <div>
-                    <strong>Bloques</strong> ({{ rutina.bloques?.length ?? 0 }})
+            <div class="d-flex justify-content-between mt-3 gap-3 mx-auto text-gray-500">
+                <div class="h5">
+                    Bloques ({{ totalBlocks }})
                 </div>
-                <div>
-                    <strong>Series</strong> ({{ totalSeries }})
+                <div class="h5">
+                    Series ({{ totalSeries }})
                 </div>
-                <div>
-                    <strong>Ejercicios</strong> ({{ totalExercises }})
+                <div class="h5">
+                    Ejercicios ({{ totalExercises }})
                 </div>
             </div>
         </div>
 
-        <div class="px-2 px-md-5 text-start text-sm text-gray-500">
-            <p class="mb-1">
-                <strong>Descanso entre bloques:</strong> <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
-            </p>
-            <p>
-                <strong>Descanso entre series:</strong> <span>{{ formatTiempo(rutina.descansoSeries) }} Min.</span>
-            </p>
+        <div class="px-2 d-flex gap-5 justify-content-center mt-4 px-md-5 text-start text-sm text-gray-500">
+            <h5 class="mb-1 h5">
+                Descanso bloques: <span>{{ formatTiempo(rutina.descansoBloques) }} Min.</span>
+            </h5>
+            <h5 class="mb-1 h5">
+                Descanso series: <span>{{ formatTiempo(rutina.descansoSeries) }} Min.</span>
+            </h5>
         </div>
         <hr class="text-danger">
-        <div v-for="(bloque, indexBloque) in rutina.bloques" :key="indexBloque" class="my-3">
+        <div v-for="(bloque, indexBloque) in rutina.bloques" :key="indexBloque" class="my-3 ">
             <div class="d-flex justify-content-between align-items-baseline">
                 <p class="h5 text-lg text-start font-semibold mb-2">{{ indexBloque + 1 }}° Bloque </p>
                 <p class="h5 text-sm text-end text-gray-400 mb-2">{{ bloque.series }} Series</p>
             </div>
-            <ul class="space-y-2 list-unstyled">
+            <ul class="space-y-2 list-unstyled border-cards bg-block">
                 <li v-for="(ejercicio, indexEjercicio) in bloque.ejercicios" :key="indexEjercicio"
-                    class="p-3 pt-1 pb-0 rounded">
+                    class="p-3 rounded bg-exercise">
                     <div class="font-medium mb-3">
                         <h4 class="mb-0">{{ ejercicio.nombre }}</h4>
                     </div>
@@ -74,20 +72,21 @@
                     <div v-if="ejercicio.notas">
                         <hr class="my-3 mx-3">
                         <div class="text-sm d-flex gap-1">
-                            <p class="mb-0 mx-md-3"><strong>Notas: </strong>{{ ejercicio.notas }}</p>
+                            <p class="mb-0 mx-md-3">Notas: {{ ejercicio.notas }}</p>
                         </div>
                     </div>
 
                     <hr v-if="indexEjercicio != bloque.ejercicios.length - 1" class="text-info mb-3">
                 </li>
-                <div v-if="bloque.notas" class="text-start">
+                <div v-if="bloque.notas" class="text-start pb-3">
                     <hr class="my-3 mx-3">
                     <div class="text-sm d-flex">
-                        <p class="mb-0 mx-md-3"><strong>Notas: </strong>{{ bloque.notas }}</p>
+                        <p class="mb-0 mx-md-3">Notas bloque: {{ bloque.notas }}</p>
                     </div>
                 </div>
-                <hr class="mb-0 text-danger">
             </ul>
+            <hr class="my-3 mx-3">
+
         </div>
 
     </div>
@@ -99,13 +98,25 @@ import { useProfileStore } from '@/stores/profile';
 export default {
     props: ['rutina'],
     computed: {
+        bloques() {
+            return Array.isArray(this.rutina?.bloques) ? this.rutina.bloques : [];
+        },
+
+        totalBlocks() {
+            return this.bloques.length;
+        },
+
         totalSeries() {
-            if (!this.rutina || !Array.isArray(this.rutina.bloques)) return 0;
-            return this.rutina.bloques.reduce((acc, b) => acc + (b.series || 0), 0);
+            return this.bloques.reduce(
+                (total, bloque) => total + (Number(bloque.series) || 0),
+                0
+            );
         },
         totalExercises() {
-            if (!this.rutina || !Array.isArray(this.rutina.bloques)) return 0;
-            return this.rutina.bloques.reduce((acc, b) => acc + ((b.ejercicios && b.ejercicios.length) || 0), 0);
+            return this.bloques.reduce(
+                (total, bloque) => total + (bloque.ejercicios?.length || 0),
+                0
+            );
         },
         formattedDate() {
             if (!this.rutina || !this.rutina.fechaCreacion) return '-';

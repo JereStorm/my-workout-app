@@ -117,7 +117,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import Notifier from '@/components/NotifierComponent.vue';
-import Timer from './Timer.vue';
+import Timer from '@/components/Timer.vue';
 
 const route = useRoute();
 const router = useRouter();

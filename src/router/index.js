@@ -2,18 +2,18 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { auth } from "@/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
-import LoginPage from "@/components/LoginPage.vue";
-import RegisterPage from "@/components/RegisterPage.vue";
-import DashboardPage from "@/components/DashboardPage.vue";
-import UnregistredPage from "@/components/UnregistredPage.vue";
-import MyWorkoutsPage from "@/components/MyWorkoutsPage.vue";
-import ProfilePage from "@/components/ProfilePage.vue";
+import LoginPage from "@/components/pages/LoginPage.vue";
+import RegisterPage from "@/components/pages/RegisterPage.vue";
+import DashboardPage from "@/components/pages/DashboardPage.vue";
+import UnregistredPage from "@/components/pages/UnregistredPage.vue";
+import MyWorkoutsPage from "@/components/pages/MyWorkoutsPage.vue";
+import ProfilePage from "@/components/pages/ProfilePage.vue";
 import FormRoutine from "@/components/FormRoutine.vue";
-import RegisterWorkoutPage from "../components/RegisterWorkoutPage.vue";
-import DoneWorkoutsPage from "../components/DoneWorkoutsPage.vue";
-import DetailWorkoutPage from "../components/DetailWorkoutPage.vue";
-import SelectRoutinePage from "../components/SelectRoutinePage.vue";
-import RoutineDetailPage from "../components/RoutineDetailPage.vue";
+import RegisterWorkoutPage from "@/components/pages/RegisterWorkoutPage.vue";
+import DoneWorkoutsPage from "@/components/pages/DoneWorkoutsPage.vue";
+import DetailWorkoutPage from "@/components/pages/DetailWorkoutPage.vue";
+import SelectRoutinePage from "@/components/pages/SelectRoutinePage.vue";
+import RoutineDetailPage from "@/components/pages/RoutineDetailPage.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
