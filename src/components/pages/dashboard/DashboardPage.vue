@@ -14,7 +14,7 @@
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from "pinia";
 import { onMounted } from 'vue';
-import SideBarComponent from '@/components/SideBarComponent.vue';
+import SideBarComponent from '@/components/layout/SideBarComponent.vue';
 
 const profileStore = useProfileStore();
 

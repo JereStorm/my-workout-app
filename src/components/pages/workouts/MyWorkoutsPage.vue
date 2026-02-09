@@ -106,7 +106,7 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
-import RoutineDetail from '@/components/RoutineDetail.vue';
+import RoutineDetail from '@/components/workout/RoutineDetail.vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 

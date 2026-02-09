@@ -41,8 +41,8 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from 'vue';
-import { useProfileStore } from '../../stores/profile';
-import Notifier from "@/components/NotifierComponent.vue";
+import Notifier from "@/components/common/NotifierComponent.vue";
+import { useProfileStore } from '@/stores/profile';
 
 const profileStore = useProfileStore();
 const profile = computed(() => profileStore.profile);

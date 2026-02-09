@@ -32,7 +32,7 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
-import RoutineDetail from '@/components/RoutineDetail.vue';
+import RoutineDetail from '@/components/workout/RoutineDetail.vue';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute();

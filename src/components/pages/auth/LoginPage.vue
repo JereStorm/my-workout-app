@@ -1,10 +1,9 @@
 <template>
-    <main class="w-100 h-100 mb-auto mt-auto mx-auto d-flex justify-content-center align-items-center">
-        <transition name="fade-slide-register" mode="out-in">
-            <form v-show="showForm" class="form-register p-4 rounded shadow" @submit.prevent="register">
+    <main class="w-100 h-100 mb-auto mt-auto mx-auto mt d-flex justify-content-center align-items-center">
+        <transition name="fade-slide-login" mode="out-in">
+            <form v-show="showForm" class="form-login p-4 rounded shadow " @submit.prevent="login">
                 <div class="d-flex justify-content-between">
-                    <h2 class="text-center ms-3 mb-4 fw-bold text-light">Registro <i class="bi bi-person-add"></i>
-                    </h2>
+                    <h2 class="text-center ms-3 mb-4 fw-bold text-light">Login <i class="bi bi-person-check"></i></h2>
                     <router-link class="text-decoration-none" to="/">
                         <button type="button" class="btn-exit btn btn-outline-light"><i class="bi bi-x"></i></button>
                     </router-link>
@@ -17,25 +16,16 @@
                 <div class="mb-3 text-start">
                     <label for="inputPassword" class="form-label text-light">Contraseña</label>
                     <input required v-model="password" type="password" class="form-control text-light"
-                        id="inputPassword" placeholder="**********">
+                        id="inputPassword" placeholder="*********">
                 </div>
-                <div class="mb-3 text-start">
-                    <label for="confirmPassword" class="form-label text-light">Confirmar contraseña</label>
-                    <input required v-model="confirmPassword" type="password" class="form-control text-light"
-                        id="confirmPassword" placeholder="**********">
-                </div>
-
-
-                <button class="btn-register btn w-100 py-2 text-light" type="submit">
-                    Registrarse <i class="bi bi-send-fill"></i>
-                </button>
-
+                <button class="btn-login btn w-100 py-2 text-light" type="submit">Iniciar Sesion <i
+                        class="bi bi-send-fill"></i></button>
                 <!-- Notificador de éxito/error -->
                 <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type"
                     @after-leave="clearNotification" />
                 <p class="text-start mt-3 text-light">
-                    ¿Ya tenes tu cuenta?
-                    <router-link to="/login" class="login">Inicia sesion</router-link>
+                    ¿Todavia no tenes una cuenta?
+                    <router-link to="/register">Registrate</router-link>
                 </p>
             </form>
         </transition>
@@ -44,66 +34,58 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useUserStore } from "@/stores/user";
-import Notifier from "@/components/NotifierComponent.vue"; // Importamos el notificador
+import Notifier from "@/components/common/NotifierComponent.vue";
+import { useUserStore } from '@/stores/user';
 
 const email = ref("");
 const password = ref("");
-const confirmPassword = ref("");
-
 const showForm = ref(false);
-const showNotifier = ref(false); // Controla la visibilidad del Notifier
+const showNotifier = ref(false);
 const notification = ref({ message: "", type: "" });
 
 const userStore = useUserStore();
 
-const register = async () => {
+const login = async () => {
     notification.value = { message: "", type: "" };
     showNotifier.value = false;
 
-    // Validación local de confirmación de contraseña
-    if (password.value !== confirmPassword.value) {
-        confirmPassword.value = "";
-        notification.value = { message: "Las contraseñas no coinciden.", type: "error" };
-        showNotifier.value = true;
-        return;
-    }
-
     try {
-        const response = await userStore.register(email.value, password.value);
+        const response = await userStore.login(email.value, password.value);
 
         if (response.ok) {
-            notification.value = { message: response.message, type: "success" };
+            notification.value = { message: "¡Inicio de sesión exitoso!", type: "success" };
+            showNotifier.value = true;
+
             setTimeout(() => {
                 showNotifier.value = false;
                 userStore.$router.push('/dashboard');
             }, 2000);
         } else {
+
             notification.value = { message: response.message, type: "error" };
+            showNotifier.value = true;
+
             setTimeout(() => {
                 showNotifier.value = false;
             }, 2000);
         }
+
     } catch (error) {
         console.error("Unexpected error:", error);
         notification.value = { message: "Error inesperado. Intentá de nuevo.", type: "error" };
+        showNotifier.value = true;
     }
-
-    showNotifier.value = true;
-
 };
 
-
-// Se ejecuta cuando la animación de salida termina
 const clearNotification = () => {
     notification.value = { message: "", type: "" };
 };
-
 
 onMounted(() => {
     showForm.value = true;
 });
 </script>
+
 
 <style>
 main {
@@ -119,7 +101,6 @@ main {
     width: 22px;
     background-color: #800020;
     color: #ffffff;
-
 }
 
 .btn-exit i {
@@ -137,11 +118,21 @@ main {
     /* sombra rojiza suave */
 }
 
-.form-register label {
+.form-login {
+    max-width: 400px;
+    width: 92%;
+    /* background: rgba(255, 255, 255, 0.1); */
+    /* Fondo semi-transparente */
+    backdrop-filter: blur(12px);
+    /* Efecto blur */
+    padding: 20px;
+}
+
+.form-login label {
     margin-bottom: 5px;
 }
 
-.form-register input {
+.form-login input {
     width: 300px;
     height: 30px;
     border-radius: 3px;
@@ -151,40 +142,34 @@ main {
     color: #f5f5f5 !important;
 }
 
-.form-register input::placeholder {
+.form-login input::placeholder {
     color: #919191 !important;
 }
 
 /* Animación de entrada */
-.fade-slide-register-enter-active {
+.fade-slide-login-enter-active {
     transition: opacity 1s ease, transform 1s ease-in-out;
 }
 
-.fade-slide-register-enter-from {
+.fade-slide-login-enter-from {
     opacity: 0;
-    transform: translateX(60vh);
+    transform: translateX(-60vh);
 }
 
-/* Estilos del formulario */
-.form-register {
-    max-width: 400px;
-    width: 92%;
-    backdrop-filter: blur(12px);
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.form-register .btn-register {
-    border: 1px solid #484848;
+.form-login .btn-login {
     background-color: #800020;
+    border: 1px solid #484848;
+
 }
 
-.form-register .btn-register:hover {
-    background-color: #282828;
+.form-login .btn-login:hover {
+    background-color: #313131;
 }
+
 
 @media only screen and (min-width: 768px) {
-    .form-register {
+
+    .form-login {
         width: 100%;
     }
 

@@ -46,7 +46,7 @@ import { computed } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import RoutineDetail from '@/components/RoutineDetail.vue';
+import RoutineDetail from '@/components/workout/RoutineDetail.vue';
 
 // Acceso al store de perfil
 const profileStore = useProfileStore()

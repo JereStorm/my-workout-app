@@ -18,32 +18,30 @@
                     </div>
 
                 </div>
-                <hr class="mb-2" />
                 <ul class="nav text-center nav-pills flex-column mb-auto">
                     <li class="nav-item">
                         <router-link :to="{ name: 'MyWorkouts' }"
-                            class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
+                            class="nav-link d-flex  justify-content-start gap-2 align-items-center px-1 text-decoration-none">
                             <i class="bi bi-clipboard-check"></i> Mis Rutinas
                         </router-link>
                     </li>
-                    <hr class="my-2" />
+
                     <li class="nav-item">
                         <router-link :to="{ name: 'DoneWorkouts' }"
-                            class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
+                            class="nav-link d-flex  justify-content-start gap-2 align-items-center px-1 text-decoration-none">
                             <i class="bi bi-book"></i> Mis Entrenos
                         </router-link>
                     </li>
-                    <hr class="my-2" />
+
                     <li class="nav-item">
                         <router-link :to="{ name: 'MyProfile' }"
-                            class="nav-link d-flex flex-column justify-content-center align-items-center px-1 text-decoration-none">
+                            class="nav-link d-flex  justify-content-start gap-2 align-items-center px-1 text-decoration-none">
                             <i class="bi bi-person-circle"></i> Mi Perfil
                         </router-link>
                     </li>
-                    <hr class="my-2" />
-                    <li class="nav-item d-flex justify-content-center">
-                        <button
-                            class="nav-link d-flex flex-column justify-content-center align-items-center text-light px-1"
+
+                    <li class="nav-item d-flex justify-content-start gap-2 ">
+                        <button class="nav-link d-flex  justify-content-start gap-2 align-items-center text-light px-1"
                             @click.prevent="logout">
                             <i class="bi bi-box-arrow-right"></i> Cerrar Sesion
                         </button>
