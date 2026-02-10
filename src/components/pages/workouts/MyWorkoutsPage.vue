@@ -408,7 +408,7 @@ const renderDifficulty = (dificultad) =>
 @media only screen and (min-width: 768px) {
     .my-workouts {
         padding-top: 0px;
-        padding-left: 160px;
+        padding-left: 240px;
         padding-right: 0px;
         width: 100%;
         display: flex;

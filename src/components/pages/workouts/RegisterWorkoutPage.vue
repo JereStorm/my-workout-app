@@ -412,7 +412,7 @@ const handleCancelar = () => {
 
 @media only screen and (min-width: 768px) {
     .register-workout-container {
-        padding-left: 160px;
+        padding-left: 240px;
         padding-right: 0px;
         padding-top: 0px;
         width: 100%;

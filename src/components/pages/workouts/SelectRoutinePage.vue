@@ -82,7 +82,7 @@ const empezarEntreno = (routineId) => {
 
 @media only screen and (min-width: 768px) {
     .contenedor {
-        padding-left: 160px;
+        padding-left: 240px;
         padding-top: 0px;
         padding-right: 0px;
     }

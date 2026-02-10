@@ -591,7 +591,7 @@ select {
     .add-routine-form {
         width: 100%;
         padding: 20px 0px 20px 20px;
-        padding-left: 160px;
+        padding-left: 240px;
 
     }
 

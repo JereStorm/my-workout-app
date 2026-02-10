@@ -160,7 +160,7 @@ const registrarEntrenamiento = (rutina) => {
 
 @media (min-width: 768px) {
     .routine-detail-page {
-        padding-left: 160px;
+        padding-left: 240px;
         padding-top: 20px;
     }
 

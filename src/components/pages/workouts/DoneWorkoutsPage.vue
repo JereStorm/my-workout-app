@@ -203,7 +203,7 @@ async function eliminarWorkout(workout) {
 
 @media only screen and (min-width: 768px) {
     .done-workouts-page {
-        padding-left: 160px;
+        padding-left: 240px;
         padding-top: 0px;
         padding-right: 0px;
     }
