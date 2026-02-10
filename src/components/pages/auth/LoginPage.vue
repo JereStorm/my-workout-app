@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import Notifier from "@/components/common/NotifierComponent.vue";
+import Notifier from "@/components/common/Notifier.vue";
 import { useUserStore } from '@/stores/user';
 
 const email = ref("");
