@@ -3,6 +3,7 @@ import { db } from '../firebaseConfig';
 import {
     collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc, orderBy
 } from 'firebase/firestore';
+import { calculateStreaks, countWorkoutBlocks, LEVEL_THRESHOLDS, levelFromVolume, sumWorkoutVolume } from '../utils/workoutSats';
 
 /**
  * Define el store de Pinia para la información del perfil del usuario.
@@ -18,6 +19,18 @@ export const useProfileStore = defineStore('profile', {
             nickname: '',
             routines: [],
             workouts: [],
+            level: 1,
+        },
+        stats: {
+            totalWorkouts: 0,
+            totalVolume: 0,
+            totalBlocks: 0,
+            avgVolume: 0,
+            levelProgress: 0,
+            nextLevelVolume: LEVEL_THRESHOLDS[1],
+            currentStreak: 0,
+            bestStreak: 0,
+            level: 1
         },
         isLoading: false
     }),
@@ -27,6 +40,79 @@ export const useProfileStore = defineStore('profile', {
       * y realizar operaciones asíncronas, como interactuar con Firebase.
       */
     actions: {
+        /**
+            * Calcula las estadísticas del usuario basándose en sus workouts.
+            * Devuelve un objeto con las estadísticas calculadas.
+            * Si el usuario no tiene workouts, devuelve estadísticas con valores por defecto.
+            * Las estadísticas incluyen:
+            * - totalWorkouts: número total de workouts realizados
+            * - totalVolume: suma total de repeticiones realizadas en todos los workouts
+            * - totalBlocks: número total de bloques de entrenamiento realizados
+            * - avgVolume: volumen promedio por workout
+            * - currentStreak: racha actual de días consecutivos con workouts
+            * - bestStreak: mejor racha de días consecutivos con workouts
+            * - level: nivel del usuario basado en el volumen total
+        */
+        async getSats() {
+            // Si no hay workouts, devolvemos estadísticas con valores por defecto
+            const workouts = this.profile.workouts || []
+            console.log(this.profile)
+            if (!workouts.length) {
+                return {
+                    totalWorkouts: 0,
+                    totalVolume: 0,
+                    totalBlocks: 0,
+                    avgVolume: 0,
+                    levelProgress: 0,
+                    nextLevelVolume: LEVEL_THRESHOLDS[1],
+                    currentStreak: 0,
+                    bestStreak: 0,
+                    level: 1
+                }
+            }
+
+            // Calculamos las estadísticas basándonos en los workouts del usuario
+            const totalWorkouts = workouts.length
+            const totalVolume = workouts.reduce(
+                (sum, w) => sum + sumWorkoutVolume(w),
+                0
+            )
+
+
+            const totalBlocks = workouts.reduce(
+                (sum, w) => sum + countWorkoutBlocks(w),
+                0
+            )
+
+            const avgVolume = Math.round(totalVolume / totalWorkouts)
+
+            const { current, best } = calculateStreaks(workouts)
+
+            const level = levelFromVolume(totalVolume)
+
+            const prevLevelVolume = LEVEL_THRESHOLDS[level - 1] ?? 0
+            const nextLevelVolume = LEVEL_THRESHOLDS[level] ?? 100000
+
+            let levelProgress =
+                (totalVolume - prevLevelVolume) /
+                (nextLevelVolume - prevLevelVolume)
+
+            levelProgress = Math.min(1, Math.max(0, levelProgress))
+
+
+            this.stats = {
+                totalWorkouts,
+                totalVolume,
+                totalBlocks,
+                avgVolume,
+                levelProgress,
+                nextLevelVolume,
+                currentStreak: current,
+                bestStreak: best,
+                level
+            }
+
+        },
         /**
          * Carga el perfil del usuario desde Firestore utilizando su UID.
          * Si el perfil no existe, crea uno nuevo con el UID y el email proporcionados.
@@ -49,23 +135,28 @@ export const useProfileStore = defineStore('profile', {
                         id: uid,
                         email: data.email,
                         nickname: data.nickname || '',
+                        level: data.level || 0,
                         routines: [],
-                        workouts: []
+                        workouts: [],
+                        stats: {}
                     };
                 } else {
-                    const initialProfile = { idUser: uid, email, nickname: '' };
+                    const initialProfile = { idUser: uid, email, nickname: '', level: 0 };
                     await setDoc(profileRef, initialProfile);
                     this.profile = {
                         id: uid,
                         email,
                         nickname: '',
                         routines: [],
-                        workouts: []
+                        workouts: [],
+                        level: 0,
+                        stats: {}
                     };
                 }
 
                 await this.getRutinas();
                 await this.loadWorkouts();
+                await this.getSats();
 
             } catch (error) {
                 console.error('Error al cargar o crear el perfil:', error);
@@ -381,5 +472,6 @@ export const useProfileStore = defineStore('profile', {
         getUserRoutines: (state) => state.profile.routines,
 
         getWorkouts: (state) => state.profile.workouts,
+
     },
 });

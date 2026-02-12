@@ -33,7 +33,6 @@ onMounted(() => {
     position: fixed;
     top: 0px;
     left: 0px;
-    height: 100%;
 }
 
 .container-dashboard {

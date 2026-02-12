@@ -2,34 +2,31 @@
     <div class="d-flex">
         <!-- 🔹 Sidebar -->
         <transition name="slide-fade">
-            <div v-if="!isMobile || isSidebarVisible" class="sidebar-profile flex-column flex-shrink-0 px-1 "
+            <div v-if="!isMobile || isSidebarVisible" class="sidebar-profile d-flex flex-column flex-shrink-0 px-1"
                 :class="{ 'mobile-mode': isMobile }">
-                <div class="d-flex flex-column align-items-center my-3">
+                <user-profile-header :nickname="profile.nickname" :photoURL="profile.photoURL" :level="stats.level" />
+                <hr>
+                <ul class="nav text-center nav-pills d-flex flex-column flex-grow-1 mt-2">
 
-                    <div class="username-container text-center font-weight-medium">
-                        <p class="ellipsis my-0" :title="profile.nickname">
-                            <span class="h5">#{{ profile.nickname || 'Usuario' }}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <ul class="nav mt-5 text-center nav-pills flex-column">
                     <li v-for="item in menuItems" :key="item.name" class="nav-item">
                         <router-link :to="{ name: item.name }"
                             class="nav-link d-flex justify-content-start gap-2 align-items-center px-1 text-start text-decoration-none">
                             <i :class="`bi ${item.icon} color-principal px-3 py-1`"></i>
-                            {{ item.label }}
+                            <span class="mb-1">{{ item.label }}</span>
                         </router-link>
                     </li>
+                    <hr>
 
-                    <li class="nav-item mt-auto">
+                    <li class="nav-item mt-auto" :class="isMobile ? 'mb-5' : ''">
+
                         <button
                             class="nav-link nav-link-danger d-flex justify-content-start gap-2 align-items-center text-danger px-1"
                             @click="logout">
                             <i class="bi bi-box-arrow-right text-danger px-3 py-1"></i>
-                            Cerrar Sesión
+                            <span class="mb-1">Cerrar Sesión</span>
                         </button>
                     </li>
+
                 </ul>
             </div>
         </transition>
@@ -41,7 +38,7 @@
 
         <!-- 🔹 Header mobile -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
-            <router-link :to="{ name: 'MyWorkouts' }" class="h2 mb-0 d-flex gap-2 router-link-active">
+            <router-link :to="{ name: 'MyWorkouts' }" class="h2 mb-0 d-flex gap-2 bg-transparent router-link-active">
                 <i class="bi bi-house"></i>
             </router-link>
 
@@ -54,17 +51,20 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useProfileStore } from '@/stores/profile'
 import { useUserStore } from '@/stores/user'
 import { SIDE_MENU_ITEMS } from './sideMenu.config'
+import UserProfileHeader from './UserProfileHeader.vue'
 
 const router = useRouter()
 const profileStore = useProfileStore()
 const userStore = useUserStore()
 const { profile } = storeToRefs(profileStore)
+const stats = computed(() => profileStore.stats)
+
 
 /* ----------------- State ----------------- */
 const isSidebarVisible = ref(false)
@@ -161,7 +161,7 @@ onUnmounted(() => {
     min-width: 200px;
     width: 80%;
     max-width: 400px;
-    height: 100vh;
+    height: 100%;
     background-color: #121414;
     padding: 1rem;
     overflow-y: auto;
