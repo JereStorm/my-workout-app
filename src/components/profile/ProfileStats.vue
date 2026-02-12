@@ -66,6 +66,14 @@ const progressStyle = computed(() => ({
 .stat-card {
     background: #121414;
     border: 1px solid rgba(255, 255, 255, .05);
+    border-radius: 16px;
+    transition: all .25s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 255, 255, .25);
+    box-shadow: 0 10px 25px rgba(0, 255, 255, .08);
 }
 
 .stat-label {

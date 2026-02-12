@@ -1,5 +1,8 @@
 <template>
     <div class="text-center mb-4">
+        <!-- Titulo de la page -->
+
+        <h1 class="mb-3 mb-md-5 h5 space-line-2 text-uppercase titulo">Perfil del Atleta</h1>
 
         <!-- Avatar -->
         <div class="position-relative d-inline-block mb-3">
@@ -9,7 +12,7 @@
         </div>
 
         <!-- Estado -->
-        <div class="text-uppercase small text-info opacity-75 mb-1">
+        <div class="text-uppercase small text-info opacity-75 mb-3 subtitulo">
             Usuario Activo
         </div>
 
@@ -109,12 +112,20 @@ const levelLabel = computed(() => {
 
 .nickname-input {
     font-size: 1.8rem;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, .2);
+    border: 1px solid rgba(255, 255, 255, .2);
     background: transparent;
+    color: #707070;
 }
 
 .nickname-input:focus {
     color: white;
+}
+
+.subtitulo {
+    letter-spacing: 6px;
+}
+
+.titulo {
+    letter-spacing: 4px;
 }
 </style>

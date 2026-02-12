@@ -1,7 +1,6 @@
 <template>
     <div class="contenedor mt-md-5">
 
-        <h1 class="mb-3 mb-md-5">Perfil del Atleta</h1>
 
         <ProfileHeader :nickname="profile.nickname" :level="stats.level" @update:nickname="guardarNickname" />
 
