@@ -276,3 +276,7 @@ form {
 .bg-block {
   background-color: #1e1e1e8a;
 }
+
+.titulo {
+  letter-spacing: 4px;
+}

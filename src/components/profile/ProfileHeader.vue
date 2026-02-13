@@ -2,7 +2,7 @@
     <div class="text-center mb-4">
         <!-- Titulo de la page -->
 
-        <h1 class="mb-3 mb-md-5 h5 space-line-2 text-uppercase titulo">Perfil del Atleta</h1>
+        <h1 class="mb-3 mb-md-5 h5 text-uppercase titulo">Perfil del Atleta</h1>
 
         <!-- Avatar -->
         <div class="position-relative d-inline-block mb-3">

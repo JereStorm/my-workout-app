@@ -1,62 +1,97 @@
 <template>
-    <div class="done-workouts-page">
+    <div class="done-page">
 
-        <h1 class="mt-5 my-md-5 mb-3">Mis Entrenos <i class="bi bi-book"></i></h1>
+        <!-- HEADER -->
+        <div
+            class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-between align-items-center">
+            <h1 class="h5 mb-0 text-uppercase titulo">Linea de tiempo</h1>
 
-        <div class="text-center mb-3">
-            <RouterLink to="/dashboard/select-routine"
-                class="btn btn-outline-success px-5 d-flex gap-2 justify-content-center align-items-baseline"
-                id="add-workout">
-                <i class="bi bi-plus-circle-fill"></i> Agregar Entreno
+            <RouterLink to="/dashboard/select-routine" class="btn btn-outline-info rounded-circle add-btn">
+                <i class="bi bi-plus-lg text-light"></i>
             </RouterLink>
         </div>
 
+
+        <!-- LOADER -->
         <div v-if="isLoading" class="loader"></div>
 
-        <!-- LIST OF TRAINS -->
-        <div v-else class="info-container">
-            <div class="workouts-container">
-                <div class="timeline position-relative ps-4 mt-5">
-                    <div v-for="workout in workouts" :key="workout.id" class="timeline-item mb-4 position-relative">
-                        <!-- Punto del timeline -->
-                        <div class="timeline-dot position-absolute top-0 start-0 translate-middle">
-                            <h6 class="text-light mt-2">{{ formatDate(workout.date) }}</h6>
 
+        <!-- TIMELINE -->
+        <div v-else class="timeline-wrapper">
+
+            <template v-for="[month, monthWorkouts] in workoutsByMonth" :key="month">
+
+                <!-- MONTH HEADER -->
+                <div class="month-separator">
+                    <span>{{ month }}</span>
+                    <div class="line"></div>
+                </div>
+
+                <!-- ITEMS -->
+                <div v-for="workout in monthWorkouts" :key="workout.id" class="timeline-item-modern ps-1">
+
+                    <!-- DOT -->
+                    <div class="timeline-dot-modern"></div>
+
+                    <!-- CARD -->
+                    <div class="timeline-card">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <h5 class="fw-bold mb-1">
+                                {{ workout.dataRoutine.nombre }}
+                            </h5>
+
+                            <span class="badge difficulty-badge">
+                                {{ workout.dataRoutine.dificultad }}
+                            </span>
                         </div>
 
-                        <!-- Contenido -->
-                        <div class="timeline-content px-1 pt-2 pb-3">
-                            <div class="d-flex w-100 justify-content-end align-items-center">
+                        <div class="timeline-date">
+                            {{ formatDate(workout.date) }}
+                        </div>
 
+                        <div class="timeline-stats">
 
-                                <span class="text-light">{{
-                                    difficultyIcons(workout.dataRoutine.dificultad) }} ({{
-                                        workout.dataRoutine.dificultad }})</span>
-                            </div>
-                            <h5 class="fw-semibold mb-1">{{ workout.dataRoutine.nombre }}</h5>
-
-                            <p class="mt-2 mb-1 text-secondary small">
-                                {{ getSummary(workout) }}
-                            </p>
-
-                            <span v-if="workout.notes" class="text-info fst-italic small">
-                                "{{ workout.notes }}"
+                            <span>
+                                <i class="bi bi-layers"></i>
+                                {{ workout.dataRoutine.bloques.length }} bloques
                             </span>
 
-                            <button v-on:click="redirect(workout)" class="btn">
-                                <i class="bi bi-chevron-double-down"></i>
-                            </button>
+                            <span>
+                                <i class="bi bi-bar-chart"></i>
+                                {{ totalSeries(workout) }} series
+                            </span>
+
+                            <span class="ms-auto text-info fw-bold">
+                                <i class="bi bi-clock"></i>
+                                {{ estimatedTime(workout) }}
+                            </span>
+
                         </div>
+
+                        <p class="timeline-summary">
+                            {{ getSummary(workout) }}
+                        </p>
+
+                        <button class="btn btn-sm btn-outline-info mt-2" @click="redirect(workout)">
+                            <small><i class="bi bi-chevron-double-down text-light px-2"></i></small>
+                        </button>
+
                     </div>
                 </div>
-            </div>
-            <div class="mt-5" v-if="!isLoading && workouts.length === 0">
-                <h5>No hay entrenos guardadas aún.</h5>
+
+            </template>
+
+            <!-- EMPTY -->
+            <div v-if="!workouts.length" class="empty-state">
+                <i class="bi bi-clock-history"></i>
+                <p>Tu progreso empieza con la primera repetición.</p>
             </div>
         </div>
-
     </div>
 </template>
+
 
 <script setup>
 
@@ -159,162 +194,180 @@ async function eliminarWorkout(workout) {
 
     isLoading.value = false;
 }
+const workoutsByMonth = computed(() => {
+    const groups = {}
+
+    workouts.value.forEach(w => {
+        const d = new Date(w.date)
+        const key = d.toLocaleDateString('es-AR', {
+            month: 'long',
+            year: 'numeric'
+        })
+
+        if (!groups[key]) groups[key] = []
+        groups[key].push(w)
+    })
+
+    return Object.entries(groups)
+})
+function totalSeries(workout) {
+    console.log(workout)
+    return workout.dataRoutine.bloques
+        .reduce((acc, b) => acc + b.series, 0)
+}
+
+function estimatedTime(workout) {
+    const mins = totalSeries(workout) * 2
+    return `${mins}m`
+}
 
 </script>
 
 <style scoped>
-.done-workouts-page {
+.done-page {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    padding-top: 50px;
-    margin-bottom: auto;
-}
-
-.info-container {
-    margin-top: 1rem;
-    margin-bottom: auto;
+    padding: 1.5rem;
+    max-width: 700px;
     width: 100%;
-    padding: 0px 10px 0px 0px;
+    margin: auto;
 }
 
-.link-train {
-    width: 100%;
-    text-align: center;
+/* HEADER */
+.page-header {
+    position: sticky;
+    top: 0;
+    padding: 10px 0 20px;
+    backdrop-filter: blur(12px);
+    z-index: 5;
 }
 
-.card-workout {
-    border: 1px solid grey;
-    width: 80%;
-    min-width: 300px;
-    border-left: 0px;
-    border-right: 0px;
-    border-top: 0px;
-    border-radius: 3px;
-    background-color: rgba(32, 32, 32, 0.493);
-}
-
-.workouts-container {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-}
-
-@media only screen and (min-width: 768px) {
-    .done-workouts-page {
-        padding-left: 240px;
-        padding-top: 0px;
-        padding-right: 0px;
-    }
-
-    .info-container {
-        width: 90%;
-    }
-
-    .card-workout {
-        width: 45%;
-        min-width: 450px;
-    }
-
-}
-
-.fade-item-enter-active,
-.fade-item-leave-active {
-    transition: all 0.4s ease;
-}
-
-.fade-item-enter-from {
-    opacity: 0;
-    transform: translateY(10px);
-}
-
-.fade-item-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-}
-
-.dropdown-menu-container {
-    position: relative;
+.add-btn {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.dropdown-menu-container>span {
-    cursor: pointer;
-    font-size: 20px;
-    padding: 5px;
-    transition: color 0.3s;
+/* TIMELINE BASE */
+.timeline-wrapper {
+    position: relative;
+    padding-left: 30px;
 }
 
-.dropdown-menu-container>span:hover {
-    color: aqua;
-}
-
-.mini-menu {
+.timeline-wrapper::before {
+    content: "";
     position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: #1f1f1f;
-    border: 1px solid #555;
-    border-radius: 6px;
-    list-style: none;
-    padding: 5px 0;
-    z-index: 550;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(0, 255, 255, .15);
 }
 
-.mini-menu li {
-    padding: 6px 15px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-size: 15px;
+/* MONTH */
+.month-separator {
     display: flex;
     align-items: center;
-    border: 0px;
-    gap: 8px;
-    transition: all 0.5s ease;
+    gap: 12px;
+    margin: 30px 0 20px;
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: cyan;
+    font-weight: 700;
 }
 
-.mini-menu li:hover {
-    color: aqua;
+.month-separator .line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, .08);
 }
 
-.timeline {
-    border-left: 2px solid aqua;
+/* ITEM */
+.timeline-item-modern {
+    position: relative;
+    margin-bottom: 28px;
 }
 
-.timeline-item {
-    padding-left: 1rem;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+/* DOT */
+.timeline-dot-modern {
+    position: absolute;
+    left: -23px;
+    top: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: cyan;
+    box-shadow: 0 0 12px cyan;
 }
 
-.timeline-dot {
-    padding-left: 5px;
-    width: 12px;
-    height: 12px;
-    left: -6px;
+/* CARD */
+.timeline-card {
+    background: #121414;
+    border: 1px solid rgba(255, 255, 255, .05);
+    border-radius: 12px;
+    padding: 14px 16px;
 }
 
-.timeline-content {
-    background-color: transparent;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+/* DATE */
+.timeline-date {
+    font-size: .85rem;
+    opacity: .6;
+}
+
+/* STATS */
+.timeline-stats {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: .8rem;
+    opacity: .8;
 }
 
-.timeline-content .btn {
-    border: 1px solid rgb(0, 143, 143);
-    width: 50px;
-    transition: all .2s ease;
+/* SUMMARY */
+.timeline-summary {
+    margin-top: 8px;
+    font-size: .85rem;
+    opacity: .7;
 }
 
-.timeline-content .btn:hover {
-    transform: scale(1.1);
-    border: 1px solid aqua;
+/* BADGE */
+.difficulty-badge {
+    background: rgba(0, 255, 255, .15);
+    color: cyan;
+}
+
+/* EMPTY */
+.empty-state {
+    text-align: center;
+    margin-top: 60px;
+    opacity: .5;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+    .done-page {
+        padding-left: 220px;
+    }
+
+    .timeline-wrapper {
+        padding-left: 19px;
+    }
+
+    .timeline-wrapper::before {
+        left: 5px;
+    }
+
+    .timeline-dot-modern {
+        left: -18px;
+        top: 6px;
+    }
 }
 </style>
