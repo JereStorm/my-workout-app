@@ -1,6 +1,10 @@
 <template>
-    <div class="contenedor mt-md-5">
 
+
+    <div class="contenedor mt-md-5">
+        <div v-if="profileStore.isLoading" class="loader">
+
+        </div>
 
         <ProfileHeader :nickname="profile.nickname" :level="stats.level" @update:nickname="guardarNickname" />
 
@@ -21,7 +25,7 @@ import ProfileStats from '../../profile/ProfileStats.vue'
 const profileStore = useProfileStore()
 
 const profile = computed(() => profileStore.profile)
-const stats = computed(() => profileStore.stats)
+const stats = computed(() => profileStore.userStats)
 
 const showNotifier = ref(false)
 const notification = ref({ message: '', type: 'success' })
@@ -35,10 +39,6 @@ const guardarNickname = async (newNickname) => {
     try {
         await profileStore.setNickname(newNickname)
 
-        notification.value = {
-            message: 'Nombre actualizado correctamente',
-            type: 'success'
-        }
 
     } catch (err) {
         console.error(err)
@@ -48,8 +48,7 @@ const guardarNickname = async (newNickname) => {
         }
     } finally {
         isSaving.value = false
-        showNotifier.value = true
-        setTimeout(() => showNotifier.value = false, 2000)
+
     }
 }
 </script>

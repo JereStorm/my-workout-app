@@ -1,6 +1,6 @@
 <template>
     <transition name="fade-slide" mode="out-in" @after-leave="$emit('after-leave')">
-        <div v-show="visible" class="notifier rounded" :class="typeClass">
+        <div v-show="isVisible" class="notifier rounded" :class="typeClass">
 
             <!-- ICONO -->
             <div class="notifier-icon me-3">
@@ -28,10 +28,11 @@ const props = defineProps({
     type: {
         type: String,
         default: 'success'
-    }
+    },
+    visible: Boolean
 })
 
-const visible = computed(() => props.title || props.message)
+const isVisible = computed(() => props.visible && props.message)
 
 const typeClass = computed(() => ({
     'notifier-success': props.type === 'success',

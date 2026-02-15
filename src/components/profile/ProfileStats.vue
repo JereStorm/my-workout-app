@@ -3,7 +3,7 @@
 
         <div class="row g-3 mx-auto">
 
-            <StatCard icon="bi-grid" label="Bloques" :value="stats?.totalBlocks || 0" extra="Totales" />
+            <StatCard icon="bi-grid" label="Entrenos" :value="stats?.totalWorkouts || 0" extra="Totales" />
 
             <StatCard icon="bi-fire" label="Racha" :value="stats?.currentStreak || 0" extra="Días activos" />
 

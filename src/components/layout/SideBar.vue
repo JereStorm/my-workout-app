@@ -63,7 +63,7 @@ const router = useRouter()
 const profileStore = useProfileStore()
 const userStore = useUserStore()
 const { profile } = storeToRefs(profileStore)
-const stats = computed(() => profileStore.stats)
+const stats = computed(() => profileStore.userStats)
 
 
 /* ----------------- State ----------------- */

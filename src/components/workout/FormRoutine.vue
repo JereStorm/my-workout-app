@@ -327,10 +327,10 @@ const guardarRutina = async () => {
     try {
         if (nuevaRutina.id) {
             // Edición de rutina existente
-            await profileStore.updateRutina({ ...nuevaRutina });
+            await profileStore.updateRoutine({ ...nuevaRutina });
         } else {
             // Creación de rutina nueva
-            await profileStore.createRutinaFirebase({ ...nuevaRutina });
+            await profileStore.createRoutine({ ...nuevaRutina });
         }
         isLoadingSave.value = false;
         router.push({ name: "MyWorkouts" });

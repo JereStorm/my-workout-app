@@ -58,3 +58,12 @@ export function calculateStreaks(workouts) {
 
     return { current, best }
 }
+
+
+export const DIFFICULTY_ORDER = {
+    "Muy facil": 1,
+    "Facil": 2,
+    "Intermedia": 3,
+    "Dificil": 4,
+    "Muy dificil": 5
+}

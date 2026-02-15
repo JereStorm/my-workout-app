@@ -11,7 +11,7 @@
             <header class="workout-meta">
                 <div class="meta-row">
                     <span class="label">Fecha:</span>
-                    <span class="value">{{ formatDate(workout.createdAt) }}</span>
+                    <span class="value">{{ formatDate(workout.date) }}</span>
                 </div>
 
                 <div class="meta-row">
@@ -84,9 +84,12 @@
                         </div>
                     </article>
                 </section>
-
                 <hr />
+
             </section>
+            <button class="btn btn-danger" @click.stop="deleteWorkout()">
+                <i class="bi bi-trash3"></i>
+            </button>
         </section>
     </div>
 </template>
@@ -108,6 +111,18 @@ const workoutId = route.query.id;
 // estado
 const workout = ref(null);
 const { isLoading } = storeToRefs(profileStore);
+
+const deleteWorkout = async () => {
+    if (!confirm('¿Confirma que desea eliminar este entrenamiento?')) return;
+
+    try {
+        await profileStore.deleteWorkout(workoutId);
+    } catch (err) {
+        console.error('Error al eliminar workout:', err);
+    } finally {
+        router.push({ name: 'DoneWorkouts' });
+    }
+}
 
 const formatDate = (iso) => {
     const d = new Date(iso);
@@ -146,7 +161,7 @@ onMounted(async () => {
 
     try {
         // Primero intento local
-        let w = profileStore.getDoneWorkoutLocal(workoutId);
+        let w = profileStore.getWorkoutLocal(workoutId);
         // Si no estaba en cache, lo traigo de Firestore
         if (!w) {
             w = await profileStore.getDoneWorkout(workoutId);

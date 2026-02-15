@@ -30,7 +30,7 @@
                     :class="{ 'column-layout': rutinasMostradas.length > 0 }">
                     <li v-for="routine in sortedRoutines" :key="routine.id" :ref="el => routineRefs.set(routine.id, el)"
                         class="mb-1 routine-card" :class="{ 'expanded': rutinasMostradas.includes(routine.id) }"
-                        @click="expandirRutina(routine.id)">
+                        @click="showRoutine(routine.id)">
                         <!-- Bloques (esquina superior izquierda) -->
                         <div class="absolute d-flex justify-content-between top-2 left-0 text-sm text-gray-500">
                             <h6 :class="{ 'h5': rutinasMostradas.includes(routine.id) }">{{
@@ -143,7 +143,7 @@ const order = ref('fechaCreacionDesc');
 const rawRoutines = computed(() => profileStore.getUserRoutines);
 
 const toggleFavorito = (rutina) => {
-    profileStore.toggleFavorita(rutina.id, rutina.favorita);
+    profileStore.toggleFavorite(rutina.id, rutina.favorita);
 };
 
 const registrarEntrenamiento = (rutina) => {
@@ -208,23 +208,11 @@ const handleClickOutside = (e) => {
  * Expande o colapsa la vista detallada de una rutina y hace scroll hacia ella.
  * @param {string} rutinaId 
  */
-function expandirRutina(rutinaId) {
+function showRoutine(rutinaId) {
     router.push({
         name: 'DetailRoutine',
         query: { id: rutinaId }
     });
-    // const index = rutinasMostradas.value.indexOf(rutinaId);
-    // if (index !== -1) {
-    //     rutinasMostradas.value.splice(index, 1);
-    // } else {
-    //     rutinasMostradas.value.push(rutinaId);
-    //     nextTick(() => {
-    //         setTimeout(() => {
-    //             const el = routineRefs.value.get(rutinaId);
-    //             el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    //         }, 300);
-    //     });
-    // }
 }
 
 /**
@@ -242,7 +230,7 @@ async function eliminarRutina(rutinaId) {
             rutinasMostradas.value.splice(index, 1);
         }
 
-        await profileStore.deleteRutina(rutinaId);
+        await profileStore.deleteRoutine(rutinaId);
 
     } catch (error) {
         console.log("Error al borrar la rutina.", error);
@@ -273,9 +261,8 @@ async function copiarRutina(rutina) {
     delete copia.id;
     delete copia.fechaCreacion;
     try {
-        const docRef = await profileStore.createRutinaFirebase(copia);
+        const docRef = await profileStore.createRoutine(copia);
         isLocalLoading.value = false;
-        expandirRutina(docRef.id);
     } catch (err) {
         console.error('Error copiando rutina:', err);
         isLocalLoading.value = false;

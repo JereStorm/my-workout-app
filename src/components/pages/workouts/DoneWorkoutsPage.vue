@@ -42,7 +42,8 @@
                                 {{ workout.dataRoutine.nombre }}
                             </h5>
 
-                            <span class="badge difficulty-badge">
+                            <span class="badge difficulty-badge text-uppercase pt-1"
+                                :title="difficultyIcons(workout.dataRoutine.dificultad)">
                                 {{ workout.dataRoutine.dificultad }}
                             </span>
                         </div>
@@ -112,22 +113,6 @@ const { isLoading } = storeToRefs(profileStore);
 // lista de workouts
 const workouts = computed(() => profileStore.profile.workouts || []);
 
-const cardMenuAbierto = ref(null);
-
-/**
- * Observamos el estado cardMenuAbierto y manejamos los listeners
- */
-watch(cardMenuAbierto, (nuevoValor) => {
-    if (nuevoValor !== null) {
-        console.log(workouts.value);
-
-        window.addEventListener('click', handleClickOutside);
-    } else {
-        console.log(workouts.value);
-
-        window.removeEventListener('click', handleClickOutside);
-    }
-});
 
 function difficultyIcons(dificultad) {
     const map = {
@@ -151,19 +136,9 @@ function getSummary(workout) {
     const totalSeries = bloques.reduce((acc, b) => acc + b.series, 0)
     const ejercicios = bloques.flatMap(b => b.ejercicios.map(e => e.nombre))
     const destacados = ejercicios.slice(0, 3).join(', ')
-    return `${bloques.length} bloques • ${totalSeries} series • Ejercicios: ${destacados}${ejercicios.length > 3 ? '...' : ''}`
+    return `Ejercicios: ${destacados}${ejercicios.length > 3 ? '...' : ''}`
 }
 
-/**
- * Maneja el estado del mini menu que se encuentra en las cards version mobile
- * @param e 
- */
-const handleClickOutside = (e) => {
-    const menuElement = document.querySelector('.dropdown-menu-container');
-    if (cardMenuAbierto.value !== null && !menuElement?.contains(e.target)) {
-        cardMenuAbierto.value = null;
-    }
-};
 
 function formatDate(iso) {
     const dias = ['Dom.', 'Lun.', 'Mar.', 'Mié.', 'Jue.', 'Vie.', 'Sáb.'];
@@ -211,7 +186,6 @@ const workoutsByMonth = computed(() => {
     return Object.entries(groups)
 })
 function totalSeries(workout) {
-    console.log(workout)
     return workout.dataRoutine.bloques
         .reduce((acc, b) => acc + b.series, 0)
 }
@@ -305,8 +279,6 @@ function estimatedTime(workout) {
 
 /* CARD */
 .timeline-card {
-    background: #121414;
-    border: 1px solid rgba(255, 255, 255, .05);
     border-radius: 12px;
     padding: 14px 16px;
 }
@@ -337,6 +309,8 @@ function estimatedTime(workout) {
 .difficulty-badge {
     background: rgba(0, 255, 255, .15);
     color: cyan;
+    font-weight: 400;
+    border: 1px solid rgba(0, 255, 255, .2);
 }
 
 /* EMPTY */

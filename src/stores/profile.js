@@ -1,17 +1,15 @@
 import { defineStore } from 'pinia';
-import { db } from '../firebaseConfig';
+import { RoutineService } from '@/services/routineService';
+import { WorkoutService } from '@/services/workoutService';
+import { ProfileService } from '@/services/profileService'; // Asumiendo que moviste setNickname aquí
 import {
-    collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc, updateDoc, orderBy
-} from 'firebase/firestore';
-import { calculateStreaks, countWorkoutBlocks, LEVEL_THRESHOLDS, levelFromVolume, sumWorkoutVolume } from '../utils/workoutSats';
+    calculateStreaks,
+    LEVEL_THRESHOLDS,
+    levelFromVolume,
+    sumWorkoutVolume
+} from '@/utils/workoutStats';
 
-/**
- * Define el store de Pinia para la información del perfil del usuario.
- */
 export const useProfileStore = defineStore('profile', {
-    /**
-     * Estado del store. Contiene la información del perfil del usuario.
-     */
     state: () => ({
         profile: {
             id: null,
@@ -19,459 +17,158 @@ export const useProfileStore = defineStore('profile', {
             nickname: '',
             routines: [],
             workouts: [],
-            level: 1,
         },
-        stats: {
-            totalWorkouts: 0,
-            totalVolume: 0,
-            totalBlocks: 0,
-            avgVolume: 0,
-            levelProgress: 0,
-            nextLevelVolume: LEVEL_THRESHOLDS[1],
-            currentStreak: 0,
-            bestStreak: 0,
-            level: 1
-        },
-        isLoading: false
+        isLoading: false,
     }),
 
-    /**
-      * Acciones del store. Contienen las funciones para modificar el estado
-      * y realizar operaciones asíncronas, como interactuar con Firebase.
-      */
-    actions: {
+    getters: {
         /**
-            * Calcula las estadísticas del usuario basándose en sus workouts.
-            * Devuelve un objeto con las estadísticas calculadas.
-            * Si el usuario no tiene workouts, devuelve estadísticas con valores por defecto.
-            * Las estadísticas incluyen:
-            * - totalWorkouts: número total de workouts realizados
-            * - totalVolume: suma total de repeticiones realizadas en todos los workouts
-            * - totalBlocks: número total de bloques de entrenamiento realizados
-            * - avgVolume: volumen promedio por workout
-            * - currentStreak: racha actual de días consecutivos con workouts
-            * - bestStreak: mejor racha de días consecutivos con workouts
-            * - level: nivel del usuario basado en el volumen total
-        */
-        async getSats() {
-            // Si no hay workouts, devolvemos estadísticas con valores por defecto
-            const workouts = this.profile.workouts || []
-            console.log(this.profile)
-            if (!workouts.length) {
+         * Las estadísticas se calculan automáticamente cada vez que 
+         * el array de workouts cambia. Son reactivas y cacheadas.
+         */
+        userStats: (state) => {
+            const workouts = state.profile.workouts || [];
+            if (workouts.length === 0) {
                 return {
-                    totalWorkouts: 0,
-                    totalVolume: 0,
-                    totalBlocks: 0,
-                    avgVolume: 0,
-                    levelProgress: 0,
-                    nextLevelVolume: LEVEL_THRESHOLDS[1],
-                    currentStreak: 0,
-                    bestStreak: 0,
-                    level: 1
-                }
+                    totalWorkouts: 0, totalVolume: 0, currentStreak: 0,
+                    bestStreak: 0, level: 1, levelProgress: 0,
+                    nextLevelVolume: LEVEL_THRESHOLDS[1]
+                };
             }
 
-            // Calculamos las estadísticas basándonos en los workouts del usuario
-            const totalWorkouts = workouts.length
-            const totalVolume = workouts.reduce(
-                (sum, w) => sum + sumWorkoutVolume(w),
-                0
-            )
+            console.log(workouts)
 
+            const totalVolume = workouts.reduce((sum, w) => sum + sumWorkoutVolume(w), 0);
+            const level = levelFromVolume(totalVolume);
+            const { current, best } = calculateStreaks(workouts);
 
-            const totalBlocks = workouts.reduce(
-                (sum, w) => sum + countWorkoutBlocks(w),
-                0
-            )
+            const prevVol = LEVEL_THRESHOLDS[level - 1] ?? 0;
+            const nextVol = LEVEL_THRESHOLDS[level] ?? 100000;
+            let progress = (totalVolume - prevVol) / (nextVol - prevVol);
+            progress = Math.min(1, Math.max(0, progress));
 
-            const avgVolume = Math.round(totalVolume / totalWorkouts)
-
-            const { current, best } = calculateStreaks(workouts)
-
-            const level = levelFromVolume(totalVolume)
-
-            const prevLevelVolume = LEVEL_THRESHOLDS[level - 1] ?? 0
-            const nextLevelVolume = LEVEL_THRESHOLDS[level] ?? 100000
-
-            let levelProgress =
-                (totalVolume - prevLevelVolume) /
-                (nextLevelVolume - prevLevelVolume)
-
-            levelProgress = Math.min(1, Math.max(0, levelProgress))
-
-
-            this.stats = {
-                totalWorkouts,
+            return {
+                totalWorkouts: workouts.length,
                 totalVolume,
-                totalBlocks,
-                avgVolume,
-                levelProgress,
-                nextLevelVolume,
                 currentStreak: current,
                 bestStreak: best,
-                level
-            }
-
+                level,
+                levelProgress: progress,
+                nextLevelVolume: nextVol
+            };
         },
+
+        getNickname: (state) => state.profile.nickname,
+        getUserRoutines: (state) => state.profile.routines,
+        getWorkouts: (state) => state.profile.workouts,
+    },
+
+    actions: {
         /**
-         * Carga el perfil del usuario desde Firestore utilizando su UID.
-         * Si el perfil no existe, crea uno nuevo con el UID y el email proporcionados.
-         * @param {string} uid - El UID del usuario.
-         * @param {string} email - El email del usuario.
-         * @throws {Error} Si el UID del usuario es inválido.
+         * Carga inicial de todo el perfil.
          */
         async loadProfile(uid, email) {
-            if (!uid) throw new Error('UID de usuario inválido');
-
             this.isLoading = true;
-
-            const profileRef = doc(db, 'profiles', uid);
             try {
-                const snapshot = await getDoc(profileRef);
+                // Ejecutamos peticiones en paralelo para mayor velocidad
+                const [routines, workouts, profileData] = await Promise.all([
+                    RoutineService.fetchByUserId(uid),
+                    WorkoutService.fetchByUserId(uid),
+                    ProfileService.getProfile(uid)
+                ]);
 
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
-                    this.profile = {
-                        id: uid,
-                        email: data.email,
-                        nickname: data.nickname || '',
-                        level: data.level || 0,
-                        routines: [],
-                        workouts: [],
-                        stats: {}
-                    };
-                } else {
-                    const initialProfile = { idUser: uid, email, nickname: '', level: 0 };
-                    await setDoc(profileRef, initialProfile);
-                    this.profile = {
-                        id: uid,
-                        email,
-                        nickname: '',
-                        routines: [],
-                        workouts: [],
-                        level: 0,
-                        stats: {}
-                    };
-                }
-
-                await this.getRutinas();
-                await this.loadWorkouts();
-                await this.getSats();
-
-            } catch (error) {
-                console.error('Error al cargar o crear el perfil:', error);
-                throw error;
+                this.profile = {
+                    id: uid,
+                    email: email,
+                    nickname: profileData?.nickname || '',
+                    routines: routines,
+                    workouts: workouts
+                };
             } finally {
                 this.isLoading = false;
             }
         },
-        /**
-         * Actualiza el nickname del usuario tanto en Firestore como en el estado local.
-         * @param {string} newNickname - El nuevo nickname del usuario.
-         * @throws {Error} Si el usuario no está autenticado (no tiene un ID de perfil).
-         */
+
+        // --- ACCIONES DE NICKNAME ---
         async setNickname(newNickname) {
-            if (!this.profile.id) {
-                throw new Error('Usuario no autenticado');
-            }
-
-            const profileRef = doc(db, 'profiles', this.profile.id);
+            if (!this.profile.id) return;
             try {
-                await updateDoc(profileRef, { nickname: newNickname });
+                await ProfileService.updateNickname(this.profile.id, newNickname);
+
                 this.profile.nickname = newNickname;
-            } catch (error) {
-                console.error('Error al actualizar el nickname:', error);
-                throw error;
-            }
+
+            } catch (error) { /* El errorHandler ya notificó al usuario */ }
         },
 
-        /**
-         * Obtiene todas las rutinas asociadas al usuario autenticado desde Firestore.
-         * Las rutinas se ordenan por fecha de creación de forma descendente.
-         * @throws {Error} Si el usuario no está autenticado.
-         */
-        async getRutinas() {
-            console.log("GetRutinas()")
-            if (!this.profile.id) {
-                throw new Error('Usuario no autenticado');
-            }
-
-            const routinesRef = collection(db, 'routines');
-            const queryConstraints = [
-                where('idUser', '==', this.profile.id),
-                orderBy('fechaCreacion', 'desc') // Ordenar por fecha de creación descendente por defecto
-            ];
-            const q = query(routinesRef, ...queryConstraints);
-
+        // --- ACCIONES DE RUTINAS ---
+        async createRoutine(routineData) {
             try {
-                const snapshot = await getDocs(q);
-                const routines = [];
-                snapshot.forEach((document) => {
-                    routines.push({ id: document.id, ...document.data() });
-                });
-                this.profile.routines = routines;
-                console.log(this.profile.routines)
-            } catch (error) {
-                console.error('Error al obtener las rutinas:', error);
-                throw error;
-            }
+                const payload = { ...routineData, idUser: this.profile.id };
+                const id = await RoutineService.create(payload);
+                this.profile.routines.unshift({ id, ...payload });
+                return id;
+            } catch (error) { throw error; }
         },
-        /**
-         * Obtiene una rutina específica por su ID desde Firestore.
-         * @param {string} idRutina - El ID de la rutina a obtener.
-         * @returns {Promise<object|null>} - Un objeto con los datos de la rutina o null si no se encuentra.
-         */
-        async getRutina(idRutina) {
+
+        async updateRoutine(routine) {
             try {
-                const docRef = doc(db, 'routines', idRutina);
-                const snapshot = await getDoc(docRef);
-
-                if (snapshot.exists()) {
-                    return { id: snapshot.id, ...snapshot.data() };
-                } else {
-                    console.warn(`No se encontró la rutina con ID: ${idRutina}`);
-                    return null;
-                }
-            } catch (error) {
-                console.error(`Error al obtener la rutina con ID ${idRutina}:`, error);
-                throw error;
-            }
-        },
-        /**
-         * Busca una rutina en el array local de rutinas del perfil por su ID.
-         * No realiza ninguna llamada a la base de datos.
-         * @param {string} rutinaId - El ID de la rutina a buscar.
-         * @returns {object|undefined} - El objeto de la rutina si se encuentra, undefined en caso contrario.
-         */
-        getRutinaLocal(rutinaId) {
-            return this.profile.routines.find(rutina => rutina.id === rutinaId);
+                await RoutineService.update(routine.id, routine);
+                const index = this.profile.routines.findIndex(r => r.id === routine.id);
+                if (index !== -1) this.profile.routines.splice(index, 1, routine);
+            } catch (error) { throw error; }
         },
 
-        /**
-         * Elimina una rutina de Firestore y actualiza el estado local.
-         * @param {string} routineId - El ID de la rutina a eliminar.
-         */
-        async deleteRutina(routineId) {
+        async deleteRoutine(routineId) {
             try {
-                this.profile.routines = this.profile.routines.filter((routine) => routine.id !== routineId);
-                await deleteDoc(doc(db, 'routines', routineId));
-            } catch (error) {
-                console.error('Error al eliminar la rutina:', error);
-                throw error;
-            }
+                await RoutineService.delete(routineId);
+                this.profile.routines = this.profile.routines.filter(r => r.id !== routineId);
+            } catch (error) { throw error; }
         },
 
-        /**
-         * Actualiza una rutina existente en Firestore y actualiza el estado local.
-         * @param {object} rutina - El objeto de la rutina con los datos actualizados.
-         * @throws {Error} Si la rutina no tiene un ID.
-         */
-        async updateRutina(rutina) {
-            if (!rutina.id) {
-                throw new Error('Rutina sin ID');
-            }
-
-            const rutinaRef = doc(db, 'routines', rutina.id);
-            const { id, ...payload } = rutina;
+        async toggleFavorite(routineId, currentValue) {
             try {
-                console.log("Antes del horror:", rutina)
-                await updateDoc(rutinaRef, payload);
-                const index = this.profile.routines.findIndex((r) => r.id === rutina.id);
-                if (index !== -1) {
-                    this.profile.routines.splice(index, 1, rutina);
-                }
-            } catch (error) {
-                console.error('Error al actualizar la rutina:', error);
-                throw error;
-            }
+                const newValue = !currentValue;
+                // Actualizamos localmente para respuesta instantánea
+                const routine = this.profile.routines.find(r => r.id === routineId);
+                if (routine) routine.favorita = newValue;
+                // Luego sincronizamos con Firebase
+                await RoutineService.toggleFavorite(routineId, newValue);
+
+            } catch (error) { throw error; }
         },
 
-        /**
-         * Crea una nueva rutina en Firestore y la añade al estado local.
-         * @param {object} rutinaData - Los datos de la nueva rutina a crear.
-         * @returns {Promise<import('firebase/firestore').DocumentReference>} - La referencia del documento creado en Firestore.
-         */
-        async createRutinaFirebase(rutinaData) {
-            const payload = {
-                ...rutinaData,
-                fechaCreacion: new Date().toISOString(),
-                favorita: false,
-                idUser: this.profile.id,
-            };
-
-            try {
-                const docRef = await addDoc(collection(db, 'routines'), payload);
-                const newRutina = { id: docRef.id, ...payload };
-                this.profile.routines.unshift(newRutina);
-                return docRef;
-            } catch (error) {
-                console.error('Error al crear la rutina en Firebase:', error);
-                throw error;
-            }
-        },
-        async toggleFavorita(rutinaId, valorActual) {
-            // Localmente actualizar la rutina también
-            const rutina = this.profile.routines.find(r => r.id === rutinaId);
-            if (rutina) rutina.favorita = !valorActual;
-            try {
-                const rutinaRef = doc(db, 'routines', rutinaId);
-                await updateDoc(rutinaRef, {
-                    favorita: !valorActual,
-                    idUser: this.profile.id,
-                });
-
-
-            } catch (err) {
-                console.error('Error al cambiar favorita:', err);
-            }
-        },
-
-        /**
-     * Registra un nuevo workout en Firestore y lo añade al estado local.
-     * @param {object} workoutData
-     * @param {string} workoutData.rutinaId
-     * @param {string} workoutData.date (ISO string)
-     * @param {Array} workoutData.logs  // [{ actualReps: [...] }, …]
-     * @param {string} workoutData.notes
-     */
-        async registerWorkout(data) {
-            if (!this.profile.id) {
-                throw new Error("Usuario no autenticado");
-            }
-            // Prepara el payload
-            const payload = {
-                idUser: this.profile.id,
-                ...data,
-                createdAt: new Date().toISOString(),
-            };
-            console.log("Payload", payload)
-            try {
-                // Guarda en la colección 'workouts'
-                const colRef = collection(db, 'workouts');
-                const docRef = await addDoc(colRef, payload);
-                // Opcionalmente manténlo en cache local
-                if (!this.profile.workouts) {
-                    this.profile.workouts = [];
-                }
-                this.profile.workouts.unshift({ id: docRef.id, ...payload });
-                return docRef.id;
-            } catch (error) {
-                console.error("Error registrando workout:", error);
-                throw error;
-            }
-        },
-        /**
-         * Obtiene todos los workouts (entrenamientos) del usuario desde Firestore.
-         * Los ordena por fecha descendente.
-         * @throws {Error} Si el usuario no está autenticado.
-         */
-        async loadWorkouts() {
-            console.log("loadWorkouts()")
-            if (!this.profile.id) {
-                throw new Error('Usuario no autenticado');
-            }
-
-            const workoutsRef = collection(db, 'workouts');
-            const q = query(
-                workoutsRef,
-                where('idUser', '==', this.profile.id),
-                orderBy('date', 'desc')
-            );
-
-            try {
-                const snapshot = await getDocs(q);
-                const workouts = [];
-                snapshot.forEach((doc) => {
-                    workouts.push({ id: doc.id, ...doc.data() });
-                });
-                this.profile.workouts = workouts;
-                console.log(this.profile.workouts)
-            } catch (error) {
-                console.error('Error al obtener los workouts:', error);
-                throw error;
-            }
-        },
-        /**
-         * Busca un workout en el array local de workouts del perfil por su ID.
-         * No realiza ninguna llamada a la base de datos.
-         * @param {string} workoutId - El ID del workout a buscar.
-         * @returns {object|undefined} - El objeto del workout si se encuentra, undefined en caso contrario.
-         */
-        getDoneWorkoutLocal(workoutId) {
-            return this.profile.workouts.find(w => w.id === workoutId);
-        },
-
-        /**
-         * Obtiene un workout específico por su ID desde Firestore.
-         * @param {string} workoutId - El ID del workout a obtener.
-         * @returns {Promise<object|null>} - Un objeto con los datos del workout o null si no se encuentra.
-         * @throws {Error} Si el usuario no está autenticado.
-         */
+        // --- ACCIONES DE WORKOUTS ---
         async getDoneWorkout(workoutId) {
-            console.log("getDoneWorkout FB")
-            if (!this.profile.id) {
-                throw new Error('Usuario no autenticado');
-            }
             try {
-                const docRef = doc(db, 'workouts', workoutId);
-                const snapshot = await getDoc(docRef);
-                if (snapshot.exists()) {
-                    return { id: snapshot.id, ...snapshot.data() };
-                } else {
-                    console.warn(`No se encontró el workout con ID: ${workoutId}`);
-                    return null;
-                }
-            } catch (error) {
-                console.error(`Error al obtener el workout con ID ${workoutId}:`, error);
-                throw error;
-            }
+                return await WorkoutService.fetchById(workoutId);
+            } catch (error) { throw error; }
         },
-        /**
-         * Elimina un workout (entreno) del usuario desde Firestore
-         * y lo elimina también del array local del estado.
-         * @param {string} workoutId - El ID del workout a eliminar.
-         * @throws {Error} Si el usuario no está autenticado o si falla la operación en Firestore.
-         */
-        async deleteDoneWorkout(workoutId) {
-            if (!this.profile.id) {
-                throw new Error('Usuario no autenticado');
-            }
-
+        async registerWorkout(data) {
+            if (!this.profile.id) return;
             try {
-                // Eliminar de Firestore
-                const workoutRef = doc(db, 'workouts', workoutId);
-                await deleteDoc(workoutRef);
+                const payload = { ...data, idUser: this.profile.id };
+                const id = await WorkoutService.create(payload);
 
-                // Eliminar del estado local
+                // Al insertar aquí, 'userStats' se recalcula solo
+                this.profile.workouts.unshift({ id, ...payload });
+                return id;
+            } catch (error) { throw error; }
+        },
+
+        async deleteWorkout(workoutId) {
+            try {
+                await WorkoutService.delete(workoutId);
                 this.profile.workouts = this.profile.workouts.filter(w => w.id !== workoutId);
-
-                console.log(`Workout ${workoutId} eliminado correctamente.`);
-            } catch (error) {
-                console.error(`Error al eliminar el workout ${workoutId}:`, error);
-                throw error;
-            }
+            } catch (error) { throw error; }
         },
 
-    },
-    /**
-     * Getters del store. Permiten acceder al estado de forma computada.
-     */
-    getters: {
-        /**
-         * Obtiene el nickname del perfil del usuario.
-         * @param {object} state - El estado actual del store.
-         * @returns {string} - El nickname del usuario.
-         */
-        getNickname: (state) => state.profile.nickname,
+        // --- MÉTODOS LOCALES (Síncronos) ---
+        getRutinaLocal(id) {
+            return this.profile.routines.find(r => r.id === id);
+        },
 
-        /**
-         * Obtiene la lista de rutinas del perfil del usuario.
-         * @param {object} state - El estado actual del store.
-         * @returns {Array<object>} - La lista de rutinas del usuario.
-         */
-        getUserRoutines: (state) => state.profile.routines,
-
-        getWorkouts: (state) => state.profile.workouts,
-
-    },
+        getWorkoutLocal(id) {
+            return this.profile.workouts.find(w => w.id === id);
+        }
+    }
 });

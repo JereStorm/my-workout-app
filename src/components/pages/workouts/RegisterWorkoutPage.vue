@@ -166,7 +166,7 @@ onMounted(() => {
 
 const construirSiCorresponde = async () => {
     if (!rutinaId) {
-        console.log("No hay encontro Rutina");
+        console.log("No sen encontro la Rutina");
         router.push({ name: 'MyWorkouts' });
         return;
     }
@@ -279,19 +279,13 @@ const submit = async () => {
             logs: logs.value,
             notes: notes.value
         });
-        notification.message = 'Entrenamiento guardado correctamente';
-        notification.type = 'success';
+
     } catch (err) {
         console.error(err);
-        notification.message = 'Error al guardar, intenta de nuevo';
-        notification.type = 'error';
+
     } finally {
         isSaving.value = false;
-        showNotifier.value = true;
-
-        setTimeout(() => {
-            router.push({ name: 'DoneWorkouts' })
-        }, 2000);
+        router.push({ name: 'DoneWorkouts' })
     }
 }
 
