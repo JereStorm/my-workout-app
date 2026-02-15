@@ -64,8 +64,10 @@ export const WorkoutService = {
      */
     async delete(workoutId) {
         try {
+            const notify = useNotificationStore();
             const docRef = doc(db, COLLECTION_NAME, workoutId);
             await deleteDoc(docRef);
+            notify.show('Entrenamiento eliminado con éxito', 'success');
 
         } catch (error) {
             handleServiceError(error);

@@ -85,11 +85,12 @@
                     </article>
                 </section>
                 <hr />
-
             </section>
-            <button class="btn btn-danger" @click.stop="deleteWorkout()">
-                <i class="bi bi-trash3"></i>
-            </button>
+            <ul class="mini-menu pb-3">
+                <li @click.stop="deleteWorkout()">
+                    <span><i class="bi bi-trash3"></i>Eliminar</span>
+                </li>
+            </ul>
         </section>
     </div>
 </template>
@@ -99,7 +100,11 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia';
+import { confirmAction } from '@/utils/confirm';
+import { getCurrentInstance } from 'vue';
+
+const { proxy } = getCurrentInstance();
 
 // router + store
 const route = useRoute();
@@ -113,8 +118,12 @@ const workout = ref(null);
 const { isLoading } = storeToRefs(profileStore);
 
 const deleteWorkout = async () => {
-    if (!confirm('¿Confirma que desea eliminar este entrenamiento?')) return;
+    const ok = await confirmAction(proxy.$swal, {
+        title: '¿Seguro queires eliminar este entrenamiento?',
+        text: 'Se perderán los datos para siempre'
+    })
 
+    if (!ok) return
     try {
         await profileStore.deleteWorkout(workoutId);
     } catch (err) {
@@ -177,7 +186,7 @@ onMounted(async () => {
 
 watch(isLoading, (nuevoValor) => {
     if (!nuevoValor && !workout.value) {
-        workout.value = profileStore.getDoneWorkoutLocal(route.query.id);
+        workout.value = profileStore.getWorkoutLocal(route.query.id);
     }
 });
 
@@ -210,6 +219,33 @@ const getComparisonClass = (ej, actualReps, actualSegs) => {
     flex-direction: column;
     width: 100%;
     margin-bottom: 3rem;
+}
+
+.mini-menu {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    justify-content: center;
+    padding-left: 0;
+}
+
+.mini-menu li span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 5px 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.mini-menu li span:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    transform: translateY(-2px);
 }
 
 .title {

@@ -1,17 +1,15 @@
 <template>
-
-
     <div class="contenedor mt-md-5">
+        <!-- Titulo de la page -->
+        <h1 class="mb-3 mb-md-5 h5 text-uppercase titulo">Perfil del Atleta</h1>
+        <!-- Loader -->
         <div v-if="profileStore.isLoading" class="loader">
-
         </div>
+        <div v-else>
+            <ProfileHeader :nickname="profile.nickname" :level="stats.level" @update:nickname="guardarNickname" />
 
-        <ProfileHeader :nickname="profile.nickname" :level="stats.level" @update:nickname="guardarNickname" />
-
-        <ProfileStats :stats="stats" />
-
-        <Notifier v-show="showNotifier" :message="notification.message" :type="notification.type" />
-
+            <ProfileStats :stats="stats" />
+        </div>
     </div>
 </template>
 

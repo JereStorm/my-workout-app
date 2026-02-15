@@ -182,6 +182,10 @@ import { reactive, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import Draggable from 'vuedraggable';
+import { confirmAction } from '../../utils/confirm';
+import { getCurrentInstance } from 'vue';
+
+const { proxy } = getCurrentInstance();
 
 /** Store global con los datos del perfil (incluye las rutinas) */
 const profileStore = useProfileStore();
@@ -314,7 +318,13 @@ const resetFormulario = () => {
 /**
  * Navega a la vista de rutinas del usuario.
  */
-const handleCancelar = () => {
+const handleCancelar = async () => {
+    const ok = await confirmAction(proxy.$swal, {
+        title: '¿Cancelar entrenamiento?',
+        text: 'Se perderá el progreso actual'
+    })
+
+    if (!ok) return
     router.back();
 };
 

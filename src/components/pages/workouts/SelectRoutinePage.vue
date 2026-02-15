@@ -8,109 +8,116 @@
 
         </div>
 
+        <div v-if="isLoading" class="loader">
 
-        <!-- QUICK START -->
-        <section v-if="lastRoutine" class="quick-section">
+        </div>
+        <div v-else class="routine-content">
 
-            <div class="section-label">
-                Acceso rápido
-                <div class="line"></div>
-            </div>
 
-            <div class="quick-card">
 
-                <div class="quick-info">
-                    <div class="quick-icon">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
+            <!-- QUICK START -->
+            <section v-if="lastRoutine" class="quick-section">
 
-                    <div>
-                        <div class="quick-sub">Último entrenamiento</div>
-                        <div class="quick-title">{{ lastRoutine.nombre }}</div>
-                        <div class="quick-meta">{{ lastRoutineMeta }} - {{ new
-                            Date(lastWorkout.date).toLocaleDateString()
-                        }}</div>
-                    </div>
+                <div class="section-label">
+                    Acceso rápido
+                    <div class="line"></div>
                 </div>
 
-                <button class="btn btn-aqua ms-3 mt-2" @click="empezarEntreno(lastRoutine.id)">
-                    <i class="bi bi-play-fill"></i>
-                    Entrenar
-                </button>
+                <div class="quick-card">
 
-            </div>
+                    <div class="quick-info">
+                        <div class="quick-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
 
-        </section>
-
-
-        <!-- ALL ROUTINES -->
-        <section class="w-100 px-3">
-
-            <div class="section-label muted">
-                Todas las rutinas
-                <div class="line"></div>
-            </div>
-            <div class="search-box me-auto mb-4 px-2 ms-md-3 ">
-                <i class="bi bi-search"></i>
-                <input v-model="search" type="text" placeholder="Buscar rutina..." class="form-control">
-            </div>
-            <div class="controls d-flex gap-2 mb-4 px-2 ms-md-3">
-
-                <button class="btn btn-outline-info btn-sm" :class="{ active: sortByDifficulty }"
-                    @click="sortByDifficulty = !sortByDifficulty">
-                    <i class="bi bi-sort-down"></i>
-                    Dificultad
-                </button>
-
-                <button class="btn btn-outline-warning btn-sm" :class="{ active: showFavoritesOnly }"
-                    @click="showFavoritesOnly = !showFavoritesOnly">
-                    <i class="bi bi-star-fill"></i>
-                    Favoritos
-                </button>
-
-
-
-            </div>
-
-            <div class="routine-grid px-3 px-md-5">
-
-                <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
-
-
-                    <div class="routine-top">
-                        <span class="badge difficulty text-uppercase pt-1">
-                            {{ routine.dificultad }}
-                        </span>
-
-                        <span class="time text-info">
-                            <i class="bi bi-clock"></i>
-                            {{ estimateDuration(routine) }}m
-                        </span>
+                        <div>
+                            <div class="quick-sub">Último entrenamiento</div>
+                            <div class="quick-title">{{ lastRoutine.nombre }}</div>
+                            <div class="quick-meta">{{ lastRoutineMeta }} - {{ new
+                                Date(lastWorkout.date).toLocaleDateString()
+                                }}</div>
+                        </div>
                     </div>
 
-                    <div class="routine-name my-auto w-100">
-                        <span class="favorite-btn">
-                            <i class="bi" :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-                        </span>
-                        <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
-                    </div>
-
-                    <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
-                        Empezar entrenamiento
+                    <button class="btn btn-aqua ms-3 mt-2" @click="empezarEntreno(lastRoutine.id)">
+                        <i class="bi bi-play-fill"></i>
+                        Entrenar
                     </button>
 
                 </div>
 
+            </section>
 
+
+            <!-- ALL ROUTINES -->
+            <section class="w-100 px-3">
+
+                <div class="section-label muted">
+                    Todas las rutinas
+                    <div class="line"></div>
+                </div>
+                <div class="search-box me-auto mb-4 px-2 ms-md-3 ">
+                    <i class="bi bi-search"></i>
+                    <input v-model="search" type="text" placeholder="Buscar rutina..." class="form-control">
+                </div>
+                <div class="controls d-flex gap-2 mb-4 px-2 ms-md-3">
+
+                    <button class="btn btn-outline-info btn-sm" :class="{ active: sortByDifficulty }"
+                        @click="sortByDifficulty = !sortByDifficulty">
+                        <i class="bi bi-sort-down"></i>
+                        Dificultad
+                    </button>
+
+                    <button class="btn btn-dark btn-sm" :class="{ active: showFavoritesOnly }"
+                        @click="showFavoritesOnly = !showFavoritesOnly">
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        Favoritos
+                    </button>
+
+
+
+                </div>
+
+                <div class="routine-grid px-3 px-md-5">
+
+                    <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
+
+
+                        <div class="routine-top">
+                            <span class="badge difficulty text-uppercase pt-1">
+                                {{ routine.dificultad }}
+                            </span>
+
+                            <span class="time text-info">
+                                <i class="bi bi-clock"></i>
+                                {{ estimateDuration(routine) }}m
+                            </span>
+                        </div>
+
+                        <div class="routine-name my-auto w-100">
+                            <span class="favorite-btn">
+                                <i class="bi" :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                            </span>
+                            <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
+                        </div>
+
+                        <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
+                            Empezar entrenamiento
+                        </button>
+
+                    </div>
+
+
+
+
+                </div>
                 <!-- CREATE -->
                 <RouterLink to="/dashboard/form-routine" class="routine-card create-card">
                     <i class="bi bi-plus-circle"></i>
                     Crear rutina
                 </RouterLink>
-
-            </div>
-
-        </section>
+            </section>
+        </div>
 
     </div>
 </template>
@@ -125,6 +132,7 @@ import { DIFFICULTY_ORDER } from '../../../utils/workoutStats'
 const router = useRouter()
 const profileStore = useProfileStore()
 const { profile } = storeToRefs(profileStore)
+const isLoading = computed(() => profileStore.isLoading)
 
 const search = ref('')
 
@@ -215,6 +223,16 @@ function empezarEntreno(id) {
     margin: auto;
     display: flex;
     flex-direction: column;
+}
+
+.routine-content {
+    width: 80%;
+}
+
+.quick-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 10px auto;
 }
 
 /* HEADER */
@@ -399,6 +417,7 @@ function empezarEntreno(id) {
 /* CREATE */
 .create-card {
     border: 2px dashed rgba(255, 255, 255, .1);
+    margin: 30px auto;
     display: flex;
     align-items: center;
     justify-content: center;

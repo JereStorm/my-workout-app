@@ -109,6 +109,10 @@ import { useProfileStore } from '@/stores/profile';
 import RoutineDetail from '@/components/workout/RoutineDetail.vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { confirmAction } from '@/utils/confirm';
+import { getCurrentInstance } from 'vue';
+
+const { proxy } = getCurrentInstance();
 
 const profileStore = useProfileStore();
 const { isLoading } = storeToRefs(profileStore);
@@ -220,10 +224,13 @@ function showRoutine(rutinaId) {
  * @param {string} rutinaId 
  */
 async function eliminarRutina(rutinaId) {
-    if (!confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
-        console.log("Eliminar cancelado")
-        return;
-    }
+
+    const ok = await confirmAction(proxy.$swal, {
+        title: '¿Seguro queires eliminar esta rutina?',
+        text: 'Se perderán los datos para siempre'
+    })
+
+    if (!ok) return
     try {
         const index = rutinasMostradas.value.indexOf(rutinaId);
         if (index !== -1) {

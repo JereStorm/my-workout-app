@@ -116,6 +116,11 @@ import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
+import { confirmAction } from '@/utils/confirm';
+import { getCurrentInstance } from 'vue';
+
+const { proxy } = getCurrentInstance();
+
 import Notifier from '@/components/common/Notifier.vue';
 import Timer from '@/components/common/Timer.vue';
 
@@ -289,7 +294,15 @@ const submit = async () => {
     }
 }
 
-const handleCancelar = () => {
+const handleCancelar = async () => {
+
+    const ok = await confirmAction(proxy.$swal, {
+        title: '¿Cancelar entrenamiento?',
+        text: 'Se perderá el progreso actual'
+    })
+
+    if (!ok) return
+
     router.back();
 }
 

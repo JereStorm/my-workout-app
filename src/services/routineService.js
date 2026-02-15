@@ -4,6 +4,8 @@ import {
     updateDoc, deleteDoc, doc, orderBy, serverTimestamp
 } from 'firebase/firestore';
 import { handleServiceError } from '../utils/errorHandler';
+import { useNotificationStore } from '../stores/notificationStore';
+
 
 const COLLECTION_NAME = 'routines';
 
@@ -46,12 +48,15 @@ export const RoutineService = {
      */
     async create(payload) {
         try {
+            const notify = useNotificationStore();
+
             const data = {
                 ...payload,
                 fechaCreacion: serverTimestamp(),
                 favorita: payload.favorita || false
             };
             const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
+            notify.show('¡Rutina guardada! Entrená ahora ⚡️', 'success');
             return docRef.id;
         } catch (error) {
             handleServiceError(error);
@@ -64,10 +69,13 @@ export const RoutineService = {
      */
     async update(routineId, payload) {
         try {
+            const notify = useNotificationStore();
+
             const docRef = doc(db, COLLECTION_NAME, routineId);
             // Eliminamos el ID del payload para no intentar sobrescribirlo en Firestore
             const { id, ...dataToUpdate } = payload;
             await updateDoc(docRef, dataToUpdate);
+            notify.show('Rutina actualizada con éxito', 'success');
         } catch (error) {
             handleServiceError(error);
         }
@@ -91,8 +99,10 @@ export const RoutineService = {
      */
     async delete(routineId) {
         try {
+            const notify = useNotificationStore();
             const docRef = doc(db, COLLECTION_NAME, routineId);
             await deleteDoc(docRef);
+            notify.show('Rutina eliminada con éxito', 'success');
         } catch (error) {
             handleServiceError(error);
         }
