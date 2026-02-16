@@ -1,7 +1,7 @@
 <template>
     <div class="my-workouts">
         <div class="routines-container">
-            <h1 class="my-md-5 mb-3">Mis Rutinas <i class="bi bi-clipboard-check"></i></h1>
+            <h1 class="my-md-5 h5 mb-3 titulo text-uppercase">Biblioteca de Rutinas</h1>
 
             <div class="text-center mb-3">
                 <RouterLink to="/dashboard/form-routine"
@@ -342,15 +342,15 @@ const renderDifficulty = (dificultad) =>
 }
 
 .routine-resumen .routine-card:hover {
-    border-color: #aaa;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: #14a59e;
+    box-shadow: 0 4px 10px rgba(8, 192, 192, 0.89);
     transform: translateY(-2px);
-    background-color: #202020;
+    background-color: #1a1a1a00;
 }
 
 .routine-resumen .routine-card:active {
     transform: scale(0.98);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgb(20, 20, 20);
 }
 
 .difficulty-container {

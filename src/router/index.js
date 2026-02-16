@@ -14,6 +14,7 @@ import DoneWorkoutsPage from "@/components/pages/workouts/DoneWorkoutsPage.vue";
 import DetailWorkoutPage from "@/components/pages/workouts/DetailWorkoutPage.vue";
 import SelectRoutinePage from "@/components/pages/workouts/SelectRoutinePage.vue";
 import RoutineDetailPage from "@/components/pages/workouts/RoutineDetailPage.vue";
+import RoutineLibrary from "@/components/workout/RoutineLibrary.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
@@ -24,8 +25,7 @@ const routes = [
         component: DashboardPage,
         children: [
             { path: '', name: 'DashboardRedirect', redirect: { name: 'MyWorkouts' } },
-            { path: 'my-workouts', name: 'MyWorkouts', component: MyWorkoutsPage },
-            { path: 'my-workouts/stats', name: 'Stats', component: MyWorkoutsPage },
+            { path: 'my-workouts', name: 'MyWorkouts', component: RoutineLibrary },
             { path: 'my-workouts/detail', name: 'DetailRoutine', component: RoutineDetailPage },
             { path: 'register-workout', name: 'RegisterWorkout', component: RegisterWorkoutPage },
             { path: 'done-workouts', name: 'DoneWorkouts', component: DoneWorkoutsPage },

@@ -13,10 +13,8 @@
         </div>
         <div v-else class="routine-content">
 
-
-
             <!-- QUICK START -->
-            <section v-if="lastRoutine" class="quick-section">
+            <section v-if="lastRoutine" class="quick-section ">
 
                 <div class="section-label">
                     Acceso rápido
@@ -25,23 +23,24 @@
 
                 <div class="quick-card">
 
-                    <div class="quick-info">
-                        <div class="quick-icon">
+                    <div class=" d-flex gap-2 flex-column">
+                        <div class="quick-icon mx-auto">
                             <i class="bi bi-clock-history"></i>
                         </div>
+                        <div class="quick-sub">Último entrenamiento</div>
 
-                        <div>
-                            <div class="quick-sub">Último entrenamiento</div>
+                        <div class="d-flex flex-column gap-1">
                             <div class="quick-title">{{ lastRoutine.nombre }}</div>
                             <div class="quick-meta">{{ lastRoutineMeta }} - {{ new
                                 Date(lastWorkout.date).toLocaleDateString()
-                                }}</div>
+                            }}</div>
                         </div>
                     </div>
 
-                    <button class="btn btn-aqua ms-3 mt-2" @click="empezarEntreno(lastRoutine.id)">
-                        <i class="bi bi-play-fill"></i>
-                        Entrenar
+                    <button class="btn btn-aqua btn-start rounded-circle ms-md-3 mt-md-2"
+                        @click="empezarEntreno(lastRoutine.id)">
+                        <i class="bi bi-play-fill my-auto"></i>
+
                     </button>
 
                 </div>
@@ -78,7 +77,7 @@
 
                 </div>
 
-                <div class="routine-grid px-3 px-md-5">
+                <div class="routine-grid px-md-5">
 
                     <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
 
@@ -300,6 +299,7 @@ function empezarEntreno(id) {
     border-radius: 10px;
     padding: 24px;
     display: flex;
+    gap: 12px;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -337,6 +337,14 @@ function empezarEntreno(id) {
 .quick-meta {
     font-size: .85rem;
     opacity: .6;
+}
+
+.btn-start {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* GRID */
@@ -404,7 +412,6 @@ function empezarEntreno(id) {
     color: #cacaca;
     border: 1px solid rgb(59, 235, 235);
     font-weight: 500;
-    border-radius: 6px;
     transition: all .3s ease;
 }
 
@@ -438,6 +445,12 @@ function empezarEntreno(id) {
 
     .quick-card {
         flex-direction: row;
+    }
+
+    .btn-start {
+        width: 5rem;
+        height: 5rem;
+
     }
 }
 </style>

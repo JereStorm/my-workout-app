@@ -1,103 +1,156 @@
 <template>
     <div class="workout-detail">
 
-        <h1 class="title my-md-5">Detalle de Entreno</h1>
+        <h1 class="titulo mb-3 mb-md-5 h5 text-uppercase my-md-5">Detalle de Entreno</h1>
 
         <div v-if="isLoading" class="loader"></div>
 
-        <section v-if="workout" class="detail-container">
+        <section v-if="workout" class="w-[80%] px-5">
 
-            <!-- Info general -->
-            <header class="workout-meta">
-                <div class="meta-row">
-                    <span class="label">Fecha:</span>
-                    <span class="value">{{ formatDate(workout.date) }}</span>
+
+            <header class="px-3 px-md-4 pt-4 pb-3 ">
+
+                <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <div>
+                        <h2 class="fw-bold mb-1">
+                            {{ workout.dataRoutine.nombre }}
+                        </h2>
+
+                        <div class="text-secondary small d-flex align-items-center gap-2">
+                            <i class="bi bi-calendar"></i>
+                            {{ formatDate(workout.date) }}
+                        </div>
+                    </div>
+
+                    <!-- nivel del usuario o dificultad -->
+                    <span
+                        class="badge rounded-pill text-bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                        {{ workout.dataRoutine.dificultad }}
+                    </span>
+
                 </div>
 
-                <div class="meta-row">
-                    <span class="label">Rutina:</span>
-                    <span class="value">{{ workout.dataRoutine.nombre }}</span>
-                </div>
-
-                <div class="meta-row">
-                    <span class="label">Comentarios:</span>
-                    <span class="value muted" v-if="!workout.notes">-</span>
-                    <span class="value" v-else>{{ workout.notes }}</span>
-                </div>
             </header>
 
-            <hr />
+            <div class="container-fluid px-3 px-md-4 mt-4">
 
-            <!-- Bloques -->
-            <section v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="block">
-                <header class="block-header">
-                    <span class="block-title">Bloque {{ bi + 1 }}</span>
-                    <span class="block-meta">{{ bloque.series }} series</span>
-                </header>
+                <div class="row g-2">
 
-                <!-- Series -->
-                <section v-for="si in bloque.series" :key="si" class="series">
-                    <div class="series-title">Serie {{ si }}</div>
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <small class="text-secondary text-uppercase">Bloques</small>
+                            <div class="fs-5 fw-bold">
+                                {{ workout.dataRoutine.bloques.length }}
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Ejercicios -->
-                    <article v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="exercise">
-                        <div class="exercise-info">
-                            <span class="exercise-index">{{ ei + 1 }}</span>
-                            <div class="exercise-text">
-                                <span class="exercise-name">{{ ej.nombre }}</span>
-                                <span v-if="ej.notas" class="exercise-notes">
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <small class="text-secondary text-uppercase">Series</small>
+                            <div class="fs-5 fw-bold">
+                                {{ workout.logs.length }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <small class="text-secondary text-uppercase">Volumen</small>
+                            <div class="fs-5 fw-bold">
+                                {{ statsVolume }} reps
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <main class="px-3 px-md-4 pb-5 mt-5">
+
+                <section v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-2">
+
+                    <!-- título bloque -->
+                    <div class="border-start border-3 border-info ps-3 mb-3">
+                        <div class="text-uppercase small text-secondary fw-semibold">
+                            Bloque {{ bi + 1 }}
+                            <span class="text-secondary">
+                                ({{ bloque.series }} sets)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- ejercicios -->
+                    <div class="d-flex flex-column gap-3">
+
+                        <div v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="exercise-card p-3">
+
+                            <!-- header ejercicio -->
+                            <div class="text-center mb-2">
+
+                                <div class="fw-semibold text-info">
+                                    {{ ej.nombre }}
+                                </div>
+
+                                <div v-if="ej?.notas" class="small text-notas">
                                     {{ ej.notas }}
-                                </span>
-                            </div>
-                        </div>
+                                </div>
 
-                        <div class="exercise-compare">
-                            <div class="compare-column">
-                                <span class="compare-label">Meta</span>
-                                <span>
-                                    {{ ej.repeticiones }} reps
-                                    <span v-if="ej.tiempo">· {{ ej.tiempo }}s</span>
+                            </div>
+
+                            <!-- meta global del ejercicio -->
+                            <div class="text-center mb-3">
+                                <span class="chip-meta">
+                                    Meta: {{ formatStimulus(ej.repeticiones, ej.tiempo) }}
                                 </span>
                             </div>
 
-                            <div class="compare-column">
-                                <span class="compare-label">Hecho</span>
-                                <span>
-                                    {{ workout.logs[getLogIndex(bi, si - 1)].actualReps[ei] }} reps
-                                    <span v-if="ej.tiempo">
-                                        · {{ workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei] }}s
+                            <!-- sets -->
+                            <div class="d-flex justify-content-center flex-wrap gap-2">
+
+                                <div v-for="si in bloque.series" :key="si" class="set-pill text-center">
+
+                                    <small class="text-secondary text-uppercase d-block">
+                                        Set {{ si }}
+                                    </small>
+
+                                    <span class="chip-real mt-1 d-inline-block">
+                                        Hecho:
+                                        {{
+                                            formatActual(
+                                                workout.logs[getLogIndex(bi, si - 1)],
+                                                ei
+                                            )
+                                        }}
                                     </span>
-                                </span>
+
+                                </div>
+
                             </div>
 
-                            <div class="compare-column result" :class="getComparisonClass(
-                                ej,
-                                workout.logs[getLogIndex(bi, si - 1)].actualReps[ei],
-                                workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei]
-                            )">
-                                {{ getComparisonText(
-                                    ej,
-                                    workout.logs[getLogIndex(bi, si - 1)].actualReps[ei],
-                                    workout.logs[getLogIndex(bi, si - 1)].actualSegs[ei]
-                                ) }}
-                            </div>
                         </div>
-                    </article>
+
+                    </div>
+
+                    <hr class="text-secondary">
                 </section>
-                <hr />
-            </section>
-            <ul class="mini-menu pb-3">
-                <li @click.stop="deleteWorkout()">
-                    <span><i class="bi bi-trash3"></i>Eliminar</span>
-                </li>
-            </ul>
+                <ul class="mini-menu pb-3">
+                    <li @click.stop="deleteWorkout()">
+                        <span><i class="bi bi-trash3"></i>Eliminar</span>
+                    </li>
+                </ul>
+            </main>
         </section>
+
+
+
     </div>
 </template>
 
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
@@ -112,10 +165,40 @@ const router = useRouter();
 const profileStore = useProfileStore();
 const workoutId = route.query.id;
 
-
 // estado
 const workout = ref(null);
 const { isLoading } = storeToRefs(profileStore);
+
+/**
+ * Calcula el volumen total del workout sumando las reps de cada set.
+ */
+const statsVolume = computed(() => {
+    if (!workout.value) return 0
+
+    let total = 0
+
+    workout.value.logs.forEach(log => {
+        if (log.actualReps) {
+            total += log.actualReps.reduce((a, b) => a + (b || 0), 0)
+        }
+    })
+
+    return total
+})
+
+function formatStimulus(reps, tiempo) {
+    if (reps > 1 && tiempo > 0) return `${reps} reps × ${tiempo}s`
+    if (reps === 1 && tiempo > 0) return `Hold ${tiempo}s`
+    if (reps > 1 && tiempo === 0) return `${reps} reps`
+    return "Libre"
+}
+
+function formatActual(log, ei) {
+    const reps = log?.actualReps?.[ei] ?? 0
+    const segs = log?.actualSegs?.[ei] ?? 0
+    return formatStimulus(reps, segs)
+}
+
 
 const deleteWorkout = async () => {
     const ok = await confirmAction(proxy.$swal, {
@@ -190,26 +273,47 @@ watch(isLoading, (nuevoValor) => {
     }
 });
 
-const getComparisonText = (ej, actualReps, actualSegs) => {
-    const repsDiff = actualReps - ej.repeticiones;
-    const segsDiff = (ej.tiempo ? actualSegs - ej.tiempo : 0);
-    let result = '';
-
-    if (repsDiff !== 0) result += `${repsDiff > 0 ? '+' : ''}${repsDiff} reps `;
-    if (ej.tiempo && segsDiff !== 0) result += `${segsDiff > 0 ? '+' : ''}${segsDiff} segs`;
-
-    return result.trim() || 'Logrado';
-}
-
-const getComparisonClass = (ej, actualReps, actualSegs) => {
-    const repsOk = actualReps >= ej.repeticiones;
-    const segsOk = ej.tiempo ? actualSegs >= ej.tiempo : true;
-    return (repsOk && segsOk) ? 'text-didit' : 'text-danger';
-}
 
 </script>
 
 <style scoped>
+.stat-box {
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, .05);
+    background: rgba(255, 255, 255, .03);
+}
+
+.set-pill {
+    min-width: 65px;
+    padding: .55rem .7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .05);
+    background: rgba(255, 255, 255, .02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chip-meta {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .08);
+    color: #aaa;
+}
+
+.chip-real {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(0, 255, 255, .12);
+    border: 1px solid rgba(0, 255, 255, .35);
+    color: #00ffff;
+    font-weight: 600;
+}
+
 .workout-detail {
     padding-left: 0px;
     padding-right: 0px;
@@ -248,118 +352,14 @@ const getComparisonClass = (ej, actualReps, actualSegs) => {
     transform: translateY(-2px);
 }
 
-.title {
-    margin-bottom: 2rem;
+
+
+.text-notas {
+    color: #e6e6e6;
+    opacity: 0.8;
 }
 
-.card {
-    width: 100%;
-    max-width: 800px;
-}
 
-.workout-meta {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    gap: 0.75rem;
-}
-
-.meta-row {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.label {
-    color: #9ca3af;
-    min-width: 90px;
-}
-
-.value {
-    font-weight: 500;
-}
-
-.muted {
-    color: #9ca3af;
-}
-
-.block {
-    margin-top: 2rem;
-}
-
-.block-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.block-title {
-    font-weight: 600;
-}
-
-.block-meta {
-    color: #9ca3af;
-}
-
-.series {
-    margin-bottom: 1.5rem;
-}
-
-.series-title {
-    text-align: center;
-    color: #6b7280;
-    margin-bottom: 1rem;
-}
-
-.exercise {
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 1rem;
-}
-
-.exercise-info {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-}
-
-.exercise-index {
-    color: #60a5fa;
-}
-
-.exercise-name {
-    font-weight: 500;
-}
-
-.exercise-notes {
-    font-size: 0.85rem;
-    color: #9ca3af;
-}
-
-.exercise-compare {
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-}
-
-.compare-column {
-    flex: 1;
-}
-
-.compare-label {
-    display: block;
-    font-size: 0.75rem;
-    color: #9ca3af;
-    margin-bottom: 0.25rem;
-}
-
-.result {
-    font-weight: 500;
-}
-
-.text-didit {
-    color: rgb(52, 228, 52);
-}
 
 @media only screen and (min-width: 768px) {
     .workout-detail {
