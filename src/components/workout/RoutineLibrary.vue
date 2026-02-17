@@ -1,14 +1,40 @@
 <template>
     <div class="my-workouts">
         <div class="routines-container">
-            <h1 class="my-md-5 h5 mb-3 titulo text-uppercase">Biblioteca de Rutinas</h1>
-
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-success px-4" id="add-routine">
-                    <i class="bi bi-plus-circle-fill"></i> Agregar Rutina
+            <!-- HEADER -->
+            <div
+                class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
+                <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Rutinas</h1>
+                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-info rounded-circle add-btn">
+                    <i class="bi bi-plus-lg text-light"></i>
                 </RouterLink>
+            </div>
 
-                <div class="view-toggle bg-dark p-1 rounded">
+
+
+            <div class="search-container mb-4 mx-5">
+                <div class="input-group ">
+                    <span class="input-group-text bg-dark border-secondary text-secondary">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input v-model="searchQuery" type="text" class="form-control text-white border-secondary"
+                        placeholder="Buscar rutina por nombre..." />
+                </div>
+            </div>
+
+            <div v-if="!isLoading"
+                class="d-flex justify-content-center justify-content-md-between align-items-center mx-md-5 mb-3">
+                <div class="d-flex align-items-baseline text-start mx-md-5">
+                    <label for="orderBy" class="me-2">Ordenar por</label>
+                    <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
+                        <option value="fechaCreacionDesc">Más Reciente</option>
+                        <option value="fechaCreacionAsc">Más Antigua</option>
+                        <option value="asc">De más fácil</option>
+                        <option value="desc">De más difícil</option>
+                    </select>
+                </div>
+
+                <div class="view-toggle rounded mx-md-5">
                     <button @click="viewMode = 'grid'"
                         :class="['btn btn-sm', viewMode === 'grid' ? 'btn-primary' : 'text-white']">
                         <i class="bi bi-grid-fill"></i>
@@ -17,28 +43,6 @@
                         :class="['btn btn-sm', viewMode === 'list' ? 'btn-primary' : 'text-white']">
                         <i class="bi bi-list-ul"></i>
                     </button>
-                </div>
-            </div>
-
-            <div class="search-container mb-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-dark border-secondary text-secondary">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input v-model="searchQuery" type="text" class="form-control bg-dark text-white border-secondary"
-                        placeholder="Buscar rutina por nombre..." />
-                </div>
-            </div>
-
-            <div v-if="!isLoading" class="d-flex justify-content-center justify-content-md-start ms-md-5 mb-3">
-                <div class="d-flex align-items-baseline text-start">
-                    <label for="orderBy" class="me-2">Ordenar por</label>
-                    <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
-                        <option value="fechaCreacionDesc">Más Reciente</option>
-                        <option value="fechaCreacionAsc">Más Antigua</option>
-                        <option value="asc">De más fácil</option>
-                        <option value="desc">De más difícil</option>
-                    </select>
                 </div>
             </div>
 
@@ -63,7 +67,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useProfileStore } from '@/stores/profile';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
@@ -143,6 +147,23 @@ const copiarRutina = async (r) => {
     transition: all 0.3s;
 }
 
+/* HEADER */
+.page-header {
+    position: sticky;
+    top: 0;
+    padding: 10px 0 20px;
+    backdrop-filter: blur(12px);
+    z-index: 5;
+}
+
+.add-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Layout dinámico */
 .grid {
     flex-direction: row;
@@ -161,6 +182,15 @@ const copiarRutina = async (r) => {
     color: #0a1114;
 }
 
+.search-container {
+    display: flex;
+    justify-content: center;
+}
+
+.search-container .input-group {
+    max-width: 500px;
+}
+
 @media (min-width: 768px) {
     .my-workouts {
         padding-top: 20px;
@@ -176,6 +206,7 @@ const copiarRutina = async (r) => {
     .list :deep(.routine-list-item) {
         max-width: 900px;
     }
+
 }
 
 .fade-item-enter-active,

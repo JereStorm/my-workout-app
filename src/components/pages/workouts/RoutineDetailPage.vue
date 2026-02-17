@@ -1,23 +1,25 @@
 <template>
     <div class="routine-detail-page">
-        <h1 class="my-md-5">Detalle Rutina <i class="bi bi-clipboard2-fill"></i></h1>
+        <h1 class="titulo mb-3 mb-md-5 h5 text-uppercase mt-3 pt-2">Detalle Rutina</h1>
+
+
 
         <div v-if="isLoading" class="loader"></div>
 
         <div v-else>
             <RoutineDetail :rutina="rutinaLocal" />
-            <ul class="mini-menu pb-3">
+            <ul class="mini-menu pb-3 mt-3">
                 <li @click.stop="registrarEntrenamiento(rutinaLocal)">
-                    <span><i class="bi bi-file-earmark-plus"></i>Entrenar</span>
+                    <span><i class="bi bi-file-earmark-plus color-principal"></i>Entrenar</span>
                 </li>
                 <li @click.stop="editarRutina(rutinaLocal)">
-                    <span><i class="bi bi-pencil-square"></i>Editar</span>
+                    <span><i class="bi bi-pencil-square color-principal"></i>Editar</span>
                 </li>
                 <li @click.stop="eliminarRutina(rutinaLocal?.id)">
-                    <span><i class="bi bi-trash3"></i>Eliminar</span>
+                    <span><i class="bi bi-trash3 color-principal"></i>Eliminar</span>
                 </li>
                 <li @click.stop="copiarRutina(rutinaLocal)">
-                    <span><i class="bi bi-copy"></i>Copiar</span>
+                    <span><i class="bi bi-copy color-principal"></i>Copiar</span>
                 </li>
             </ul>
 
@@ -125,7 +127,6 @@ const registrarEntrenamiento = (rutina) => {
 
 <style scoped>
 .routine-detail-page {
-    padding-top: 80px;
     padding-right: 0px;
     display: flex;
     flex-direction: column;
@@ -148,7 +149,7 @@ const registrarEntrenamiento = (rutina) => {
     padding: 5px 1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .mini-menu li span:hover {

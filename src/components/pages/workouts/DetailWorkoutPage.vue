@@ -102,7 +102,7 @@
                             <!-- meta global del ejercicio -->
                             <div class="text-center mb-3">
                                 <span class="chip-meta">
-                                    Meta: {{ formatStimulus(ej.repeticiones, ej.tiempo) }}
+                                    Meta: {{ formatStimulusTarget(ej.repeticiones, ej.tiempo) }}
                                 </span>
                             </div>
 
@@ -156,6 +156,12 @@ import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
+import {
+    formatStimulusTarget,
+    formatStimulusActual,
+    getStimulusVolume
+} from '@/domain/stimulus'
+
 
 const { proxy } = getCurrentInstance();
 
@@ -173,30 +179,28 @@ const { isLoading } = storeToRefs(profileStore);
  * Calcula el volumen total del workout sumando las reps de cada set.
  */
 const statsVolume = computed(() => {
+
     if (!workout.value) return 0
 
     let total = 0
 
     workout.value.logs.forEach(log => {
-        if (log.actualReps) {
-            total += log.actualReps.reduce((a, b) => a + (b || 0), 0)
-        }
+
+        log.actualReps?.forEach((reps, i) => {
+            const secs = log.actualSegs?.[i] ?? 0
+            total += getStimulusVolume(reps, secs)
+        })
     })
 
     return total
 })
 
-function formatStimulus(reps, tiempo) {
-    if (reps > 1 && tiempo > 0) return `${reps} reps × ${tiempo}s`
-    if (reps === 1 && tiempo > 0) return `Hold ${tiempo}s`
-    if (reps > 1 && tiempo === 0) return `${reps} reps`
-    return "Libre"
-}
 
 function formatActual(log, ei) {
-    const reps = log?.actualReps?.[ei] ?? 0
-    const segs = log?.actualSegs?.[ei] ?? 0
-    return formatStimulus(reps, segs)
+    return formatStimulusActual(
+        log?.actualReps?.[ei] ?? 0,
+        log?.actualSegs?.[ei] ?? 0
+    )
 }
 
 

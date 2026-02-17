@@ -8,7 +8,7 @@ import UnregistredPage from "@/components/pages/auth/UnregistredPage.vue";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage.vue";
 import ProfilePage from "@/components/pages/profile/ProfilePage.vue";
 import MyWorkoutsPage from "@/components/pages/workouts/MyWorkoutsPage.vue";
-import FormRoutine from "@/components/workout/FormRoutine.vue";
+import FormRoutinePage from "@/components/pages/workouts/FormRoutinePage.vue";
 import RegisterWorkoutPage from "@/components/pages/workouts/RegisterWorkoutPage.vue";
 import DoneWorkoutsPage from "@/components/pages/workouts/DoneWorkoutsPage.vue";
 import DetailWorkoutPage from "@/components/pages/workouts/DetailWorkoutPage.vue";
@@ -31,7 +31,7 @@ const routes = [
             { path: 'done-workouts', name: 'DoneWorkouts', component: DoneWorkoutsPage },
             { path: 'done-workouts/detail', name: 'DetailWorkout', component: DetailWorkoutPage },
             { path: 'my-profile', name: 'MyProfile', component: ProfilePage },
-            { path: 'form-routine', name: 'FormRoutine', component: FormRoutine },
+            { path: 'form-routine', name: 'FormRoutine', component: FormRoutinePage },
             { path: 'select-routine', name: 'SelectRoutine', component: SelectRoutinePage },
         ],
         meta: { requiresAuth: true },

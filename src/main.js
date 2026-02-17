@@ -15,9 +15,9 @@ pinia.use(({ store }) => {
 
 app.use(VueSweetalert2, {
     theme: 'bootstrap-4',
-    background: '#0a0f1b',
+    background: '#161616',
     color: '#e2e8f0',
-    confirmButtonColor: '#22c55e',
+    confirmButtonColor: '#0bc032',
     cancelButtonColor: '#64748b',
     buttonsStyling: true
 })

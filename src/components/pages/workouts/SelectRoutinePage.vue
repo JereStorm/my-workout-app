@@ -33,7 +33,7 @@
                             <div class="quick-title">{{ lastRoutine.nombre }}</div>
                             <div class="quick-meta">{{ lastRoutineMeta }} - {{ new
                                 Date(lastWorkout.date).toLocaleDateString()
-                            }}</div>
+                                }}</div>
                         </div>
                     </div>
 
@@ -230,7 +230,7 @@ function empezarEntreno(id) {
 
 .quick-section {
     width: 100%;
-    max-width: 800px;
+    max-width: 550px;
     margin: 10px auto;
 }
 

@@ -104,10 +104,6 @@ onUnmounted(() => {
 
 
 <style scoped>
-.color-principal {
-    color: #00ffff;
-}
-
 .nav-link {
     color: #ffffff;
     cursor: pointer;
