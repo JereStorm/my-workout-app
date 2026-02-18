@@ -31,9 +31,7 @@
 
                         <div class="d-flex flex-column gap-1">
                             <div class="quick-title">{{ lastRoutine.nombre }}</div>
-                            <div class="quick-meta">{{ lastRoutineMeta }} - {{ new
-                                Date(lastWorkout.date).toLocaleDateString()
-                                }}</div>
+                            <div class="quick-meta">{{ lastRoutineMeta }} - {{ formatDate(lastWorkout.date) }}</div>
                         </div>
                     </div>
 
@@ -99,16 +97,16 @@
                             </span>
                             <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
                         </div>
-
+                        <div class="d-flex py-1 text-center">
+                            <small class="text-secondary text-align-center">
+                                {{ getSummary(routine) }}
+                            </small>
+                        </div>
                         <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
+                            <i class="bi bi-play-fill my-auto"></i>
                             Empezar entrenamiento
                         </button>
-
                     </div>
-
-
-
-
                 </div>
                 <!-- CREATE -->
                 <RouterLink to="/dashboard/form-routine" class="routine-card create-card">
@@ -126,7 +124,7 @@ import { computed, ref } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { DIFFICULTY_ORDER } from '../../../utils/workoutStats'
+import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '../../../utils/routineStats'
 
 const router = useRouter()
 const profileStore = useProfileStore()
@@ -186,7 +184,7 @@ const lastRoutine = computed(() => {
     if (!workouts.length) return null
 
     const last = workouts.at(0)
-    return routines.value.find(r => r.id === last.rutinaId)
+    return last.dataRoutine
 })
 
 const lastWorkout = computed(() => {
@@ -204,9 +202,6 @@ const lastRoutineMeta = computed(() => {
     return `Última sesión registrada`
 })
 
-function estimateDuration(routine) {
-    return Math.round((routine.bloques?.length || 0) * 4 + 10)
-}
 
 function empezarEntreno(id) {
     router.push({

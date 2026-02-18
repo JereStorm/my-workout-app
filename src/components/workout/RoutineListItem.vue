@@ -265,7 +265,7 @@ onUnmounted(() => window.removeEventListener('click', closeMenu))
 .mini-menu {
     position: absolute;
     right: 0;
-    top: 100%;
+    top: 0%;
     background: #1a262b;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;

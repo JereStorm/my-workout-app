@@ -161,6 +161,8 @@ import {
     formatStimulusActual,
     getStimulusVolume
 } from '@/domain/stimulus'
+import { formatDate } from '../../../utils/routineStats';
+import { sumWorkoutVolume } from '../../../utils/workoutStats';
 
 
 const { proxy } = getCurrentInstance();
@@ -182,15 +184,7 @@ const statsVolume = computed(() => {
 
     if (!workout.value) return 0
 
-    let total = 0
-
-    workout.value.logs.forEach(log => {
-
-        log.actualReps?.forEach((reps, i) => {
-            const secs = log.actualSegs?.[i] ?? 0
-            total += getStimulusVolume(reps, secs)
-        })
-    })
+    let total = sumWorkoutVolume(workout.value)
 
     return total
 })
@@ -218,13 +212,6 @@ const deleteWorkout = async () => {
     } finally {
         router.push({ name: 'DoneWorkouts' });
     }
-}
-
-const formatDate = (iso) => {
-    const d = new Date(iso);
-    return `${String(d.getDate()).padStart(2, '0')}/` +
-        `${String(d.getMonth() + 1).padStart(2, '0')}/` +
-        d.getFullYear();
 }
 
 /**
@@ -300,18 +287,18 @@ watch(isLoading, (nuevoValor) => {
 }
 
 .chip-meta {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, .05);
     border: 1px solid rgba(255, 255, 255, .08);
     color: #aaa;
 }
 
 .chip-real {
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: 8px;
     background: rgba(0, 255, 255, .12);
     border: 1px solid rgba(0, 255, 255, .35);
     color: #00ffff;

@@ -43,7 +43,7 @@
                             </h5>
 
                             <span class="badge difficulty-badge text-uppercase pt-1"
-                                :title="difficultyIcons(workout.dataRoutine.dificultad)">
+                                :title="getDifficultyIcons(workout.dataRoutine.dificultad)">
                                 {{ workout.dataRoutine.dificultad }}
                             </span>
                         </div>
@@ -61,18 +61,18 @@
 
                             <span>
                                 <i class="bi bi-bar-chart"></i>
-                                {{ totalSeries(workout) }} series
+                                {{ countSets(workout.dataRoutine) }} series
                             </span>
 
                             <span class="ms-auto text-info fw-bold">
                                 <i class="bi bi-clock"></i>
-                                {{ estimatedTime(workout) }}
+                                {{ estimateDuration(workout.dataRoutine) }}
                             </span>
 
                         </div>
 
                         <p class="timeline-summary">
-                            {{ getSummary(workout) }}
+                            {{ getSummary(workout.dataRoutine) }}
                         </p>
 
                         <button class="btn btn-sm btn-outline-info mt-2" @click="redirect(workout)">
@@ -100,6 +100,7 @@ import { computed, ref, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
+import { countSets, estimateDuration, formatDate, getDifficultyIcons, getSummary } from '../../../utils/routineStats';
 
 /** Acceso al enrutador y a la ruta actual */
 const route = useRoute();
@@ -113,62 +114,11 @@ const { isLoading } = storeToRefs(profileStore);
 // lista de workouts
 const workouts = computed(() => profileStore.profile.workouts || []);
 
-
-function difficultyIcons(dificultad) {
-    const map = {
-        'Muy facil': 1,
-        'Facil': 2,
-        'Intermedia': 3,
-        'Dificil': 4,
-        'Muy dificil': 5
-    };
-    const count = map[dificultad] || 0;
-    return '⚡'.repeat(count) || '';
-}
-
 function redirect(workout) {
     console.log(workout)
     router.push({ name: 'DetailWorkout', query: { id: workout.id } });
 }
 
-function getSummary(workout) {
-    const bloques = workout.dataRoutine.bloques
-    const totalSeries = bloques.reduce((acc, b) => acc + b.series, 0)
-    const ejercicios = bloques.flatMap(b => b.ejercicios.map(e => e.nombre))
-    const destacados = ejercicios.slice(0, 3).join(', ')
-    return `Ejercicios: ${destacados}${ejercicios.length > 3 ? '...' : ''}`
-}
-
-
-function formatDate(iso) {
-    const dias = ['Dom.', 'Lun.', 'Mar.', 'Mié.', 'Jue.', 'Vie.', 'Sáb.'];
-    const d = new Date(iso);
-    const dia = dias[d.getDay()];
-    const fecha = `${String(d.getDate()).padStart(2, '0')}/` +
-        `${String(d.getMonth() + 1).padStart(2, '0')}/` +
-        d.getFullYear();
-    return `${dia} ${fecha}`;
-}
-
-/**
- * Elimina una workout tras confirmación del usuario.
- * @param {string} workoutId 
- */
-async function eliminarWorkout(workout) {
-    if (!confirm('¿Estás seguro de que querés eliminar este entreno?')) {
-        console.log("Eliminar cancelado")
-        return;
-    }
-    try {
-        isLoading.value = true;
-        await profileStore.deleteDoneWorkout(workout.id);
-
-    } catch (error) {
-        console.log("Error al borrar la rutina.", error);
-    }
-
-    isLoading.value = false;
-}
 const workoutsByMonth = computed(() => {
     const groups = {}
 
@@ -185,15 +135,6 @@ const workoutsByMonth = computed(() => {
 
     return Object.entries(groups)
 })
-function totalSeries(workout) {
-    return workout.dataRoutine.bloques
-        .reduce((acc, b) => acc + b.series, 0)
-}
-
-function estimatedTime(workout) {
-    const mins = totalSeries(workout) * 2
-    return `${mins}m`
-}
 
 </script>
 

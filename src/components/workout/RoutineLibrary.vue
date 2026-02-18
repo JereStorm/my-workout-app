@@ -1,6 +1,6 @@
 <template>
     <div class="my-workouts">
-        <div class="routines-container">
+        <div class="routines-container mb-auto">
             <!-- HEADER -->
             <div
                 class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
@@ -9,8 +9,6 @@
                     <i class="bi bi-plus-lg text-light"></i>
                 </RouterLink>
             </div>
-
-
 
             <div class="search-container mb-4 mx-5">
                 <div class="input-group ">
@@ -136,6 +134,7 @@ const copiarRutina = async (r) => {
 
 .routines-container {
     width: 90%;
+    height: 100%;
     max-width: 1200px;
 }
 

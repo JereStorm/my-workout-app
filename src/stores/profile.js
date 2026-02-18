@@ -4,10 +4,9 @@ import { WorkoutService } from '@/services/workoutService';
 import { ProfileService } from '@/services/profileService'; // Asumiendo que moviste setNickname aquí
 import {
     calculateStreaks,
-    LEVEL_THRESHOLDS,
-    levelFromVolume,
     sumWorkoutVolume
 } from '@/utils/workoutStats';
+import { LEVEL_THRESHOLDS, levelFromVolume } from '../utils/profileStats';
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({

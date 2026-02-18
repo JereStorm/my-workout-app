@@ -75,7 +75,7 @@
                             <div class="exercise-text">
                                 <h4>{{ ej.nombre }}</h4>
 
-                                <p v-if="ej.notas" class="exercise-note">
+                                <p v-if="ej.notas" class="exercise-note pe-5">
                                     {{ ej.notas }}
                                 </p>
                             </div>
@@ -281,6 +281,7 @@ export default {
 }
 
 .exercise-note {
+    text-align: start;
     margin-top: 4px;
     font-size: .75rem;
     opacity: .6;

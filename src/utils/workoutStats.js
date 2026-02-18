@@ -11,59 +11,58 @@ export function countWorkoutBlocks(workout) {
     return workout.logs?.length || 0
 }
 
-export function levelFromVolume(volume) {
-    if (volume < 1000) return 1
-    if (volume < 5000) return 2
-    if (volume < 15000) return 3
-    if (volume < 40000) return 4
-    if (volume < 80000) return 5
-    return 6
-}
-export const LEVEL_THRESHOLDS = [0, 1000, 5000, 15000, 40000, 80000]
 
 export function calculateStreaks(workouts) {
-    if (!workouts.length) return { current: 0, best: 0 }
+    if (!workouts?.length) return { current: 0, best: 0 }
 
-    const uniqueDays = [...new Set(
-        workouts.map(w => new Date(w.date).toISOString().slice(0, 10))
-    )].sort().reverse()
+    // ===== normalizar fechas en LOCAL (no UTC)
+    const toLocalDay = (date) => {
+        const d = new Date(date)
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+    }
 
-    let current = 0
-    let best = 0
-    let temp = 1
+    const uniqueDays = [
+        ...new Set(workouts.map(w => toLocalDay(w.date).getTime()))
+    ]
+        .map(t => new Date(t))
+        .sort((a, b) => b - a) // más reciente primero
+
+
+    // ===== calcular BEST STREAK
+    let best = 1
+    let streak = 1
 
     for (let i = 0; i < uniqueDays.length - 1; i++) {
-        const today = new Date(uniqueDays[i])
-        const prev = new Date(uniqueDays[i + 1])
+        const diff = (uniqueDays[i] - uniqueDays[i + 1]) / 86400000
 
-        const diff = (today - prev) / (1000 * 60 * 60 * 24)
-
-        if (diff === 1) {
-            temp++
-        } else {
-            best = Math.max(best, temp)
-            temp = 1
+        if (diff === 1) streak++
+        else {
+            best = Math.max(best, streak)
+            streak = 1
         }
     }
 
-    best = Math.max(best, temp)
+    best = Math.max(best, streak)
 
-    // calcular current streak desde hoy
-    const today = new Date().toISOString().slice(0, 10)
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
 
-    if (uniqueDays[0] === today || uniqueDays[0] === yesterday) {
-        current = temp
+    // ===== calcular CURRENT STREAK (desde el más reciente)
+    let current = 0
+
+    if (uniqueDays.length) {
+        const today = toLocalDay(new Date())
+        const diffToday = (today - uniqueDays[0]) / 86400000
+
+        // solo hay racha si entrenaste hoy o ayer
+        if (diffToday === 0 || diffToday === 1) {
+            current = 1
+
+            for (let i = 0; i < uniqueDays.length - 1; i++) {
+                const diff = (uniqueDays[i] - uniqueDays[i + 1]) / 86400000
+                if (diff === 1) current++
+                else break
+            }
+        }
     }
 
     return { current, best }
-}
-
-
-export const DIFFICULTY_ORDER = {
-    "Muy facil": 1,
-    "Facil": 2,
-    "Intermedia": 3,
-    "Dificil": 4,
-    "Muy dificil": 5
 }
