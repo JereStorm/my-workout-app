@@ -59,6 +59,11 @@ import { useUserStore } from '@/stores/user'
 import { SIDE_MENU_ITEMS } from './sideMenu.config'
 import UserProfileHeader from './UserProfileHeader.vue'
 
+import { useRoute } from 'vue-router'
+import { watch } from 'vue'
+
+const route = useRoute()
+
 const router = useRouter()
 const profileStore = useProfileStore()
 const userStore = useUserStore()
@@ -100,6 +105,15 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize)
 })
+
+
+watch(() => route.fullPath, () => {
+    if (isMobile.value) {
+        closeSidebar()
+    }
+})
+
+
 </script>
 
 

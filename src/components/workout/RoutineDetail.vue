@@ -4,7 +4,7 @@
         <!-- ================= HEADER ================= -->
 
         <header class="routine-header p-4 rounded-4 shadow-lg mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-center mb-3">
                 <h1 class="routine-title m-0 text-white fw-bold">
                     {{ rutina.nombre }}
                 </h1>
@@ -18,7 +18,7 @@
             <div class="row g-2 mb-3">
                 <div class="col-6">
                     <div class="info-card p-2 rounded-3 text-center">
-                        <span class="d-block text-secondary small text-uppercase">Descanso Series</span>
+                        <p class="d-block text-secondary small mb-0 text-uppercase">Descanso Series</p>
                         <span class="text-aqua fw-semibold">
                             <i class="bi bi-stopwatch"></i> {{ formatTiempoDesc(rutina.descansoSeries) }}
                         </span>
@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-6">
                     <div class="info-card p-2 rounded-3 text-center">
-                        <span class="d-block text-secondary small text-uppercase">Descanso Bloques</span>
+                        <p class="d-block text-secondary small mb-0 text-uppercase">Descanso Bloques</p>
                         <span class="text-aqua fw-semibold">
                             <i class="bi bi-arrow-repeat"></i> {{ formatTiempoDesc(rutina.descansoBloques) }}
                         </span>
