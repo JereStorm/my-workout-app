@@ -2,8 +2,8 @@ import { db } from '../firebaseConfig';
 import {
     collection, query, where, getDocs, addDoc, deleteDoc, doc, orderBy, serverTimestamp
 } from 'firebase/firestore';
-import { handleServiceError } from '../utils/errorHandler';
-import { useNotificationStore } from '../stores/notificationStore';
+import { handleServiceError } from '@/utils/errorHandler';
+import { useNotificationStore } from '@/stores/notificationStore';
 
 const COLLECTION_NAME = 'workouts';
 

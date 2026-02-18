@@ -100,7 +100,7 @@ import { computed, ref, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
-import { countSets, estimateDuration, formatDate, getDifficultyIcons, getSummary } from '../../../utils/routineStats';
+import { countSets, estimateDuration, formatDate, getDifficultyIcons, getSummary } from '@/utils/routineStats';
 
 /** Acceso al enrutador y a la ruta actual */
 const route = useRoute();

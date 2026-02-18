@@ -36,7 +36,7 @@
                     </div>
 
                     <button class="btn btn-aqua btn-start rounded-circle ms-md-3 mt-md-2"
-                        @click="empezarEntreno(lastRoutine.id)">
+                        @click="empezarEntreno(lastWorkout.rutinaId)">
                         <i class="bi bi-play-fill my-auto"></i>
 
                     </button>
@@ -98,13 +98,13 @@
                             <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
                         </div>
                         <div class="d-flex py-1 text-center">
-                            <small class="text-secondary text-align-center">
+                            <small class="text-secondary text-align-center truncate-2-lines">
                                 {{ getSummary(routine) }}
                             </small>
                         </div>
                         <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
                             <i class="bi bi-play-fill my-auto"></i>
-                            Empezar entrenamiento
+                            Entrenar
                         </button>
                     </div>
                 </div>
@@ -124,7 +124,7 @@ import { computed, ref } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '../../../utils/routineStats'
+import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '@/utils/routineStats'
 
 const router = useRouter()
 const profileStore = useProfileStore()
@@ -213,6 +213,13 @@ function empezarEntreno(id) {
 
 
 <style scoped>
+.truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .routine-container {
     margin: auto;
     display: flex;
@@ -353,7 +360,6 @@ function empezarEntreno(id) {
 }
 
 .routine-card {
-    background: #0e151a;
     border-radius: 10px;
     padding: 22px;
     display: flex;

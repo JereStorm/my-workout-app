@@ -1,7 +1,7 @@
 import { db } from '../firebaseConfig';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { handleServiceError } from '../utils/errorHandler';
-import { useNotificationStore } from '../stores/notificationStore';
+import { handleServiceError } from '@/utils/errorHandler';
+import { useNotificationStore } from '@/stores/notificationStore';
 
 const COLLECTION_NAME = 'profiles';
 

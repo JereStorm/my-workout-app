@@ -3,8 +3,8 @@ import {
     collection, query, where, getDocs, getDoc, addDoc,
     updateDoc, deleteDoc, doc, orderBy, serverTimestamp
 } from 'firebase/firestore';
-import { handleServiceError } from '../utils/errorHandler';
-import { useNotificationStore } from '../stores/notificationStore';
+import { handleServiceError } from '@/utils/errorHandler';
+import { useNotificationStore } from '@/stores/notificationStore';
 
 
 const COLLECTION_NAME = 'routines';

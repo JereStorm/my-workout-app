@@ -320,3 +320,46 @@ form {
   color: #94a3b8;
   border-color: rgba(148, 163, 184, 0.35);
 }
+
+/* Badge Dificultad */
+.badge-difficulty {
+  backdrop-filter: blur(6px);
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+
+/* MUY FACIL */
+.difficulty-very-easy {
+  background: rgba(0, 200, 83, 0.12);
+  color: #00c853;
+  border: 1px solid rgba(0, 200, 83, 0.25);
+}
+
+/* FACIL */
+.difficulty-easy {
+  background: rgba(76, 175, 80, 0.12);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.25);
+}
+
+/* INTERMEDIA */
+.difficulty-medium {
+  background: rgba(255, 193, 7, 0.12);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.25);
+}
+
+/* DIFICIL */
+.difficulty-hard {
+  background: rgba(255, 71, 71, 0.12);
+  color: #ff4747;
+  border: 1px solid rgba(255, 71, 71, 0.25);
+}
+
+/* MUY DIFICIL */
+.difficulty-extreme {
+  background: rgba(156, 39, 176, 0.15);
+  color: #c77dff;
+  border: 1px solid rgba(156, 39, 176, 0.35);
+}

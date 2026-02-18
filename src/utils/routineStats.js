@@ -89,3 +89,24 @@ export const DIFFICULTY_ORDER = {
     "Dificil": 4,
     "Muy dificil": 5
 }
+
+export const DIFFICULTY_STYLE = {
+    "Muy facil": "difficulty-very-easy",
+    "Facil": "difficulty-easy",
+    "Intermedia": "difficulty-medium",
+    "Dificil": "difficulty-hard",
+    "Muy dificil": "difficulty-extreme"
+}
+
+export const DIFFICULTY_COLOR = {
+    "Muy facil": "#00c853",
+    "Facil": "#4caf50",
+    "Intermedia": "#ffc107",
+    "Dificil": "#ff4747",
+    "Muy dificil": "#c77dff"
+}
+
+
+export function getDifficultyClass(dificultad) {
+    return DIFFICULTY_STYLE[dificultad] || ''
+}

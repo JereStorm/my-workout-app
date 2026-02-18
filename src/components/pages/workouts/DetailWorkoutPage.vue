@@ -161,8 +161,8 @@ import {
     formatStimulusActual,
     getStimulusVolume
 } from '@/domain/stimulus'
-import { formatDate } from '../../../utils/routineStats';
-import { sumWorkoutVolume } from '../../../utils/workoutStats';
+import { formatDate } from '@/utils/routineStats';
+import { sumWorkoutVolume } from '@/utils/workoutStats';
 
 
 const { proxy } = getCurrentInstance();

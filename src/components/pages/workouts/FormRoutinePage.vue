@@ -182,7 +182,7 @@ import { reactive, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import Draggable from 'vuedraggable';
-import { confirmAction } from '../../../utils/confirm';
+import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
 
 const { proxy } = getCurrentInstance();

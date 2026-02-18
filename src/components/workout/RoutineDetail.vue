@@ -8,10 +8,11 @@
                 <h1 class="routine-title m-0 text-white fw-bold">
                     {{ rutina.nombre }}
                 </h1>
-                <div class="badge-difficulty px-3 py-1 rounded-pill">
+                <div class="badge-difficulty" :class="difficultyClass(rutina.dificultad)">
                     <small class="text-uppercase fw-bold">{{ rutina.dificultad }}</small>
-                    <span class="ms-1">{{ difficultyIcons }}</span>
+                    <span class="ms-1">{{ difficultyIcons(rutina.dificultad) }}</span>
                 </div>
+
             </div>
 
             <div class="row g-2 mb-3">
@@ -113,8 +114,8 @@
 
 
 <script>
-import { formatStimulusTarget } from '@/domain/stimulus'
-import { getStimulusType } from '../../domain/stimulus';
+import { formatStimulusTarget, getStimulusType } from '@/domain/stimulus'
+import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
 
 
 export default {
@@ -144,17 +145,6 @@ export default {
                 (t, b) => t + (b.ejercicios?.length || 0),
                 0
             )
-        },
-
-        difficultyIcons() {
-            const map = {
-                'Muy facil': 1,
-                'Facil': 2,
-                'Intermedia': 3,
-                'Dificil': 4,
-                'Muy dificil': 5
-            }
-            return '⚡'.repeat(map[this.rutina?.dificultad] || 0)
         }
     },
 
@@ -176,7 +166,13 @@ export default {
                 ej.repeticiones,
                 ej.tiempo
             )
-        }
+        },
+
+        difficultyIcons(dificultad) {
+            return getDifficultyIcons(dificultad)
+        },
+
+        difficultyClass: getDifficultyClass
     }
 
 }
@@ -184,7 +180,6 @@ export default {
 
 <style scoped>
 .routine-detail {
-    max-width: 720px;
     margin: auto;
     padding: 16px;
 }
@@ -193,7 +188,6 @@ export default {
 /* ===== HEADER ===== */
 .routine-header {
     border: 1px solid rgba(255, 255, 255, 0.05);
-    background-image: linear-gradient(145deg, #181818 0%, #0a0a0a 100%);
 }
 
 .routine-title {
@@ -202,12 +196,6 @@ export default {
     text-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
 }
 
-/* Badge de dificultad con estilo Neumorphic Dark */
-.badge-difficulty {
-    background: rgba(255, 71, 71, 0.1);
-    color: #ff4747;
-    border: 1px solid rgba(255, 71, 71, 0.2);
-}
 
 /* Tarjetas de descanso */
 .info-card {
@@ -262,7 +250,6 @@ export default {
 }
 
 .exercise-card {
-    background-image: linear-gradient(145deg, #181818 0%, #0a0a0a 100%);
 
     border-radius: 12px;
     padding: 14px;
@@ -337,5 +324,11 @@ export default {
     color: #13ecec;
     font-weight: 700;
     margin-right: 6px;
+}
+
+@media only screen and (min-width: 768px) {
+    .routine-detail {
+        min-width: 600px;
+    }
 }
 </style>

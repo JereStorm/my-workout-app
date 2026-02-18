@@ -6,7 +6,7 @@ import {
     calculateStreaks,
     sumWorkoutVolume
 } from '@/utils/workoutStats';
-import { LEVEL_THRESHOLDS, levelFromVolume } from '../utils/profileStats';
+import { LEVEL_THRESHOLDS, levelFromVolume } from '@/utils/profileStats';
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
