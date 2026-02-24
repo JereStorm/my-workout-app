@@ -5,7 +5,7 @@
             <div
                 class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
                 <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Rutinas</h1>
-                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-info rounded-circle add-btn">
+                <RouterLink to="/dashboard/form-routine" class="btn btn-outline-info p-3 rounded-circle add-btn">
                     <i class="bi bi-plus-lg text-light"></i>
                 </RouterLink>
             </div>
