@@ -286,6 +286,7 @@ form {
 }
 
 .stimulus-chip {
+  width: fit-content;
   font-size: 0.75rem;
   padding: 4px 10px;
   border-radius: 999px;

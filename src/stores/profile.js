@@ -6,7 +6,7 @@ import {
     calculateStreaks,
     sumWorkoutVolume
 } from '@/utils/workoutStats';
-import { LEVEL_THRESHOLDS, levelFromVolume } from '@/utils/profileStats';
+import { getLevelInfo } from '@/utils/profileStats';
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
@@ -27,36 +27,29 @@ export const useProfileStore = defineStore('profile', {
          */
         userStats: (state) => {
             const workouts = state.profile.workouts || [];
-            if (workouts.length === 0) {
-                return {
-                    totalWorkouts: 0, totalVolume: 0, currentStreak: 0,
-                    bestStreak: 0, level: 1, levelProgress: 0,
-                    nextLevelVolume: LEVEL_THRESHOLDS[1]
-                };
-            }
 
-            console.log(workouts)
-
+            // Calculamos volumen total primero
             const totalVolume = workouts.reduce((sum, w) => sum + sumWorkoutVolume(w), 0);
-            const level = levelFromVolume(totalVolume);
-            const { current, best } = calculateStreaks(workouts);
 
-            const prevVol = LEVEL_THRESHOLDS[level - 1] ?? 0;
-            const nextVol = LEVEL_THRESHOLDS[level] ?? 100000;
-            let progress = (totalVolume - prevVol) / (nextVol - prevVol);
-            progress = Math.min(1, Math.max(0, progress));
+            // Delegamos toda la lógica de nivel a la utilidad
+            const levelInfo = getLevelInfo(totalVolume);
+
+            // Delegamos rachas
+            const { current, best } = calculateStreaks(workouts);
 
             return {
                 totalWorkouts: workouts.length,
                 totalVolume,
                 currentStreak: current,
                 bestStreak: best,
-                level,
-                levelProgress: progress,
-                nextLevelVolume: nextVol
+                level: levelInfo.level,
+                levelProgress: levelInfo.progress,
+                nextLevelVolume: levelInfo.nextThreshold,
+                isMaxLevel: levelInfo.isMaxLevel
             };
         },
 
+        // Simplificación de getters de acceso directo
         getNickname: (state) => state.profile.nickname,
         getUserRoutines: (state) => state.profile.routines,
         getWorkouts: (state) => state.profile.workouts,

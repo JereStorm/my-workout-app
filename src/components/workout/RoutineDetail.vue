@@ -18,7 +18,7 @@
             <div class="row g-2 mb-3">
                 <div class="col-6">
                     <div class="info-card p-2 rounded-3 text-center">
-                        <p class="d-block text-secondary small mb-0 text-uppercase">Descanso Series</p>
+                        <p class="d-block px-3 mx-md-0 small mb-0 text-uppercase">Descanso Series</p>
                         <span class="text-aqua fw-semibold">
                             <i class="bi bi-stopwatch"></i> {{ formatTiempoDesc(rutina.descansoSeries) }}
                         </span>
@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-6">
                     <div class="info-card p-2 rounded-3 text-center">
-                        <p class="d-block text-secondary small mb-0 text-uppercase">Descanso Bloques</p>
+                        <p class="d-block small mb-0 text-uppercase">Descanso Bloques</p>
                         <span class="text-aqua fw-semibold">
                             <i class="bi bi-arrow-repeat"></i> {{ formatTiempoDesc(rutina.descansoBloques) }}
                         </span>
@@ -37,17 +37,17 @@
             <div class="global-stats d-flex justify-content-around align-items-center py-2 border-top border-secondary">
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalBlocks }}</div>
-                    <small class="text-secondary">Bloques</small>
+                    <small class="">Bloques</small>
                 </div>
                 <div class="v-line"></div>
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalSeries }}</div>
-                    <small class="text-secondary">Series</small>
+                    <small class="">Series</small>
                 </div>
                 <div class="v-line"></div>
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalExercises }}</div>
-                    <small class="text-secondary">Ejercicios</small>
+                    <small class="">Ejercicios</small>
                 </div>
             </div>
         </header>
@@ -60,7 +60,7 @@
             <section v-for="(bloque, bi) in bloques" :key="bi" class="block">
 
                 <!-- header bloque -->
-                <div class="block-header">
+                <div class="block-header ">
                     <h3 class="h5">Bloque {{ bi + 1 }}</h3>
                     <h3 class="h6">{{ bloque.series }} series</h3>
                 </div>
@@ -74,13 +74,9 @@
                         <div class="exercise-main">
 
                             <div class="exercise-text">
-                                <h4>{{ ej.nombre }}</h4>
+                                <h4 class="h4">{{ ej.nombre }}</h4>
 
-                                <p v-if="ej.notas" class="exercise-note pe-5">
-                                    {{ ej.notas }}
-                                </p>
                             </div>
-
                             <div class="exercise-metrics">
 
                                 <!-- etiqueta unificada del estímulo -->
@@ -90,8 +86,11 @@
 
                             </div>
 
-
-
+                        </div>
+                        <div v-if="ej.notas" class="block-note">
+                            <p class="exercise-note my-auto">
+                                ({{ ej.notas }})
+                            </p>
                         </div>
 
                     </div>
@@ -237,7 +236,7 @@ export default {
     justify-content: space-between;
     font-size: .8rem;
     font-weight: 700;
-    opacity: .7;
+    opacity: .9;
 }
 
 
@@ -262,16 +261,24 @@ export default {
     align-items: center;
 }
 
+.exercise-text {
+    text-align: start;
+}
+
 .exercise-text h4 {
     margin: 0;
     font-size: .95rem;
 }
 
+.exercise-metrics {
+    min-width: fit-content;
+    margin-left: 30px;
+}
+
 .exercise-note {
-    text-align: start;
-    margin-top: 4px;
+    text-align: center;
     font-size: .75rem;
-    opacity: .6;
+    opacity: .9;
 }
 
 
@@ -285,12 +292,6 @@ export default {
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #ccc;
     font-weight: 500;
-}
-
-
-.exercise-metrics {
-    display: flex;
-    gap: 18px;
 }
 
 .metric {

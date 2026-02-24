@@ -9,7 +9,7 @@
 
 ## 🧰 Stack Tecnológico
 
-- **Frontend:** [Vue.js 3](https://vuejs.org/) + [Pinia](https://pinia.vuejs.org/) + [Tailwind CSS](https://tailwindcss.com/)
+- **Frontend:** [Vue.js 3](https://vuejs.org/) + [Pinia](https://pinia.vuejs.org/) + [Bootstrap CSS](https://getbootstrap.com/)
 - **Backend as a Service:** [Firebase](https://firebase.google.com/)
   - Firebase Authentication (Email & Password)
   - Cloud Firestore (Base de datos en tiempo real)
@@ -27,8 +27,22 @@
 - Cada rutina puede tener bloques con series, repeticiones (numéricas o por tiempo) y notas.  
 - Las rutinas están vinculadas al usuario que las creó.
 
+✅ **Favoritos**  
+- Posibilidad de guardar rutinas como favoritas.
+
+✅ **Gestión de entrenamientos**  
+- Crear y eliminar entrenamientos relacionados a las rutinas.  
+- Cada entrenamiento registra los bloques con susseries y repeticiones logradas.
+
+✅ **Historial de entrenamientos** 
+- Detalle completo del entrenamiento, bloques, series, reps, feedback final.
+- Calculo de estadisticas del entrenamiento (Volumen total, Reps esperadas vs Reps logradas)
+
+✅ **Estadísticas y progresos**  
+- Registro de avances en Volumen de reps y sistemas de nivel internos para motivar.
+
 ✅ **Almacenamiento en la nube**  
-- Las rutinas se almacenan en Firestore, accesibles desde cualquier dispositivo tras iniciar sesión.
+- Las entidades se almacenan en Firestore, accesibles desde cualquier dispositivo tras iniciar sesión.
 
 ✅ **Organización inteligente**  
 - Rutinas ordenadas por fecha de creación, de más recientes a más antiguas.
@@ -36,24 +50,16 @@
 ✅ **Sincronización en tiempo real**  
 - Después de cada acción (crear, eliminar, actualizar), la app sincroniza automáticamente las rutinas del usuario.
 
+✅ **Persistencia del perfil**  
+- Guardado y recuperación del nickname del usuario en Firestore
+
 ---
 
 ## 🛠️ En desarrollo / Mejoras previstas
 
-🔄 **Persistencia del perfil**  (HECHO 14/05)
-- Guardado y recuperación del nickname del usuario en Firestore (actualmente es solo local).
-
-📅 **Historial de entrenamientos**  
-- Vinculación de rutinas a fechas específicas para llevar seguimiento.
-
-🌐 **Explorar rutinas públicas**  
+🌐 **Explorar rutinas públicas** 
 - Agregar opción de marcar una rutina como pública y navegar rutinas creadas por otros usuarios.
 
-⭐ **Favoritos**  
-- Posibilidad de guardar rutinas de otros usuarios como favoritas.
-
-📈 **Estadísticas y progresos**  
-- Registro de avances en dominadas, flexiones u otros movimientos a lo largo del tiempo.
 
 🌙 **Tema oscuro / claro**  
 - Selector de tema visual, con preferencia guardada en el dispositivo.
