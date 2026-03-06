@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center mb-4">
+    <div class="text-center mb-4 mx-2">
 
 
         <!-- Avatar -->

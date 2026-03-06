@@ -1,5 +1,5 @@
 <template>
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 mx-2">
 
         <div class="row g-3 mx-auto">
 
