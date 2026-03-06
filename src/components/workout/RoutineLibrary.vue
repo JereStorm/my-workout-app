@@ -3,14 +3,14 @@
         <div class="routines-container mb-auto">
             <!-- HEADER -->
             <div
-                class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
+                class="page-header px-3 py-2 gap-5 mt-md-1 mb-5 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
                 <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Rutinas</h1>
                 <RouterLink to="/dashboard/form-routine" class="btn btn-outline-info p-3 rounded-circle add-btn">
                     <i class="bi bi-plus-lg text-light"></i>
                 </RouterLink>
             </div>
 
-            <div class="search-container mb-4 mx-5">
+            <div class="search-container mb-3 mx-5">
                 <div class="input-group ">
                     <span class="input-group-text bg-dark border-secondary text-secondary">
                         <i class="bi bi-search"></i>
