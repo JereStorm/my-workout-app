@@ -15,10 +15,13 @@ import DetailWorkoutPage from "@/components/pages/workouts/DetailWorkoutPage.vue
 import SelectRoutinePage from "@/components/pages/workouts/SelectRoutinePage.vue";
 import RoutineDetailPage from "@/components/pages/workouts/RoutineDetailPage.vue";
 import RoutineLibrary from "@/components/workout/RoutineLibrary.vue";
+import LandingPage from "../components/pages/landing/LandingPage.vue";
 
 const routes = [
     { path: '/register', name: 'Register', component: RegisterPage },
     { path: '/login', name: 'Login', component: LoginPage },
+    { path: '/landing-page', name: 'LandingPage', component: LandingPage },
+
     {
         path: '/dashboard',
         name: 'Dashboard',
