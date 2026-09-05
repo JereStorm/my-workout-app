@@ -102,7 +102,7 @@
                     </p>
                     <div class="small text-start ">
 
-                        <p><i class="bi bi-check-lg"></i> Clases presenciales 3 veces por semana</p>
+                        <p><i class="bi bi-check-lg"></i> Clases presenciales 2 o 3 veces por semana</p>
 
                         <p><i class="bi bi-check-lg"></i> Seguimiento personalizado</p>
 
@@ -115,9 +115,9 @@
                     <p class="text-muted small text-uppercase">
                         Inversion mensual
                     </p>
-                    <h3 class="h1">$40.000</h3>
+                    <h3 class="h1">40.000 $</h3>
                     <p class="text-muted">
-                        Cupos limitados por grupo
+                        (Cupos limitados por grupo)
                     </p>
                     <button class="btn btn-success btn-lg mt-3">
                         Reservar mi lugar <i class="bi bi-arrow-up-right"></i>
