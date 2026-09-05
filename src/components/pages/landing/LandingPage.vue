@@ -115,7 +115,7 @@
                     <p class="text-muted small text-uppercase">
                         Inversion mensual
                     </p>
-                    <h3 class="h1">$45.000</h3>
+                    <h3 class="h1">$40.000</h3>
                     <p class="text-muted">
                         Cupos limitados por grupo
                     </p>
