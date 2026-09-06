@@ -56,7 +56,7 @@
         </section>
 
         <!-- FILOSOFIA -->
-        <section id="clases" class="section bg-light text-dark">
+        <section id="clases" class="section bg-light text-dark px-5">
             <div class="container text-start">
                 <h3 class="section-subtitle small">Nuestra filosofía</h3>
                 <h2 class="section-title">Entrenamiento con propósito</h2>
@@ -134,39 +134,6 @@
                     Entrenamos en distintos puntos de Tandil para aprovechar lo mejor del entorno: espacios abiertos,
                     barras y aire libre.
                 </p>
-
-                <div class="row g-4">
-                    <div v-for="(loc, index) in locations" :key="index" class="col-md-6">
-                        <div
-                            class="location-card p-4 border rounded-3 shadow-sm h-100 d-flex flex-wrap align-items-start justify-content-center gap-3">
-                            <div class="d-flex align-items-start gap-5">
-                                <div class="location-icon">
-                                    <i class="bi bi-geo-alt-fill text-danger fs-2"></i>
-                                </div>
-                                <div>
-                                    <h5 class="fw-bold mb-1">{{ loc.place }}</h5>
-                                    <p class="text-muted small mb-2">{{ loc.address }}</p>
-                                    <div class="badge bg-info text-dark px-3 py-2">
-                                        <i class="bi bi-calendar3 me-2"></i>{{ loc.days }}
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="w-100">
-                                <iframe :src="loc.mapSrc" class="w-100 rounded" height="200" width="200"
-                                    style="border:0;" loading="lazy">
-                                </iframe>
-                            </div>
-                            <div class="mt-3">
-                                <a :href="loc.mapLink" target="_blank" class="btn btn-sm text-info">
-                                    Ver en Google Maps <i class="bi bi-arrow-up-right"></i>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
 
                 <p class="text-center mt-5 text-muted italic">
                     <i class="bi bi-info-circle me-2"></i>
