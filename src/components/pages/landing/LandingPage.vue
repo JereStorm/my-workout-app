@@ -56,12 +56,12 @@
         </section>
 
         <!-- FILOSOFIA -->
-        <section id="clases" class="section bg-light text-dark px-5">
-            <div class="container text-start">
-                <h3 class="section-subtitle small">Nuestra filosofía</h3>
-                <h2 class="section-title">Entrenamiento con propósito</h2>
+        <section id="clases" class="section bg-light text-dark">
+            <div class="container">
+                <h3 class="section-subtitle small text-start">Nuestra filosofía</h3>
+                <h2 class="section-title text-start">Entrenamiento con propósito</h2>
 
-                <div class="row mt-5">
+                <div class="row mt-5 ">
                     <div class="col-md-3" v-for="item in features" :key="item.title">
                         <div class="card-feature">
                             <i :class="item.icon + ' feature-icon'"></i>
@@ -93,7 +93,7 @@
         </section>
 
         <!-- PRECIO -->
-        <section id="precio" class="section bg-light text-dark">
+        <section id="precio" class="section bg-light text-dark d-flex mx-auto">
 
             <div class="price-card d-flex flex-wrap gap-3 gap-md-5 mx-auto justify-content-center">
                 <div>
@@ -113,7 +113,7 @@
                 </div>
                 <div class="my-3 px-3 py-3 bg-light rounded text-center">
                     <p class="text-muted small text-uppercase">
-                        Inversion mensual
+                        2 clases por semana
                     </p>
                     <h3 class="h1">40.000 $</h3>
                     <p class="text-muted">
@@ -126,21 +126,58 @@
             </div>
         </section>
 
-        <section id="ubicacion" class="section bg-white text-dark">
-            <div class="container">
-                <h3 class="section-subtitle small text-dark">¿Dónde entrenamos?</h3>
-                <h2 class="section-title mb-5">Puntos de encuentro en Tandil</h2>
-                <p class="text-muted mb-5 mx-5 text-center">
-                    Entrenamos en distintos puntos de Tandil para aprovechar lo mejor del entorno: espacios abiertos,
-                    barras y aire libre.
+<section id="ubicacion" class="section bg-white text-dark">
+    <h2 class="section-subtitle text-dark mb-5 h5">¿Dónde entrenamos?</h2>
+
+    <div class="container">
+        <div class="row align-items-center justify-content-center g-5">
+
+            <!-- Información -->
+            <div class="col-12 col-md-6">
+                <h2 class="section-title mb-3 text-start">
+                    Nuestros puntos de encuentro
+                </h2>
+
+                <p class="text-muted mb-4 text-start">
+                    Entrenamos en distintos puntos de Tandil para aprovechar lo mejor del entorno:
+                    espacios abiertos, barras y aire libre.
                 </p>
 
-                <p class="text-center mt-5 text-muted italic">
+                <div class="callout callout-info text-start mb-3">
+                    <h3 class="h5">Parque del Ferrocarril</h3>
+                    <p class="text-muted small mb-0">
+                        Machado, entre Alsina y 4 de Abril
+                    </p>
+                </div>
+
+                <div class="callout callout-info text-start">
+                    <h3 class="h5">Plaza El Calvario</h3>
+                    <p class="text-muted small mb-0">
+                        Av. Rivadavia, entre Mitre y Av. España
+                    </p>
+                </div>
+
+                <p class="text-center mt-4 mb-0 text-muted italic">
                     <i class="bi bi-info-circle me-2"></i>
-                    En caso de lluvia intensa, coordinamos el cambio de lugar o fecha por el grupo de WhatsApp.
+                    En caso de lluvia intensa, coordinamos el cambio de lugar o fecha
+                    por el grupo de WhatsApp.
                 </p>
             </div>
-        </section>
+
+            <!-- Imagen -->
+            <div class="col-12 col-md-5">
+                <div class="hero-img">
+                    <img
+                        src="/src/assets/tandil.jpg"
+                        alt="Tandil"
+                        class="img-fluid w-100"
+                    />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
 
         <!-- CTA FINAL -->
         <section class="cta">
@@ -381,6 +418,14 @@ const steps = ref([
     margin-left: 2px;
 }
 
+.callout {
+    background-color: #e9f7fe;
+    border-left: 2px solid #0dcaf0;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
 @keyframes blink {
 
     0%,
@@ -427,8 +472,8 @@ const steps = ref([
 .step-number {
     width: 60px;
     height: 60px;
-    background: black;
-    color: white;
+    background: white;
+    color: black;
     border-radius: 50%;
     border-radius: 16px;
     margin: auto;
