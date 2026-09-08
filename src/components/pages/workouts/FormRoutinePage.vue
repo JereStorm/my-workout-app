@@ -1,12 +1,19 @@
 <template>
     <div class="add-routine-form">
-        <h2 class="text-center mb-4">
-            {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Agregar Nueva Rutina' }}
-        </h2>
+        <div class="d-flex w-100 justify-content-start sticky-header align-items-center gap-3 ps-3 mb-3">
+            <h2 class="text-start mb-0">
+                {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Crear Rutina' }}
+            </h2>
+            <button @click="guardarRutina" class="border-info btn btn-guardar mt-0 ">
+                Guardar <i class="bi bi-box-arrow-up"></i>
+            </button>
+
+        </div>
+
         <div v-if="isLoadingInfo" class="loader"></div>
-        <form v-else @submit.prevent="guardarRutina" class="p-2 p-md-4">
+        <form v-else class="p-2 p-md-4">
             <div class="mb-3 text-start">
-                <label for="nombre" class="form-label">Nombre</label>
+                <label for="nombre" class="form-label">Nombre de la rutina</label>
                 <input type="text" v-model="nuevaRutina.nombre" spellcheck="false" autocomplete="on"
                     :class="['form-control', inputClass(nuevaRutina.nombre)]" id="nombre" required>
             </div>
@@ -21,27 +28,58 @@
                     <option value="Muy dificil">Muy difícil</option>
                 </select>
             </div>
-            <div class="mb-3 text-start d-flex justify-content-start gap-5 align-items-center">
-                <label for="descansoBloques" class="form-label w-50 mb-0">
-                    Descanso entre Bloques
-                </label>
-                <div class="d-flex gap-2 align-items-baseline">
-                    <input type="number" v-model="nuevaRutina.descansoBloques" class="form-control  input-number"
-                        id="descansoBloques">
-                    <span class="descanso-min text-info fw-medium">
-                        {{ formatTiempo(nuevaRutina.descansoBloques) }} M
-                    </span>
-                </div>
+            <div class="d-flex flex-column flex-md-row justify-content-start gap-3 align-items-center">
+                <!-- Descanso entre Bloques -->
+                <div class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
+                    <label for="descansoBloques" class="form-label  mb-0">
+                        Descanso entre Bloques
+                    </label>
 
-            </div>
-            <div class="mb-3 text-start d-flex justify-content-start gap-5 align-items-center ">
-                <label for="descansoSeries" class="form-label w-50 mb-0">Descanso entre Series</label>
-                <div class="d-flex gap-2 align-items-baseline">
-                    <input type="number" v-model="nuevaRutina.descansoSeries" class="form-control  input-number"
-                        id="descansoSeries">
-                    <span class="descanso-min text-info fw-medium">
-                        {{ formatTiempo(nuevaRutina.descansoSeries) }} M
-                    </span>
+                    <div class="">
+                        <select id="descansoBloques" v-model="descansoBloquesSeleccionado"
+                            class="form-select input-time">
+                            <option :value="60">1 min</option>
+                            <option :value="120">2 min</option>
+                            <option :value="180">3 min</option>
+                            <option :value="300">5 min</option>
+                            <option :value="600">10 min</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+
+                        <div v-if="descansoBloquesSeleccionado === 'personalizado'" class="d-flex gap-2 mt-2">
+                            <input type="number" v-model.number="descansoBloquesPersonalizado.minutos"
+                                class="form-control text-center" min="0" placeholder="Min">
+                            <span class="mt-2">:</span>
+                            <input type="number" v-model.number="descansoBloquesPersonalizado.segundos"
+                                class="form-control text-center" min="0" max="59" placeholder="Seg">
+                        </div>
+                    </div>
+                </div>
+                <!-- Descanso entre Series -->
+                <div class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
+                    <label for="descansoSeries" class="form-label  mb-0">
+                        Descanso entre Series
+                    </label>
+
+                    <div class="">
+                        <select id="descansoSeries" v-model="descansoSeriesSeleccionado" class="form-select input-time">
+                            <option :value="30">30 seg</option>
+                            <option :value="60">1 min</option>
+                            <option :value="90">1:30 min</option>
+                            <option :value="120">2 min</option>
+                            <option :value="180">3 min</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+
+                        <div v-if="descansoSeriesSeleccionado === 'personalizado'"
+                            class="d-flex personalizado gap-2 mt-2">
+                            <input type="number" v-model.number="descansoSeriesPersonalizado.minutos"
+                                class="form-control text-center" min="0" placeholder="Min">
+
+                            <input type="number" v-model.number="descansoSeriesPersonalizado.segundos"
+                                class="form-control text-center" min="0" max="59" placeholder="Seg">
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -162,10 +200,7 @@
             <div v-if="isLoadingSave" class="loader-form"></div>
 
             <div class="text-center d-flex btns-set-routine flex-column align-items-center">
-                <button type="submit" class="btn btn-success mt-0">
-                    <i class="bi bi-box-arrow-down"></i>
-                    Guardar rutina
-                </button>
+                <button  type="button" @click="guardarRutina" class="btn btn-guardar mt-0"><i  class="bi bi-box-arrow-down"></i> Guardar rutina </button>
 
                 <button type="button" @click="handleCancelar" class="btn btn-danger mt-3 mb-2">
                     <i class="bi bi-x-circle"></i> Cancelar
@@ -184,6 +219,8 @@ import { useProfileStore } from '@/stores/profile';
 import Draggable from 'vuedraggable';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
+import { useNotificationStore } from '@/stores/notificationStore';
+
 
 const { proxy } = getCurrentInstance();
 
@@ -219,6 +256,86 @@ const nuevaRutina = reactive({
         notas: ''
     }]
 });
+
+const descansoBloquesSeleccionado = ref(nuevaRutina.descansoBloques);
+const descansoSeriesSeleccionado = ref(nuevaRutina.descansoSeries);
+
+const descansoBloquesPersonalizado = reactive({
+    minutos: 0,
+    segundos: 0
+});
+
+const descansoSeriesPersonalizado = reactive({
+    minutos: 0,
+    segundos: 0
+});
+
+watch(descansoBloquesSeleccionado, (valor) => {
+    if (valor !== 'personalizado') {
+        nuevaRutina.descansoBloques = Number(valor);
+    }
+});
+
+watch(descansoSeriesSeleccionado, (valor) => {
+    if (valor !== 'personalizado') {
+        nuevaRutina.descansoSeries = Number(valor);
+    }
+});
+
+watch(
+    descansoBloquesPersonalizado,
+    (valor) => {
+        if (descansoBloquesSeleccionado.value === 'personalizado') {
+            nuevaRutina.descansoBloques =
+                Number(valor.minutos) * 60 +
+                Number(valor.segundos);
+        }
+    },
+    { deep: true }
+);
+
+watch(
+    descansoSeriesPersonalizado,
+    (valor) => {
+        if (descansoSeriesSeleccionado.value === 'personalizado') {
+            nuevaRutina.descansoSeries =
+                Number(valor.minutos) * 60 +
+                Number(valor.segundos);
+        }
+    },
+    { deep: true }
+);
+
+function configurarDescansos() {
+    const opcionesBloques = [60, 120, 180, 300, 600];
+    const opcionesSeries = [30, 60, 90, 120, 180];
+
+    // BLOQUES
+    if (opcionesBloques.includes(nuevaRutina.descansoBloques)) {
+        descansoBloquesSeleccionado.value = nuevaRutina.descansoBloques;
+    } else {
+        descansoBloquesSeleccionado.value = 'personalizado';
+
+        descansoBloquesPersonalizado.minutos =
+            Math.floor(nuevaRutina.descansoBloques / 60);
+
+        descansoBloquesPersonalizado.segundos =
+            nuevaRutina.descansoBloques % 60;
+    }
+
+    // SERIES
+    if (opcionesSeries.includes(nuevaRutina.descansoSeries)) {
+        descansoSeriesSeleccionado.value = nuevaRutina.descansoSeries;
+    } else {
+        descansoSeriesSeleccionado.value = 'personalizado';
+
+        descansoSeriesPersonalizado.minutos =
+            Math.floor(nuevaRutina.descansoSeries / 60);
+
+        descansoSeriesPersonalizado.segundos =
+            nuevaRutina.descansoSeries % 60;
+    }
+}
 
 // Mostrar/ocultar notas (por ejercicio y por bloque)
 const showNotasEjercicio = ref(new Set());
@@ -256,7 +373,7 @@ function aplicarRutinaSiCorresponde() {
             const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
             if (rutinaExistente) {
                 Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
-
+                configurarDescansos();
                 console.log(nuevaRutina)
                 isLoadingInfo.value = false;
             } else {
@@ -319,13 +436,113 @@ const resetFormulario = () => {
  * Navega a la vista de rutinas del usuario.
  */
 const handleCancelar = async () => {
-    const ok = await confirmAction(proxy.$swal, {
-        title: '¿Cancelar entrenamiento?',
-        text: 'Se perderá el progreso actual'
-    })
-
-    if (!ok) return
+    if (rutinaIdFromRoute) {
+        const ok = await confirmAction(proxy.$swal, {
+            title: '¿Seguro deseas cancelar la edición?',
+            text: 'Se perderán los cambios realizados'
+        })
+        if (!ok) return
+    } else {
+        const ok = await confirmAction(proxy.$swal, {
+            title: '¿Seguro deseas cancelar?',
+            text: 'Se perderá el progreso actual'
+        })
+        if (!ok) return
+    }
     router.back();
+};
+
+const focusField = (id) => {
+    const element = document.getElementById(id);
+
+    if (!element) return;
+
+    element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+
+    // Esperamos a que termine mínimamente el scroll antes del focus
+    setTimeout(() => {
+        element.focus();
+    }, 300);
+};
+
+const validarRutina = () => {
+    const notify = useNotificationStore();
+
+    // Nombre de la rutina
+    if (!nuevaRutina.nombre.trim()) {
+        notify.show(
+            'El nombre de la rutina no puede estar vacío.',
+            'error'
+        );
+
+        focusField('nombre');
+        return false;
+    }
+
+    // Validación de bloques
+    for (const [indexBloque, bloque] of nuevaRutina.bloques.entries()) {
+
+        // Series
+        if (!bloque.series || bloque.series < 1) {
+            notify.show(
+                `El bloque ${indexBloque + 1} debe tener al menos 1 serie.`,
+                'error'
+            );
+
+            focusField(`series-bloque-${indexBloque}`);
+            return false;
+        }
+
+        // Validación de ejercicios
+        for (const [ejercicioIndex, ejercicio] of bloque.ejercicios.entries()) {
+
+            if (!ejercicio.nombre.trim()) {
+                notify.show(
+                    `El ejercicio ${ejercicioIndex + 1} del bloque ${indexBloque + 1} necesita un nombre.`,
+                    'error'
+                );
+
+                focusField(
+                    `ejercicio-${indexBloque}-${ejercicioIndex}`
+                );
+
+                return false;
+            }
+
+            // Repeticiones
+            if (!ejercicio.repeticiones || ejercicio.repeticiones < 1) {
+                notify.show(
+                    `Las repeticiones del ejercicio ${ejercicioIndex + 1} deben ser mayores a 0.`,
+                    'error'
+                );
+
+                focusField(
+                    `reps-${indexBloque}-${ejercicioIndex}`
+                );
+
+                return false;
+            }
+
+            // Tiempo
+            if (ejercicio.tiempo < 0) {
+                notify.show(
+                    `El tiempo del ejercicio ${ejercicioIndex + 1} no puede ser negativo.`,
+                    'error'
+                );
+
+                focusField(
+                    `tiempo-${indexBloque}-${ejercicioIndex}`
+                );
+
+                return false;
+            }
+        }
+    }
+
+    return true;
 };
 
 /**
@@ -334,6 +551,14 @@ const handleCancelar = async () => {
  */
 const guardarRutina = async () => {
     isLoadingSave.value = true;
+
+    const isValid = validarRutina();
+
+    if (!isValid) {
+        isLoadingSave.value = false;
+        return;
+    }
+
     try {
         if (nuevaRutina.id) {
             // Edición de rutina existente
@@ -416,6 +641,16 @@ const formatTiempo = (segundos) => {
 </script>
 
 <style scoped>
+.sticky-header {
+    position: sticky;
+    top: 0px;
+    width: 100%;
+    background-color: transparent;
+    z-index: 1000;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 /* Clases para el draggable */
 .ghost {
     opacity: 0.5;
@@ -456,11 +691,6 @@ const formatTiempo = (segundos) => {
     gap: 5px
 }
 
-#descansoBloques,
-#descansoSeries {
-    width: 70px;
-}
-
 .add-routine-form form input,
 select {
     background: transparent;
@@ -478,7 +708,8 @@ select {
 .input-difficulty,
 .input-rir {
     border-radius: 5px;
-    border: 1px solid aquamarine;
+    border-left: 1px solid aquamarine;
+    border-bottom: 1px solid aquamarine;
     width: 70px;
     text-align: center;
 
@@ -493,8 +724,13 @@ select {
     background-color: #151515;
 }
 
+.input-time option {
+    background-color: #151515;
+}
+
 .bloque-container {
-    border: 1px solid lightskyblue;
+    border-left: 3px solid lightskyblue;
+    background-color: #101010;
 }
 
 .setting-exercise {
@@ -532,6 +768,17 @@ select {
     width: 80%;
 }
 
+.descanso-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 3px solid aquamarine;
+    border-radius: 5px;
+    padding-bottom: 5px;
+}
+
 .add-routine-form {
     width: 100%;
     margin: 0 auto;
@@ -561,6 +808,19 @@ select {
     padding: 4px 12px;
     width: 80%;
     gap: 10px;
+}
+
+.add-routine-form .btn-guardar {
+    width: auto;
+    transition: all 0.3s ease;
+    background-color: aqua;
+    color: #000;
+
+}
+
+.add-routine-form .btn-guardar:hover {
+    background-color: #007575;
+    color: #fff;
 }
 
 .btn-nota {

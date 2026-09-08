@@ -200,7 +200,7 @@ function formatActual(log, ei) {
 
 const deleteWorkout = async () => {
     const ok = await confirmAction(proxy.$swal, {
-        title: '¿Seguro queires eliminar este entrenamiento?',
+        title: '¿Seguro quieres eliminar este entrenamiento?',
         text: 'Se perderán los datos para siempre'
     })
 
