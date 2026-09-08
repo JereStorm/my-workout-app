@@ -1,6 +1,6 @@
 <template>
     <div class="add-routine-form">
-        <div class="d-flex w-100 justify-content-start sticky-header align-items-center gap-3 ps-3 mb-3">
+        <div class="d-flex w-100 justify-content-start justify-content-md-center sticky-header align-items-center gap-3 gap-md-5 ps-3 mb-3">
             <h2 class="text-start mb-0">
                 {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Crear Rutina' }}
             </h2>
@@ -776,13 +776,13 @@ select {
     align-items: center;
     border-left: 3px solid aquamarine;
     border-radius: 5px;
-    padding-bottom: 5px;
+    padding: 5px;
 }
 
 .add-routine-form {
     width: 100%;
     margin: 0 auto;
-    padding-top: 100px;
+    padding-top: 80px;
     display: flex;
     flex-direction: column;
 }
@@ -892,6 +892,9 @@ select {
         max-width: 240px;
     }
 
+    .sticky-header {
+        position: relative;
+    }
 }
 
 @keyframes blink {
