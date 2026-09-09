@@ -10,20 +10,21 @@
                 </RouterLink>
             </div>
 
-            <div class="search-container mb-3 mx-5">
-                <div class="input-group ">
-                    <span class="input-group-text bg-dark border-secondary text-secondary">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input v-model="searchQuery" type="text" class="form-control text-white border-secondary"
-                        placeholder="Buscar rutina por nombre..." />
+            <div class="mb-3 mx-5">
+                <div class="section-label muted">
+                    Todas las rutinas
+                    <div class="line"></div>
+                </div>
+                <div class="search-box mx-auto mb-4 px-2 ">
+                    <i class="bi bi-search"></i>
+                    <input v-model="searchQuery" type="text" placeholder="Buscar rutina..." class="form-control">
                 </div>
             </div>
 
             <div v-if="!isLoading"
-                class="d-flex justify-content-center justify-content-md-between align-items-center mx-md-5 mb-3">
+                class="d-flex justify-content-center gap-3 gap-md-5 align-items-center mx-md-5 mb-3">
                 <div class="d-flex align-items-baseline text-start mx-md-5">
-                    <label for="orderBy" class="me-2">Ordenar por</label>
+                    <label for="orderBy" class="me-2">Orden</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
                         <option value="fechaCreacionDesc">Más Reciente</option>
                         <option value="fechaCreacionAsc">Más Antigua</option>
@@ -32,7 +33,7 @@
                     </select>
                 </div>
 
-                <div class="view-toggle rounded mx-md-5">
+             <div class="view-toggle rounded mx-md-5">
                     <button @click="viewMode = 'grid'"
                         :class="['btn btn-sm', viewMode === 'grid' ? 'btn-primary' : 'text-white']">
                         <i class="bi bi-grid-fill"></i>
@@ -136,6 +137,55 @@ const copiarRutina = async (r) => {
     width: 90%;
     height: 100%;
     max-width: 1200px;
+}
+
+
+.search-box {
+    position: relative;
+    max-width: 500px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .5;
+}
+
+.search-box input {
+    padding-left: 40px;
+    background-color: transparent;
+    border: 1 px solid rgba(255, 255, 255, .2);
+    border-radius: 6px;
+    height: 50px;
+    color: white;
+}
+
+.search-box input::placeholder {
+    color: #7a7a7a;
+}
+
+/* SECTION LABEL */
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: .7rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: cyan;
+    margin-bottom: 18px;
+}
+
+.section-label.muted {
+    color: #7a7a7a;
+}
+
+.section-label .line {
+    height: 1px;
+    flex: 1;
+    background: rgba(255, 255, 255, .1);
 }
 
 .routine-resumen {

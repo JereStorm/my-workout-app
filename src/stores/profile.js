@@ -68,7 +68,7 @@ export const useProfileStore = defineStore('profile', {
                     WorkoutService.fetchByUserId(uid),
                     ProfileService.getProfile(uid)
                 ]);
-
+                console.log('Profile loaded:', { uid, email, routines, workouts, profileData });
                 this.profile = {
                     id: uid,
                     email: email,
@@ -95,7 +95,8 @@ export const useProfileStore = defineStore('profile', {
         // --- ACCIONES DE RUTINAS ---
         async createRoutine(routineData) {
             try {
-                const payload = { ...routineData, idUser: this.profile.id };
+                const payload = { ...routineData, idUser: this.profile.id, fechaCreacion: new Date().toISOString() };
+                console.log('Creating routine with payload:', payload);
                 const id = await RoutineService.create(payload);
                 this.profile.routines.unshift({ id, ...payload });
                 return id;
@@ -111,10 +112,15 @@ export const useProfileStore = defineStore('profile', {
         },
 
         async deleteRoutine(routineId) {
+            this.isLoading = true;
             try {
                 await RoutineService.delete(routineId);
                 this.profile.routines = this.profile.routines.filter(r => r.id !== routineId);
-            } catch (error) { throw error; }
+                this.isLoading = false;
+            } catch (error) {
+                this.isLoading = false;
+                throw error;
+            }
         },
 
         async toggleFavorite(routineId, currentValue) {

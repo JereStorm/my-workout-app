@@ -2,12 +2,13 @@
     <div class="routine-detail-page">
         <h1 class="titulo mb-3 mb-md-5 h5 text-uppercase mt-3 pt-2">Detalle Rutina</h1>
 
+        <div v-if="!rutinaLocal && isLoading" class="loader"></div>
 
-
-        <div v-if="isLoading" class="loader"></div>
-
-        <div v-else>
+        <div v-if="rutinaLocal">
             <RoutineDetail :rutina="rutinaLocal" />
+        </div>
+        <div v-if="rutinaLocal && isLoading" class="loader"></div>
+
             <ul class="mini-menu pb-3 mt-3">
                 <li @click.stop="registrarEntrenamiento(rutinaLocal)">
                     <span><i class="bi bi-file-earmark-plus color-principal"></i>Entrenar</span>
@@ -22,8 +23,6 @@
                     <span><i class="bi bi-copy color-principal"></i>Copiar</span>
                 </li>
             </ul>
-
-        </div>
         <div class="mt-5" v-if="!isLoading && !rutinaLocal">
             <h5>Rutina guardadas aún.</h5>
         </div>
@@ -34,11 +33,14 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
+import { confirmAction } from '@/utils/confirm';
+import { getCurrentInstance } from 'vue';
 import RoutineDetail from '@/components/workout/RoutineDetail.vue';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
+const { proxy } = getCurrentInstance();
 
 // instancia el store
 const profileStore = useProfileStore();
@@ -66,15 +68,17 @@ watch(rutina, (val) => {
  * @param {string} rutinaId 
  */
 async function eliminarRutina(rutinaId) {
-    if (!confirm('¿Estás seguro de que querés eliminar esta rutina?')) {
-        console.log("Eliminar cancelado")
-        return;
-    }
+    // Mostrar notificación de confirmación
+    const ok = await confirmAction(proxy.$swal, {
+        title: '¿Seguro deseas eliminar esta rutina?',
+        text: 'Los datos se perderán y no podrán recuperarse.'
+    })
+    if (!ok) return;
     // usar id seguro (parámetro o copia local)
     const idToDelete = rutinaId || rutinaLocal.value?.id;
     if (!idToDelete) return;
     try {
-        await profileStore.deleteRutina(idToDelete);
+        await profileStore.deleteRoutine(idToDelete);
         router.push({ name: 'MyWorkouts' });
     } catch (error) {
         console.log("Error al borrar la rutina.", error);
@@ -100,16 +104,16 @@ async function copiarRutina(rutina) {
     isLoading.value = true
     const copia = {
         ...JSON.parse(JSON.stringify(rutina)),
-        nombre: rutina.nombre + ' (copia)'
+        nombre: rutina.nombre + ' (copia)',
+        fechaCreacion: new Date().toISOString()
     };
     delete copia.id;
-    delete copia.fechaCreacion;
     try {
-        const docRef = await profileStore.createRutinaFirebase(copia);
+        const id = await profileStore.createRoutine(copia);
         isLoading.value = false;
         router.push({
             name: 'DetailRoutine',
-            query: { id: docRef.id }
+            query: { id: id }
         });
     } catch (err) {
         console.error('Error copiando rutina:', err);

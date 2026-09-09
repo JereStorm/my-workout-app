@@ -1,6 +1,7 @@
 <template>
     <div class="add-routine-form">
-        <div class="d-flex w-100 justify-content-start justify-content-md-center sticky-header align-items-center gap-3 gap-md-5 ps-3 mb-3">
+        <div
+            class="d-flex w-100 justify-content-start justify-content-md-center sticky-header align-items-center gap-3 gap-md-5 ps-3 mb-3">
             <h2 class="text-start mb-0">
                 {{ rutinaIdFromRoute ? 'Editar Rutina' : 'Crear Rutina' }}
             </h2>
@@ -30,7 +31,8 @@
             </div>
             <div class="d-flex flex-column flex-md-row justify-content-start gap-3 align-items-center">
                 <!-- Descanso entre Bloques -->
-                <div class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
+                <div
+                    class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
                     <label for="descansoBloques" class="form-label  mb-0">
                         Descanso entre Bloques
                     </label>
@@ -56,7 +58,8 @@
                     </div>
                 </div>
                 <!-- Descanso entre Series -->
-                <div class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
+                <div
+                    class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
                     <label for="descansoSeries" class="form-label  mb-0">
                         Descanso entre Series
                     </label>
@@ -200,7 +203,9 @@
             <div v-if="isLoadingSave" class="loader-form"></div>
 
             <div class="text-center d-flex btns-set-routine flex-column align-items-center">
-                <button  type="button" @click="guardarRutina" class="btn btn-guardar mt-0"><i  class="bi bi-box-arrow-down"></i> Guardar rutina </button>
+                <button type="button" @click="guardarRutina" class="btn btn-guardar mt-0 px-5"><i
+                        class="bi bi-box-arrow-down"></i>
+                    Guardar rutina </button>
 
                 <button type="button" @click="handleCancelar" class="btn btn-danger mt-3 mb-2">
                     <i class="bi bi-x-circle"></i> Cancelar
