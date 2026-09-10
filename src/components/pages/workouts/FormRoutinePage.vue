@@ -648,12 +648,12 @@ const formatTiempo = (segundos) => {
 <style scoped>
 .sticky-header {
     position: sticky;
-    top: 0px;
+    top: 50px;
     width: 100%;
-    background-color: transparent;
-    z-index: 1000;
+    backdrop-filter: blur(12px);
     padding-top: 10px;
     padding-bottom: 10px;
+    z-index: 1000;
 }
 
 /* Clases para el draggable */

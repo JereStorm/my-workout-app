@@ -168,8 +168,6 @@ watch(() => route.fullPath, () => {
 }
 
 .sidebar-profile {
-    min-width: 200px;
-    width: 80%;
     max-width: 400px;
     height: 100%;
     background-color: #121414;
@@ -183,7 +181,7 @@ watch(() => route.fullPath, () => {
     top: 0;
     left: 0;
     margin-top: 55px;
-    z-index: 502;
+    z-index: 1002;
 }
 
 .profileNickname {
@@ -204,7 +202,7 @@ watch(() => route.fullPath, () => {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 501;
+    z-index: 1001;
 }
 
 /* Transiciones */
