@@ -10,9 +10,9 @@
 
                     <li v-for="item in menuItems" :key="item.name" class="nav-item">
                         <router-link :to="{ name: item.name }"
-                            class="nav-link d-flex justify-content-start gap-2 align-items-center px-1 text-start text-decoration-none">
-                            <i :class="`bi ${item.icon} color-principal px-3 py-1`"></i>
-                            <span class="mb-1">{{ item.label }}</span>
+                            class="nav-link d-flex flex-column justify-content-start align-items-center text-start text-decoration-none">
+                            <i :class="`bi ${item.icon} color-principal`"></i>
+                            <span class="">{{ item.label }}</span>
                         </router-link>
                     </li>
                     <hr>
@@ -20,7 +20,7 @@
                     <li class="nav-item mt-auto" :class="isMobile ? 'mb-5' : ''">
 
                         <button
-                            class="nav-link nav-link-danger d-flex justify-content-start gap-2 align-items-center text-danger px-1"
+                            class="nav-link nav-link-danger d-flex flex-column justify-content-start align-items-center text-danger"
                             @click="logout">
                             <i class="bi bi-box-arrow-right text-danger px-3 py-1"></i>
                             <span class="mb-1">Cerrar Sesión</span>
@@ -123,7 +123,6 @@ watch(() => route.fullPath, () => {
     cursor: pointer;
     width: 90%;
     margin: 5px auto;
-    padding: 5px 1rem;
     border-radius: 12px;
     transition: all 0.3s ease;
     font-weight: 400;
@@ -180,7 +179,7 @@ watch(() => route.fullPath, () => {
     position: fixed;
     top: 0;
     left: 0;
-    margin-top: 55px;
+    margin-top: 54px;
     z-index: 1002;
 }
 

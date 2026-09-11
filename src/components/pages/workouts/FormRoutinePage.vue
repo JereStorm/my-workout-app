@@ -899,6 +899,7 @@ select {
 
     .sticky-header {
         position: relative;
+        top: 0;
     }
 }
 

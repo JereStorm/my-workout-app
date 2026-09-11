@@ -5,22 +5,18 @@
 
         <div v-if="isLoading" class="loader"></div>
 
-        <section v-if="workout" class="w-[80%] px-5">
+        <section v-if="workout" class="w-[90%] px-2">
 
 
-            <header class="px-3 px-md-4 pt-4 pb-3 ">
+            <header class="px-1 pt-4 pb-3 ">
+                <h2 class="fw-bold mb-1">
+                    {{ workout.dataRoutine.nombre }}
+                </h2>
+                <div class="d-flex justify-content-between align-items-start mt-4">
 
-                <div class="d-flex justify-content-between align-items-start mb-2">
-
-                    <div>
-                        <h2 class="fw-bold mb-1">
-                            {{ workout.dataRoutine.nombre }}
-                        </h2>
-
-                        <div class="text-secondary small d-flex align-items-center gap-2">
-                            <i class="bi bi-calendar"></i>
-                            {{ formatDate(workout.date) }}
-                        </div>
+                    <div class="text-secondary small d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar"></i>
+                        {{ formatDate(workout.date) }}
                     </div>
 
                     <!-- nivel del usuario o dificultad -->
@@ -33,90 +29,115 @@
 
             </header>
 
-            <div class="container-fluid px-3 px-md-4 mt-4">
+            <!-- ESTADÍSTICAS -->
+            <div class="container-fluid px-1 px-md-3 pb-3 mt-4">
 
                 <div class="row g-2">
 
+                    <!-- Bloques -->
                     <div class="col-4">
-                        <div class="stat-box">
-                            <small class="text-secondary text-uppercase">Bloques</small>
-                            <div class="fs-5 fw-bold">
+                        <div class="border rounded-3 px-2 py-2 text-center h-100">
+                            <div class="text-secondary text-uppercase small">
+                                Bloques
+                            </div>
+
+                            <div class="fs-5 fw-bold mt-1">
                                 {{ workout.dataRoutine.bloques.length }}
                             </div>
                         </div>
                     </div>
 
+                    <!-- Series -->
                     <div class="col-4">
-                        <div class="stat-box">
-                            <small class="text-secondary text-uppercase">Series</small>
-                            <div class="fs-5 fw-bold">
+                        <div class="border rounded-3 px-2 py-2 text-center h-100">
+                            <div class="text-secondary text-uppercase small">
+                                Series
+                            </div>
+
+                            <div class="fs-5 fw-bold mt-1">
                                 {{ workout.logs.length }}
                             </div>
                         </div>
                     </div>
 
+                    <!-- Volumen -->
                     <div class="col-4">
-                        <div class="stat-box">
-                            <small class="text-secondary text-uppercase">Volumen</small>
-                            <div class="fs-5 fw-bold">
-                                {{ statsVolume }} reps
+                        <div class="border rounded-3 px-2 py-2 text-center h-100">
+                            <div class="text-secondary text-uppercase small">
+                                Volumen
+                            </div>
+
+                            <div class="fs-5 fw-bold mt-1">
+                                {{ statsVolume }}
+                                <small class="fs-6 fw-normal text-secondary">reps</small>
                             </div>
                         </div>
                     </div>
 
                 </div>
-
             </div>
+
             <main class="px-3 px-md-4 pb-5 mt-5">
 
-                <section v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-2">
+                <section v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-4">
 
-                    <!-- título bloque -->
+                    <!-- TÍTULO BLOQUE -->
                     <div class="border-start border-3 border-info ps-3 mb-3">
-                        <div class="text-uppercase small text-secondary fw-semibold">
-                            Bloque {{ bi + 1 }}
-                            <span class="text-secondary">
-                                ({{ bloque.series }} sets)
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-uppercase small text-secondary fw-semibold">
+                                Bloque {{ bi + 1 }}
+                            </span>
+
+                            <span class="text-secondary small">
+                                · {{ bloque.series }} sets
                             </span>
                         </div>
+
                     </div>
 
-                    <!-- ejercicios -->
+
+                    <!-- EJERCICIOS -->
                     <div class="d-flex flex-column gap-3">
 
                         <div v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="exercise-card p-3">
 
-                            <!-- header ejercicio -->
-                            <div class="text-center mb-2">
+                            <!-- HEADER EJERCICIO -->
+                            <div class="text-center mb-3">
 
-                                <div class="fw-semibold text-info">
+                                <div class="fw-semibold text-info fs-6">
                                     {{ ej.nombre }}
                                 </div>
 
-                                <div v-if="ej?.notas" class="small text-notas">
+                                <div v-if="ej?.notas" class="small text-notas mt-1">
+                                    <i class="bi bi-info-circle me-1"></i>
                                     {{ ej.notas }}
                                 </div>
 
                             </div>
 
-                            <!-- meta global del ejercicio -->
+
+                            <!-- META -->
                             <div class="text-center mb-3">
+
                                 <span class="chip-meta">
+                                    <i class="bi bi-bullseye me-1"></i>
                                     Meta: {{ formatStimulusTarget(ej.repeticiones, ej.tiempo) }}
                                 </span>
+
                             </div>
 
-                            <!-- sets -->
+
+                            <!-- SETS -->
                             <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                                <div v-for="si in bloque.series" :key="si" class="set-pill text-center">
+                                <div v-for="si in bloque.series" :key="si" class="set-pill text-center px-3 py-2">
 
                                     <small class="text-secondary text-uppercase d-block">
                                         Set {{ si }}
                                     </small>
 
                                     <span class="chip-real mt-1 d-inline-block">
-                                        Hecho:
                                         {{
                                             formatActual(
                                                 workout.logs[getLogIndex(bi, si - 1)],
@@ -133,13 +154,21 @@
 
                     </div>
 
-                    <hr class="text-secondary">
+
+                    <hr class="text-secondary opacity-25 mt-4">
                 </section>
+
+
+                <!-- ELIMINAR -->
                 <ul class="mini-menu pb-3">
                     <li @click.stop="deleteWorkout()">
-                        <span><i class="bi bi-trash3"></i>Eliminar</span>
+                        <span>
+                            <i class="bi bi-trash3 me-2"></i>
+                            Eliminar
+                        </span>
                     </li>
                 </ul>
+
             </main>
         </section>
 

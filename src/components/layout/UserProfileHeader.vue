@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex ps-3 align-items-center gap-3 my-3">
+    <div class="d-flex flex-column align-items-center gap-2">
 
         <!-- Avatar -->
         <div class="position-relative">
@@ -14,7 +14,7 @@
         </div>
 
         <!-- User info -->
-        <div class="text-start overflow-hidden">
+        <div class="text-center overflow-hidden">
             <h6 class="mb-0 fw-bold text-white text-truncate" :title="nickname" style="max-width: 140px">
                 {{ nickname || 'Usuario' }}
             </h6>

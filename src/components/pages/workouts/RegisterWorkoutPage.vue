@@ -183,7 +183,7 @@
                     </div>
 
                     <!-- NOTA FINAL -->
-                    <div v-else class="finish-container">
+                    <div v-else class="finish-container mx-auto">
 
                         <div class="finish-icon">
                             <i class="bi bi-check2-circle"></i>
@@ -806,7 +806,6 @@ const handleCancelar = async () => {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 2rem 1rem;
 }
 
 .finish-icon {
