@@ -10,10 +10,10 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center text-gray-700">
-            <h6 class="mb-0 difficulty-container">
-                <span class="difficulty-icons">{{ renderDifficulty }}</span>
-                <span class="difficulty-text">({{ routine.dificultad }})</span>
-            </h6>
+            <div class="badge-difficulty" :class="getDifficultyClass(routine.dificultad)">
+                <small class="text-uppercase fw-bold">{{ routine.dificultad }}</small>
+                <span class="ms-1">{{ getDifficultyIcons(routine.dificultad) }}</span>
+            </div>
 
             <div class="dropdown-menu-container" @click.stop>
                 <span class="me-1" @click.stop="$emit('toggle-fav', routine)" title="Favorita">
@@ -39,6 +39,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats';
 
 const props = defineProps({
     routine: Object,
@@ -73,7 +74,7 @@ onUnmounted(() => window.removeEventListener('click', closeMenu));
 .routine-card {
     position: relative;
     cursor: pointer;
-    border: 1px solid rgba(211, 211, 211, 0.527);
+    border: 1px solid rgba(211, 211, 211, 0.144);
     padding: 20px 10px;
     border-radius: 8px;
     width: 100%;
@@ -113,7 +114,9 @@ onUnmounted(() => window.removeEventListener('click', closeMenu));
 .difficulty-text {
     font-size: 14px;
 }
-
+.badge-difficulty {
+    font-size: 0.80rem;
+}
 .ellipsis {
     overflow: hidden;
     white-space: nowrap;

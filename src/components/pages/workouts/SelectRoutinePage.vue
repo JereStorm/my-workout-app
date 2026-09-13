@@ -81,9 +81,10 @@
 
 
                         <div class="routine-top">
-                            <span class="badge difficulty text-uppercase pt-1">
-                                {{ routine.dificultad }}
-                            </span>
+                            <div class="badge-difficulty" :class="getDifficultyClass(routine.dificultad)">
+                                <small class="text-uppercase fw-bold">{{ routine.dificultad }}</small>
+                                <span class="ms-1">{{ getDifficultyIcons(routine.dificultad) }}</span>
+                            </div>
 
                             <span class="time text-info">
                                 <i class="bi bi-clock"></i>
@@ -124,7 +125,8 @@ import { computed, ref } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '@/utils/routineStats'
+import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate, getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
+
 
 const router = useRouter()
 const profileStore = useProfileStore()
@@ -246,6 +248,10 @@ function empezarEntreno(id) {
     margin-bottom: 20px;
 }
 
+.badge-difficulty{
+    font-size: .80rem;
+}
+
 .search-box {
     position: relative;
     max-width: 500px;
@@ -361,7 +367,9 @@ function empezarEntreno(id) {
 
 .routine-card {
     border-radius: 10px;
+    max-width: 550px;
     padding: 22px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, .05);
