@@ -33,55 +33,56 @@
                 <!-- Descanso entre Bloques -->
                 <div
                     class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
-                    <label for="descansoBloques" class="form-label  mb-0">
-                        Descanso entre Bloques
-                    </label>
+                    <div class="w-100 d-flex justify-content-start mb-1">
+                        <label for="descansoBloques" class="form-label  mb-0">
+                            Descanso entre Bloques
+                        </label>
+                    </div>
 
-                    <div class="">
-                        <select id="descansoBloques" v-model="descansoBloquesSeleccionado"
-                            class="form-select input-time">
-                            <option :value="60">1 min</option>
-                            <option :value="120">2 min</option>
-                            <option :value="180">3 min</option>
-                            <option :value="300">5 min</option>
-                            <option :value="600">10 min</option>
-                            <option value="personalizado">Personalizado</option>
-                        </select>
 
-                        <div v-if="descansoBloquesSeleccionado === 'personalizado'" class="d-flex gap-2 mt-2">
-                            <input type="number" v-model.number="descansoBloquesPersonalizado.minutos"
-                                class="form-control text-center" min="0" placeholder="Min">
-                            <span class="mt-2">:</span>
-                            <input type="number" v-model.number="descansoBloquesPersonalizado.segundos"
-                                class="form-control text-center" min="0" max="59" placeholder="Seg">
-                        </div>
+                    <select id="descansoBloques" v-model="descansoBloquesSeleccionado" class="form-select input-time">
+                        <option :value="60">1 min</option>
+                        <option :value="120">2 min</option>
+                        <option :value="180">3 min</option>
+                        <option :value="300">5 min</option>
+                        <option :value="600">10 min</option>
+                        <option value="personalizado">Personalizado</option>
+                    </select>
+
+                    <div v-if="descansoBloquesSeleccionado === 'personalizado'" class="d-flex personalizado gap-2 mt-2">
+                        <input type="number" v-model.number="descansoBloquesPersonalizado.minutos"
+                            class="border-card text-center" min="0" placeholder="Min">
+                        <span class="mt-2">:</span>
+                        <input type="number" v-model.number="descansoBloquesPersonalizado.segundos"
+                            class="border-card  text-center" min="0" max="59" placeholder="Seg">
                     </div>
                 </div>
                 <!-- Descanso entre Series -->
                 <div
                     class="descanso-container mb-3 text-start d-flex flex-column justify-content-start gap-1 align-items-center">
-                    <label for="descansoSeries" class="form-label  mb-0">
-                        Descanso entre Series
-                    </label>
+                    <div class="w-100 d-flex justify-content-start mb-1">
 
-                    <div class="">
-                        <select id="descansoSeries" v-model="descansoSeriesSeleccionado" class="form-select input-time">
-                            <option :value="30">30 seg</option>
-                            <option :value="60">1 min</option>
-                            <option :value="90">1:30 min</option>
-                            <option :value="120">2 min</option>
-                            <option :value="180">3 min</option>
-                            <option value="personalizado">Personalizado</option>
-                        </select>
+                        <label for="descansoSeries" class="form-label  mb-0">
+                            Descanso entre Series
+                        </label>
+                    </div>
 
-                        <div v-if="descansoSeriesSeleccionado === 'personalizado'"
-                            class="d-flex personalizado gap-2 mt-2">
-                            <input type="number" v-model.number="descansoSeriesPersonalizado.minutos"
-                                class="form-control text-center" min="0" placeholder="Min">
+                    <select id="descansoSeries" v-model="descansoSeriesSeleccionado" class="form-select input-time">
+                        <option :value="30">30 seg</option>
+                        <option :value="60">1 min</option>
+                        <option :value="90">1:30 min</option>
+                        <option :value="120">2 min</option>
+                        <option :value="180">3 min</option>
+                        <option value="personalizado">Personalizado</option>
+                    </select>
 
-                            <input type="number" v-model.number="descansoSeriesPersonalizado.segundos"
-                                class="form-control text-center" min="0" max="59" placeholder="Seg">
-                        </div>
+                    <div v-if="descansoSeriesSeleccionado === 'personalizado'" class="d-flex personalizado gap-2 mt-2">
+                        <input type="number" v-model.number="descansoSeriesPersonalizado.minutos"
+                            class="border-card text-center" min="0" placeholder="Min">
+                        <span class="mt-2">:</span>
+
+                        <input type="number" v-model.number="descansoSeriesPersonalizado.segundos"
+                            class="border-card text-center" min="0" max="59" placeholder="Seg">
                     </div>
                 </div>
 
@@ -650,7 +651,7 @@ const formatTiempo = (segundos) => {
     position: sticky;
     top: 50px;
     width: 100%;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
     padding-top: 10px;
     padding-bottom: 10px;
     z-index: 1000;
@@ -711,6 +712,7 @@ select {
 
 .add-routine-form form .input-number,
 .input-difficulty,
+.input-time,
 .input-rir {
     border-radius: 5px;
     border-left: 1px solid aquamarine;
@@ -718,6 +720,11 @@ select {
     width: 70px;
     text-align: center;
 
+}
+
+.input-time {
+    min-width: 100px;
+    width: auto;
 }
 
 .input-difficulty {
@@ -775,10 +782,6 @@ select {
 
 .descanso-container {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     border-left: 3px solid aquamarine;
     border-radius: 5px;
     padding: 5px;
@@ -859,6 +862,26 @@ select {
 
 .descanso-min {
     width: 70px;
+}
+
+.add-routine-form .border-card {
+    border-radius: 5px;
+    border: 1px solid rgba(127, 255, 212, 0.315);
+}
+
+.add-routine-form .personalizado input {
+    width: 80px;
+    text-align: center;
+}
+
+.btn-danger {
+    background-color: #4e1818a4;
+    color: white;
+    border: 1px solid #6820207c;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 /* Solo se fija si NO es mobile */

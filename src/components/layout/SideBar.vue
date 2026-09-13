@@ -226,7 +226,7 @@ watch(() => route.fullPath, () => {
     opacity: 0;
 }
 
-.nav-mobile {
+.nav-mobile {   
     position: fixed;
     top: 0px;
     z-index: 10;
@@ -237,7 +237,8 @@ watch(() => route.fullPath, () => {
 
 .heather {
     width: 100%;
-    background-color: #151515;
+    background-color: rgba(0, 0, 0, 0.842);
+    backdrop-filter: blur(10px);
     z-index: 600;
 }
 
@@ -247,6 +248,7 @@ watch(() => route.fullPath, () => {
 
 .btn-outline-info {
     border-color: #00ffff;
+    background-color: #101010;
 }
 
 .username-container {
