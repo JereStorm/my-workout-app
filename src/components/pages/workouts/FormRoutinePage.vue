@@ -257,7 +257,7 @@ const nuevaRutina = reactive({
     bloques: [{
         series: 3,
         ejercicios: [
-            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+            { ejercicioId: '', nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
         ],
         notas: ''
     }]
@@ -269,7 +269,7 @@ const descansoSeriesSeleccionado = ref(nuevaRutina.descansoSeries);
 const descansoBloquesPersonalizado = reactive({
     minutos: 0,
     segundos: 0
-});
+}); 
 
 const descansoSeriesPersonalizado = reactive({
     minutos: 0,

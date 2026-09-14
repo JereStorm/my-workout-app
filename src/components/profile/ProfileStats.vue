@@ -2,36 +2,14 @@
     <div class="row g-3 mb-4 mx-2">
 
         <div class="row g-3 mx-auto">
+            <StatCard icon="bi-fire" label="Volumen Total" :value="stats?.totalVolume || 0" extra="Reps" />
 
-            <StatCard icon="bi-grid" label="Entrenos" :value="stats?.totalWorkouts || 0" extra="Totales" />
 
+            <StatCard icon="bi-grid" label="Sesiones Hechas" :value="stats?.totalWorkouts || 0" extra="Totales" />
+
+            <StatCard icon="bi-fire" label="Tiempo bajo tensión" :value="stats?.currentStreak || 0" extra="Segundos" />
             <StatCard icon="bi-fire" label="Racha" :value="stats?.currentStreak || 0" extra="Días activos" />
 
-        </div>
-
-
-        <div class="col-12 mx-auto">
-            <div class="card stat-card text-secondary">
-                <div class="card-body d-flex justify-content-between align-items-center">
-
-                    <div>
-                        <div class="stat-label">
-                            <i class="bi bi-bar-chart"></i>
-                            Volumen Total
-                        </div>
-
-                        <div class="stat-value text-light">
-                            {{ stats?.totalVolume || 0 }} / {{ stats?.nextLevelVolume || 10000 }} <small>Reps</small>
-                        </div>
-                    </div>
-
-                    <div class="progress-circle text-light" :style="progressStyle">
-                        {{ progressPercent }}
-                    </div>
-
-
-                </div>
-            </div>
         </div>
 
     </div>
@@ -44,12 +22,6 @@ import StatCard from './StatCard.vue'
 const props = defineProps({
     stats: Object
 })
-
-const progress = computed(() => props.stats?.levelProgress || 0)
-
-const progressPercent = computed(() =>
-    Math.round(progress.value * 100) + '%'
-)
 
 const progressStyle = computed(() => ({
     background: `

@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { RoutineService } from '@/services/routineService';
 import { WorkoutService } from '@/services/workoutService';
-import { ProfileService } from '@/services/profileService'; // Asumiendo que moviste setNickname aquí
+import { ProfileService } from '@/services/profileService';
+import { ExerciseService } from '@/services/exerciseService';
 import {
     calculateStreaks,
     sumWorkoutVolume
@@ -15,6 +16,7 @@ export const useProfileStore = defineStore('profile', {
             email: '',
             nickname: '',
             routines: [],
+            exercises: [],
             workouts: [],
         },
         isLoading: false,
@@ -53,6 +55,7 @@ export const useProfileStore = defineStore('profile', {
         getNickname: (state) => state.profile.nickname,
         getUserRoutines: (state) => state.profile.routines,
         getWorkouts: (state) => state.profile.workouts,
+        getUserExercises: (state) => state.profile.exercises,
     },
 
     actions: {
@@ -63,18 +66,20 @@ export const useProfileStore = defineStore('profile', {
             this.isLoading = true;
             try {
                 // Ejecutamos peticiones en paralelo para mayor velocidad
-                const [routines, workouts, profileData] = await Promise.all([
+                const [exercises, routines, workouts, profileData] = await Promise.all([
+                    ExerciseService.fetchByUserId(uid),
                     RoutineService.fetchByUserId(uid),
                     WorkoutService.fetchByUserId(uid),
                     ProfileService.getProfile(uid)
                 ]);
-                console.log('Profile loaded:', { uid, email, routines, workouts, profileData });
+                console.log('Profile loaded:', { uid, email, routines, workouts, exercises, profileData });
                 this.profile = {
                     id: uid,
                     email: email,
                     nickname: profileData?.nickname || '',
                     routines: routines,
-                    workouts: workouts
+                    workouts: workouts,
+                    exercises: exercises
                 };
             } finally {
                 this.isLoading = false;
@@ -90,6 +95,58 @@ export const useProfileStore = defineStore('profile', {
                 this.profile.nickname = newNickname;
 
             } catch (error) { /* El errorHandler ya notificó al usuario */ }
+        },
+
+        // --- ACCIONES DE EJERCICIOS ---
+
+        async createExercise(exerciseData) {
+            if (!this.profile.id) return;
+
+            try {
+                const payload = {
+                    ...exerciseData,
+                    idUser: this.profile.id,
+                    fechaCreacion: new Date().toISOString()
+                };
+
+                const id = await ExerciseService.create(payload);
+
+                this.profile.exercises.push({
+                    id,
+                    ...payload
+                });
+
+                return id;
+            } catch (error) {
+                throw error;
+            }
+        },
+
+        async updateExercise(exercise) {
+            try {
+                await ExerciseService.update(exercise.id, exercise);
+
+                const index = this.profile.exercises.findIndex(
+                    e => e.id === exercise.id
+                );
+
+                if (index !== -1) {
+                    this.profile.exercises.splice(index, 1, exercise);
+                }
+            } catch (error) {
+                throw error;
+            }
+        },
+
+        async deleteExercise(exerciseId) {
+            try {
+                await ExerciseService.delete(exerciseId);
+
+                this.profile.exercises =
+                    this.profile.exercises.filter(e => e.id !== exerciseId);
+            } catch (error) {
+                throw error;
+            }
         },
 
         // --- ACCIONES DE RUTINAS ---
@@ -167,6 +224,10 @@ export const useProfileStore = defineStore('profile', {
 
         getWorkoutLocal(id) {
             return this.profile.workouts.find(w => w.id === id);
-        }
+        },
+
+        getExerciseLocal(id) {
+            return this.profile.exercises.find(e => e.id === id);
+        },
     }
 });
