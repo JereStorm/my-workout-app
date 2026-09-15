@@ -59,9 +59,6 @@ export const useProfileStore = defineStore('profile', {
     },
 
     actions: {
-        /**
-         * Carga inicial de todo el perfil.
-         */
         async loadProfile(uid, email) {
             this.isLoading = true;
             try {
@@ -72,12 +69,32 @@ export const useProfileStore = defineStore('profile', {
                     WorkoutService.fetchByUserId(uid),
                     ProfileService.getProfile(uid)
                 ]);
-                console.log('Profile loaded:', { uid, email, routines, workouts, exercises, profileData });
+
+                // --- HIDRATACIÓN DE RUTINAS ---
+                // Aseguramos que cada ejercicio dentro de cada rutina use el nombre actual del catálogo global
+                const routinesHydrated = routines.map(routine => ({
+                    ...routine,
+                    bloques: (routine.bloques || []).map(bloque => ({
+                        ...bloque,
+                        ejercicios: (bloque.ejercicios || []).map(ej => {
+                            if (ej.exerciseId) {
+                                const ejercicioGlobal = exercises.find(ex => ex.id === ej.exerciseId);
+                                if (ejercicioGlobal) {
+                                    return { ...ej, nombre: ejercicioGlobal.nombre };
+                                }
+                            }
+                            return ej;
+                        })
+                    }))
+                }));
+
+                console.log('Profile loaded:', { uid, email, routines: routinesHydrated, workouts, exercises, profileData });
+
                 this.profile = {
                     id: uid,
                     email: email,
                     nickname: profileData?.nickname || '',
-                    routines: routines,
+                    routines: routinesHydrated, // Guardamos las rutinas ya hidratadas
                     workouts: workouts,
                     exercises: exercises
                 };

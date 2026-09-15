@@ -74,7 +74,7 @@
                         <div class="exercise-main">
 
                             <div class="exercise-text">
-                                <h4 class="h4">{{ ej.nombre }}</h4>
+                                <h4 class="h4">{{ getNombreEjercicio(ej) }}</h4>
 
                             </div>
                             <div class="exercise-metrics">
@@ -113,15 +113,43 @@
 
 
 <script>
+import { computed } from 'vue'
+import { useProfileStore } from '@/stores/profile'
 import { formatStimulusTarget, getStimulusType } from '@/domain/stimulus'
 import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
 
-
 export default {
-    props: ['rutina'],
+    props: {
+        rutina: {
+            type: Object,
+            required: true
+        }
+    },
+
+    setup(props) {
+        const profileStore = useProfileStore()
+        const ejerciciosGlobales = computed(() => profileStore.getUserExercises)
+
+        /**
+         * Obtiene el nombre actualizado del ejercicio global si tiene ID
+         */
+        const getNombreEjercicio = (ejercicio) => {
+            if (!ejercicio?.exerciseId) return ejercicio?.nombre || ''
+
+            const ejercicioGlobal = ejerciciosGlobales.value.find(
+                ex => ex.id === ejercicio.exerciseId
+            )
+
+            return ejercicioGlobal ? ejercicioGlobal.nombre : (ejercicio?.nombre || '')
+        }
+
+        return {
+            ejerciciosGlobales,
+            getNombreEjercicio
+        }
+    },
 
     computed: {
-
         bloques() {
             return Array.isArray(this.rutina?.bloques)
                 ? this.rutina.bloques
@@ -173,7 +201,6 @@ export default {
 
         difficultyClass: getDifficultyClass
     }
-
 }
 </script>
 

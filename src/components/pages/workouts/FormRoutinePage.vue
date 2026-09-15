@@ -106,13 +106,10 @@
                         <div
                             class="ejercicio-container p-3 p-md-2 d-flex flex-column align-items-center gap-2 drag-handle">
                             <div class="row w-100 d-flex flex-column justify-content-center gap-3">
-                                <div class="w-100 mb-2 px-3 px-md-2">
-                                    <label :for="'ejercicio-' + indexBloque + '-' + ejercicioIndex"
-                                        class="form-label mb-0">Ejercicio</label>
-                                    <input type="text" v-model="ejercicio.nombre" spellcheck="false" autocomplete="on"
-                                        required :class="['form-control', inputClass(nuevaRutina.nombre)]"
-                                        :id="'ejercicio-' + indexBloque + '-' + ejercicioIndex" />
-                                </div>
+                                <!-- Dentro del template de FormRoutinePage_2.vue (en el v-for de Draggable) -->
+                                <InputExercise :ejercicio="ejercicio" :index-bloque="indexBloque"
+                                    :ejercicio-index="ejercicioIndex"
+                                    :es-edicion="Boolean(rutinaIdFromRoute || nuevaRutina.id)" />
                             </div>
 
                             <div class="setting-exercise py-2 d-flex justify-content-center gap-3 flex-wrap">
@@ -219,13 +216,15 @@
 <!-- AddFormRoutine.vue -->
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, onMounted, ref, watch } from 'vue';
+import { reactive, onMounted, ref, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProfileStore } from '@/stores/profile';
 import Draggable from 'vuedraggable';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
 import { useNotificationStore } from '@/stores/notificationStore';
+import InputExercise from '@/components/form/InputExercise.vue';
+
 
 
 const { proxy } = getCurrentInstance();
@@ -257,7 +256,7 @@ const nuevaRutina = reactive({
     bloques: [{
         series: 3,
         ejercicios: [
-            { ejercicioId: '', nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+            { exerciseId: '', nombre: '', nombreOriginal: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
         ],
         notas: ''
     }]
@@ -269,7 +268,7 @@ const descansoSeriesSeleccionado = ref(nuevaRutina.descansoSeries);
 const descansoBloquesPersonalizado = reactive({
     minutos: 0,
     segundos: 0
-}); 
+});
 
 const descansoSeriesPersonalizado = reactive({
     minutos: 0,
@@ -312,6 +311,184 @@ watch(
     { deep: true }
 );
 
+/**const buscarEjercicioPorNombre = (nombre) => {
+    const nombreNormalizado = nombre.trim().toLowerCase();
+
+    if (!nombreNormalizado) {
+        return null;
+    }
+
+    return exercises.value.find(
+        exercise =>
+            exercise.nombre.trim().toLowerCase() ===
+            nombreNormalizado
+    );
+};*/
+
+const exercises = computed(() => profileStore.getUserExercises);
+
+// Función ultra limpia para procesar los ejercicios nuevos al guardar
+const prepararEjercicios = async () => {
+    const ejercicios = nuevaRutina.bloques.flatMap(bloque => bloque.ejercicios);
+
+    for (const ejercicio of ejercicios) {
+        const nombreLimpio = ejercicio.nombre.trim();
+        if (!nombreLimpio) continue;
+
+        // Si ya tiene exerciseId, validamos si cambió el nombre respecto al original
+        if (ejercicio.exerciseId && ejercicio.nombreOriginal && nombreLimpio !== ejercicio.nombreOriginal.trim()) {
+            // Si el usuario renombró un ejercicio existente, decidimos si actualizarlo globalmente o tratarlo como nuevo.
+            // Para simplificar y evitar popups molestos, si difiere y ya tenía ID, podemos desvincularlo o actualizarlo:
+            ejercicio.exerciseId = ''; // Opcional: si querés que cree uno nuevo o maneje edición global.
+        }
+
+        // Si no tiene ID pero coincide exactamente con uno existente en la store global, lo asociamos
+        if (!ejercicio.exerciseId) {
+            const existente = exercises.value.find(
+                ex => ex.nombre.trim().toLowerCase() === nombreLimpio.toLowerCase()
+            );
+
+            if (existente) {
+                ejercicio.exerciseId = existente.id;
+                ejercicio.nombre = existente.nombre;
+                ejercicio.nombreOriginal = existente.nombre;
+            } else {
+                // Si realmente es nuevo, lo creamos en la base de datos/store
+                const nuevoId = await profileStore.createExercise({
+                    nombre: nombreLimpio,
+                    categoria: ''
+                });
+                ejercicio.exerciseId = nuevoId;
+                ejercicio.nombre = nombreLimpio;
+                ejercicio.nombreOriginal = nombreLimpio;
+            }
+        }
+    }
+};
+
+/*
+const obtenerEjerciciosModificados = () => {
+    return nuevaRutina.bloques
+        .flatMap(bloque => bloque.ejercicios)
+        .filter(ejercicio =>
+            ejercicio.exerciseId &&
+            ejercicio.nombreOriginal &&
+            ejercicio.nombre.trim() !==
+            ejercicio.nombreOriginal.trim()
+        );
+};
+
+const resolverEjerciciosModificados = async () => {
+    // Si estamos CREANDO una rutina, no queremos mostrar alertas de renombrado global.
+    // Simplemente dejamos que el texto final mande: si cambió lo que eligió el autocomplete,
+    // le quitamos el exerciseId viejo para que se resuelva como nuevo o se busque por su nuevo nombre.
+    if (!nuevaRutina.id) {
+        const ejerciciosModificados = obtenerEjerciciosModificados();
+        for (const ejercicio of ejerciciosModificados) {
+            ejercicio.exerciseId = '';
+            ejercicio.nombreOriginal = '';
+        }
+        return true;
+    }
+
+    // --- EL RESTO QUEDA IGUAL PARA CUANDO SÍ ESTÁS EDITANDO UNA RUTINA EXISTENTE ---
+    const ejerciciosModificados = obtenerEjerciciosModificados();
+
+    if (!ejerciciosModificados.length) {
+        return true;
+    }
+
+    for (const ejercicio of ejerciciosModificados) {
+        const ejercicioOriginal = exercises.value.find(
+            exercise => exercise.id === ejercicio.exerciseId
+        );
+
+        const nuevoNombre = ejercicio.nombre.trim();
+
+        if (!ejercicioOriginal) {
+            const existente = buscarEjercicioPorNombre(nuevoNombre);
+            if (existente) {
+                ejercicio.exerciseId = existente.id;
+                ejercicio.nombre = existente.nombre;
+                ejercicio.nombreOriginal = existente.nombre;
+            } else {
+                const nuevoId = await profileStore.createExercise({
+                    nombre: nuevoNombre,
+                    categoria: ''
+                });
+                ejercicio.exerciseId = nuevoId;
+                ejercicio.nombre = nuevoNombre;
+                ejercicio.nombreOriginal = nuevoNombre;
+            }
+            continue;
+        }
+
+        const resultado = await proxy.$swal.fire({
+            title: '¿Qué querés hacer?',
+            html: `
+                <div class="text-start">
+                    <p class="mb-2">
+                        Cambiaste el nombre de:
+                    </p>
+                    <p class="mb-3">
+                        <strong>${ejercicioOriginal.nombre}</strong>
+                        →
+                        <strong>${nuevoNombre}</strong>
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Si renombrás el ejercicio, el cambio afectará
+                        todas las rutinas que utilicen este ejercicio.
+                    </p>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: 'Renombrar ejercicio',
+            denyButtonText: 'Usar otro ejercicio',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        });
+
+        if (resultado.isDismissed) {
+            return false;
+        }
+
+        if (resultado.isConfirmed) {
+            await profileStore.updateExercise({
+                ...ejercicioOriginal,
+                nombre: nuevoNombre
+            });
+
+            ejercicio.nombre = nuevoNombre;
+            ejercicio.nombreOriginal = nuevoNombre;
+            continue;
+        }
+
+        if (resultado.isDenied) {
+            const existente = buscarEjercicioPorNombre(nuevoNombre);
+
+            if (existente) {
+                ejercicio.exerciseId = existente.id;
+                ejercicio.nombre = existente.nombre;
+                ejercicio.nombreOriginal = existente.nombre;
+                continue;
+            }
+
+            const nuevoId = await profileStore.createExercise({
+                nombre: nuevoNombre,
+                categoria: ''
+            });
+
+            ejercicio.exerciseId = nuevoId;
+            ejercicio.nombre = nuevoNombre;
+            ejercicio.nombreOriginal = nuevoNombre;
+        }
+    }
+
+    return true;
+};
+*/
 function configurarDescansos() {
     const opcionesBloques = [60, 120, 180, 300, 600];
     const opcionesSeries = [30, 60, 90, 120, 180];
@@ -372,25 +549,67 @@ const hasNotaBloque = (bloqueIndex) => {
  * Intenta cargar la rutina en función del query.id
  */
 function aplicarRutinaSiCorresponde() {
+    if (!rutinaIdFromRoute) return;
 
-    if (rutinaIdFromRoute) {
-        isLoadingInfo.value = true;
-        try {
-            const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
-            if (rutinaExistente) {
-                Object.assign(nuevaRutina, cloneDeep(rutinaExistente));
-                configurarDescansos();
-                console.log(nuevaRutina)
-                isLoadingInfo.value = false;
-            } else {
-                console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
-                router.push({ name: "MyWorkouts" });
-                // Aquí podrías redirigir o mostrar un mensaje al usuario
-            }
-        } catch (error) {
-            console.error('Error al cargar la rutina para editar:', error);
-            // Se recomienda mostrar feedback al usuario
+    isLoadingInfo.value = true;
+
+    try {
+        const rutinaExistente = profileStore.getRutinaLocal(rutinaIdFromRoute);
+
+        if (!rutinaExistente) {
+            console.warn(`No se encontró la rutina con ID: ${rutinaIdFromRoute}`);
+            router.push({ name: "MyWorkouts" });
+            return;
         }
+
+        const rutina = cloneDeep(rutinaExistente);
+
+        rutina.bloques = rutina.bloques.map(bloque => ({
+            ...bloque,
+            ejercicios: bloque.ejercicios.map(ejercicio => {
+                // Si el ejercicio ya tiene un exerciseId vinculado, buscamos su nombre global actual
+                if (ejercicio.exerciseId) {
+                    const ejercicioGlobal = exercises.value.find(
+                        exercise => exercise.id === ejercicio.exerciseId
+                    );
+
+                    return {
+                        ...ejercicio,
+                        nombre: ejercicioGlobal?.nombre ?? ejercicio.nombre,
+                        nombreOriginal: ejercicioGlobal?.nombre ?? ejercicio.nombre ?? ''
+                    };
+                }
+
+                // Fallback por si es una rutina vieja sin ID pero con texto
+                const nombre = ejercicio.nombre?.trim() ?? '';
+                const ejercicioGlobal = exercises.value.find(
+                    exercise => exercise.nombre.trim().toLowerCase() === nombre.toLowerCase()
+                );
+
+                if (ejercicioGlobal) {
+                    return {
+                        ...ejercicio,
+                        exerciseId: ejercicioGlobal.id,
+                        nombre: ejercicioGlobal.nombre,
+                        nombreOriginal: ejercicioGlobal.nombre
+                    };
+                }
+
+                return {
+                    ...ejercicio,
+                    exerciseId: '',
+                    nombreOriginal: ''
+                };
+            })
+        }));
+
+        Object.assign(nuevaRutina, rutina);
+        configurarDescansos();
+
+    } catch (error) {
+        console.error('Error al cargar la rutina para editar:', error);
+    } finally {
+        isLoadingInfo.value = false;
     }
 }
 
@@ -428,7 +647,15 @@ const resetFormulario = () => {
         bloques: [{
             series: 3,
             ejercicios: [
-                { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+                {
+                    exerciseId: '',
+                    nombre: '',
+                    nombreOriginal: '',
+                    repeticiones: 1,
+                    tiempo: 0,
+                    esfuerzo: 0,
+                    notas: ''
+                }
             ],
             notas: ''
         }]
@@ -558,26 +785,28 @@ const validarRutina = () => {
 const guardarRutina = async () => {
     isLoadingSave.value = true;
 
-    const isValid = validarRutina();
-
-    if (!isValid) {
-        isLoadingSave.value = false;
-        return;
-    }
-
     try {
+        // 1. Validar rutina básica (campos vacíos, números, etc.)
+        const isValid = validarRutina();
+        if (!isValid) return;
+
+        // 2. Preparar/Crear automáticamente los ejercicios nuevos o faltantes
+        await prepararEjercicios();
+
+        // 3. Guardar o actualizar la rutina en el store
         if (nuevaRutina.id) {
-            // Edición de rutina existente
             await profileStore.updateRoutine({ ...nuevaRutina });
         } else {
-            // Creación de rutina nueva
             await profileStore.createRoutine({ ...nuevaRutina });
         }
-        isLoadingSave.value = false;
+
+        // 4. Redirigir a la vista de rutinas
         router.push({ name: "MyWorkouts" });
+
     } catch (error) {
         console.error('Error al guardar la rutina:', error);
-        // Aquí podrías usar un sistema de notificaciones o alertas
+    } finally {
+        isLoadingSave.value = false;
     }
 };
 
@@ -589,7 +818,15 @@ const agregarBloque = (bloqueIndex) => {
     nuevaRutina.bloques.splice(bloqueIndex + 1, 0, {
         series: 3,
         ejercicios: [
-            { nombre: '', repeticiones: 1, tiempo: 0, esfuerzo: 0, notas: '' }
+            {
+                exerciseId: '',
+                nombre: '',
+                nombreOriginal: '',
+                repeticiones: 1,
+                tiempo: 0,
+                esfuerzo: 0,
+                notas: ''
+            }
         ],
         notas: ''
     });
@@ -611,7 +848,9 @@ const eliminarBloque = (index) => {
 const agregarEjercicio = (bloqueIndex, ejercicioIndex) => {
     const ejercicios = nuevaRutina.bloques[bloqueIndex].ejercicios;
     ejercicios.splice(ejercicioIndex + 1, 0, {
+        exerciseId: '',
         nombre: '',
+        nombreOriginal: '',
         repeticiones: 1,
         tiempo: 0,
         esfuerzo: 0,

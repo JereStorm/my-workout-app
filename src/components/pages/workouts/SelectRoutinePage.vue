@@ -193,14 +193,14 @@ const lastWorkout = computed(() => {
     const workouts = profile.value.workouts || []
     if (!workouts.length) return null
     const lastWorkout = workouts.at(0);
-    console.log('lastWorkout:', lastWorkout)
+    //console.log('lastWorkout:', lastWorkout)
     return lastWorkout
 })
 
 const lastRoutineMeta = computed(() => {
     if (!lastRoutine.value) return ''
 
-    console.log(lastRoutine.value)
+    //console.log(lastRoutine.value)
     return `Última sesión registrada`
 })
 

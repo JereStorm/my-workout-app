@@ -41,6 +41,23 @@ export const ExerciseService = {
         }
     },
 
+        /**
+     * Obtiene un ejercicio específico por nombre
+     */
+    async getByName(exerciseName) {
+        try {
+            const q = query(
+                collection(db, COLLECTION_NAME),
+                where('nombre', '==', exerciseName)
+            );
+
+            const snap = await getDocs(q);
+            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch (error) {
+            handleServiceError(error);
+        }
+    },
+
     /**
      * Crea un nuevo ejercicio
      */
