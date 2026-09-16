@@ -1165,21 +1165,23 @@ select {
     }
 }
 
+.input-alert {
+    animation: blink 2s infinite;
+    border-color: rgb(0, 255, 242) !important;
+}
+
 @keyframes blink {
 
     0%,
     100% {
-        box-shadow: 0 0 0px aquamarine;
+        border-bottom-color: aquamarine;
+        box-shadow: 0 2px 0 0 transparent;
     }
 
     50% {
-        box-shadow: 0 0 8px 2px aqua;
+        border-bottom-color: aqua;
+        box-shadow: 0 2px 8px 2px aqua;
     }
-}
-
-.input-alert {
-    animation: blink 2s infinite;
-    border-color: rgb(0, 255, 242) !important;
 }
 
 input:-webkit-autofill,

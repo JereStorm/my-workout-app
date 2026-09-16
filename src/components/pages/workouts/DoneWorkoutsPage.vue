@@ -3,7 +3,7 @@
 
         <!-- HEADER -->
         <div
-            class="page-header px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-between align-items-center">
+            class="page-header w-100 px-3 py-2 gap-5 mt-5 mt-md-1 mb-3 mb-md-5 d-flex justify-content-center align-items-center">
             <h1 class="h5 mb-0 text-uppercase titulo">Linea de tiempo</h1>
 
             <RouterLink to="/dashboard/select-routine" class="btn btn-outline-info rounded-circle add-btn">
@@ -17,7 +17,7 @@
 
 
         <!-- TIMELINE -->
-        <div v-else class="timeline-wrapper">
+        <div v-else class="timeline-wrapper w-100  pe-1">
 
             <template v-for="[month, monthWorkouts] in workoutsByMonth" :key="month">
 
@@ -143,15 +143,13 @@ const workoutsByMonth = computed(() => {
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    max-width: 700px;
-    width: 100%;
     margin: auto;
 }
 
 /* HEADER */
 .page-header {
     position: sticky;
-    top: 0;
+    top: 50px;
     padding: 10px 0 20px;
     backdrop-filter: blur(12px);
     z-index: 5;
@@ -169,6 +167,8 @@ const workoutsByMonth = computed(() => {
 .timeline-wrapper {
     position: relative;
     padding-left: 30px;
+    max-width: 800px;
+
 }
 
 .timeline-wrapper::before {
@@ -269,7 +269,12 @@ const workoutsByMonth = computed(() => {
 
 @media (min-width: 768px) {
     .done-page {
-        padding-left: 220px;
+        padding-left: 240px;
+        padding-right: 0;
+    }
+
+    .page-header {
+        top: 0;
     }
 
     .timeline-wrapper {

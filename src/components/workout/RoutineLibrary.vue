@@ -21,8 +21,7 @@
                 </div>
             </div>
 
-            <div v-if="!isLoading"
-                class="d-flex justify-content-center gap-3 gap-md-5 align-items-center mx-md-5 mb-3">
+            <div v-if="!isLoading" class="d-flex justify-content-center gap-3 gap-md-5 align-items-center mx-md-5 mb-3">
                 <div class="d-flex align-items-baseline text-start mx-md-5">
                     <label for="orderBy" class="me-2">Orden</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
@@ -33,7 +32,7 @@
                     </select>
                 </div>
 
-             <div class="view-toggle rounded mx-md-5">
+                <div class="view-toggle rounded mx-md-5">
                     <button @click="viewMode = 'grid'"
                         :class="['btn btn-sm', viewMode === 'grid' ? 'btn-primary' : 'text-white']">
                         <i class="bi bi-grid-fill"></i>
@@ -199,7 +198,7 @@ const copiarRutina = async (r) => {
 /* HEADER */
 .page-header {
     position: sticky;
-    top: 0;
+    top: 50px;
     padding: 10px 0 20px;
     backdrop-filter: blur(12px);
     z-index: 5;
@@ -245,6 +244,10 @@ const copiarRutina = async (r) => {
         padding-top: 20px;
         padding-left: 240px;
         min-height: 100vh;
+    }
+
+    .page-header {
+        top: 0;
     }
 
     .grid :deep(.routine-card) {

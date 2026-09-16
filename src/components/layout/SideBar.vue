@@ -8,7 +8,7 @@
                 <hr>
                 <ul class="nav text-center nav-pills d-flex flex-column flex-grow-1 mt-2">
 
-                    <li v-for="item in menuItems" :key="item.name" class="nav-item">
+                    <li v-for="item in menuItems" :key="item.name" class="nav-item mb-1">
                         <router-link :to="{ name: item.name }"
                             class="nav-link d-flex flex-column justify-content-start align-items-center text-start text-decoration-none">
                             <i :class="`bi ${item.icon} color-principal`"></i>
@@ -20,7 +20,7 @@
                     <li class="nav-item mt-auto" :class="isMobile ? 'mb-5' : ''">
 
                         <button
-                            class="nav-link nav-link-danger d-flex flex-column justify-content-start align-items-center text-danger"
+                            class="nav-link nav-link-danger d-flex flex-column justify-content-start align-items-center text-danger mx-auto"
                             @click="logout">
                             <i class="bi bi-box-arrow-right text-danger px-3 py-1"></i>
                             <span class="mb-1">Cerrar Sesión</span>
@@ -121,8 +121,6 @@ watch(() => route.fullPath, () => {
 .nav-link {
     color: #ffffff;
     cursor: pointer;
-    width: 90%;
-    margin: 5px auto;
     border-radius: 12px;
     transition: all 0.3s ease;
     font-weight: 400;
@@ -157,13 +155,15 @@ watch(() => route.fullPath, () => {
 
 .router-link-active,
 .router-link-exact-active {
-    background-color: #00ffff;
-    color: #121414;
-    font-weight: bold;
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.192);
+    text-shadow: 0 0 5px #00ffff;
+    transform: translateY(-2px);
 }
 
 .router-link-active i {
-    color: #121414;
+    color: #00ffff;
 }
 
 .sidebar-profile {
@@ -226,7 +226,7 @@ watch(() => route.fullPath, () => {
     opacity: 0;
 }
 
-.nav-mobile {   
+.nav-mobile {
     position: fixed;
     top: 0px;
     z-index: 10;
