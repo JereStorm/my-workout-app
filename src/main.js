@@ -17,8 +17,8 @@ app.use(VueSweetalert2, {
     theme: 'bootstrap-4',
     background: '#0a0f12',
     color: '#e2e8f0',
-    confirmButtonColor: '#21b140de',
-    cancelButtonColor: '#64748b',
+    confirmButtonColor: '#21a0b1de',
+    cancelButtonColor: '#38393b',
     buttonsStyling: true
 })
 

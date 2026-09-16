@@ -793,15 +793,17 @@ const guardarRutina = async () => {
         // 2. Preparar/Crear automáticamente los ejercicios nuevos o faltantes
         await prepararEjercicios();
 
+        let id;
         // 3. Guardar o actualizar la rutina en el store
         if (nuevaRutina.id) {
+            id = nuevaRutina.id;
             await profileStore.updateRoutine({ ...nuevaRutina });
         } else {
-            await profileStore.createRoutine({ ...nuevaRutina });
+            id = await profileStore.createRoutine({ ...nuevaRutina });
         }
 
         // 4. Redirigir a la vista de rutinas
-        router.push({ name: "MyWorkouts" });
+        router.push({ name: 'DetailRoutine', query: { id } });
 
     } catch (error) {
         console.error('Error al guardar la rutina:', error);

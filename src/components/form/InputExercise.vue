@@ -26,7 +26,7 @@
                 </div>
 
                 <!-- Nuevo ejercicio indicador -->
-                <div v-else-if="ejercicio.nombre.trim() && !ejercicio.exerciseId"
+                <div v-else-if="ejercicio.nombre.trim() && !ejercicio.exerciseId && !esExacto"
                     class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000;">
                     <div class="list-group-item small py-0 bg-transparent text-info">
                         <span class="d-flex gap-2"><i class="bi bi-info-circle"></i>Se creará un nuevo ejercicio al
@@ -74,6 +74,8 @@ const { proxy } = getCurrentInstance();
 const profileStore = useProfileStore();
 const exercises = computed(() => profileStore.getUserExercises);
 
+let esExacto = false; // Variable para controlar si hay coincidencia exacta
+
 const filtrarExercises = computed(() => {
     const query = props.ejercicio.nombre.trim().toLowerCase();
     if (!query) return []; // Si está vacío, no mostramos nada
@@ -84,7 +86,10 @@ const filtrarExercises = computed(() => {
     );
 
     // Si coincide exactamente, devolvemos un array vacío para ocultar el dropdown
-    if (coincideExacto) return [];
+    if (coincideExacto){
+        esExacto = true;
+        return [];
+    };
 
     // Si no es exacto, filtramos las coincidencias parciales como antes
     return exercises.value.filter(exercise =>
