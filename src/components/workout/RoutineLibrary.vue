@@ -46,7 +46,7 @@
 
             <div v-if="isLoading || isLocalLoading" class="loader"></div>
 
-            <div v-if="!isLoading && sortedRoutines.length > 0">
+            <div v-if="sortedRoutines.length > 0">
                 <transition-group name="fade-item" tag="ul" :class="['routine-resumen', viewMode]">
                     <component :is="viewMode === 'grid' ? RoutineCard : RoutineListItem"
                         v-for="routine in sortedRoutines" :key="routine.id" :routine="routine" @click-card="showRoutine"

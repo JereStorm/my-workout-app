@@ -20,7 +20,7 @@
                     <span><i class="bi bi-trash3 color-principal"></i>Eliminar</span>
                 </li>
                 <li @click.stop="copiarRutina(rutinaLocal)">
-                    <span><i class="bi bi-copy color-principal"></i>Copiar</span>
+                    <span><i class="bi bi-copy color-principal"></i>Clonar</span>
                 </li>
             </ul>
         <div class="mt-5" v-if="!isLoading && !rutinaLocal">

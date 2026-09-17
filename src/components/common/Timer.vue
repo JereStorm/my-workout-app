@@ -91,10 +91,10 @@ if (props.autoStart && props.initialSeconds > 0) {
 
 <template>
     <div class="card shadow-sm mb-3 p-4 text-center mx-auto" style="max-width: 300px;">
-        <h5 class="mb-3 fw-semibold text-light"><i style="font-size: 30px;" class="bi bi-stopwatch"></i></h5>
+        <h5 class="mb-1 fw-semibold small titulo-timer text-uppercase">TIEMPO TOTAL</h5>
 
         <!-- Display del tiempo -->
-        <h1 class="display-5 fw-bold mb-3 text-light">
+        <h1 class="display-5 mb-1 text-info">
             {{ String(minutes).padStart(2, '0') }}:{{ String(seconds).padStart(2, '0') }}
         </h1>
 
@@ -104,10 +104,10 @@ if (props.autoStart && props.initialSeconds > 0) {
                 <i class="bi me-0 bi-play-fill"></i>
             </button>
 
-            <button v-else class="btn btn-warning px-3 text-center" @click="pause">
+            <button v-else class="btn btn-secondary px-3 text-center" @click="pause">
                 <i class="bi me-0 bi-pause-fill"></i>
             </button>
-            <button class="btn btn-danger px-3 d-flex justify-content-center align-items-center" @click="reset">
+            <button class="btn btn-outline-danger px-3 d-flex justify-content-center align-items-center" @click="reset">
                 <i class="bi me-0 bi-ban"></i>
             </button>
         </div>
@@ -115,6 +115,13 @@ if (props.autoStart && props.initialSeconds > 0) {
 </template>
 
 <style scoped>
+
+.titulo-timer {
+    font-size: 0.75rem;
+    letter-spacing: 0.1rem;
+    color: #777;
+
+}
 .card {
     background-color: transparent;
     border-radius: 1rem;

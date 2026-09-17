@@ -39,7 +39,7 @@
                     <span>Progreso</span>
 
                     <strong>
-                        {{ step + 1 }} / {{ steps.length }}
+                        {{ step }} / {{ steps.length }}
                     </strong>
                 </div>
 
@@ -174,7 +174,7 @@
 
                         <!-- CANCELAR -->
                         <div class="cancel-container">
-                            <button type="button" @click="handleCancelar" class="btn btn-link cancel-btn">
+                            <button type="button" @click="handleCancelar" class="btn btn-link cancel-btn mb-1">
                                 <i class="bi bi-x-circle"></i>
                                 Cancelar entrenamiento
                             </button>
@@ -197,7 +197,7 @@
                             Antes de guardar, podés agregar una nota sobre cómo te sentiste.
                         </p>
 
-                        <div class="notes-container">
+                        <div class="notes-container px-md-5">
                             <label for="workout-notes" class="form-label">
                                 Notas del entrenamiento
                             </label>
@@ -787,7 +787,7 @@ const handleCancelar = async () => {
 
 .cancel-btn {
     color: #777;
-    font-size: 0.75rem;
+    font-size: 0.90rem;
     text-decoration: none;
 }
 
@@ -834,6 +834,7 @@ const handleCancelar = async () => {
 
 .notes-container {
     width: 100%;
+    max-width: 550px;
     margin-top: 1rem;
     text-align: left;
 }
