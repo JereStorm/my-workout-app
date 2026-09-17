@@ -8,11 +8,7 @@
                 <h1 class="routine-title m-0 text-white fw-bold">
                     {{ rutina.nombre }}
                 </h1>
-                <div class="badge-difficulty" :class="difficultyClass(rutina.dificultad)">
-                    <small class="text-uppercase fw-bold">{{ rutina.dificultad }}</small>
-                    <span class="ms-1">{{ difficultyIcons(rutina.dificultad) }}</span>
-                </div>
-
+                <DifficultyBadge :dificultad="rutina.dificultad" />
             </div>
 
             <div class="row g-2 mb-3">
@@ -117,6 +113,8 @@ import { computed } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { formatStimulusTarget, getStimulusType } from '@/domain/stimulus'
 import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
+
 
 export default {
     props: {
@@ -125,7 +123,10 @@ export default {
             required: true
         }
     },
-
+    // 1. ¡Acá faltaba registrar el componente!
+    components: {
+        DifficultyBadge
+    },
     setup(props) {
         const profileStore = useProfileStore()
         const ejerciciosGlobales = computed(() => profileStore.getUserExercises)

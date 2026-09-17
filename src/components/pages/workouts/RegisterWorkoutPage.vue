@@ -24,12 +24,7 @@
                     <i class="bi bi-calendar3"></i>
                     {{ formatDate(workoutDate) }}
                 </div>
-                <div class="workout-dificultad text-end">
-                    <span class="badge difficulty">
-                        {{ rutina?.dificultad }}
-                    </span>
-                </div>
-
+                <DifficultyBadge :dificultad="rutina.dificultad" />
 
             </div>
 
@@ -247,6 +242,9 @@ import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
+
+
 
 const { proxy } = getCurrentInstance();
 
@@ -398,8 +396,9 @@ const onTimerTick = (secondsLeft) => {
 
 const submit = async () => {
     isSaving.value = true;
+    let id = null;
     try {
-        await profileStore.registerWorkout({
+        id = await profileStore.registerWorkout({
             rutinaId,
             dataRoutine: {
                 bloques: rutina.value.bloques,
@@ -419,7 +418,7 @@ const submit = async () => {
 
     } finally {
         isSaving.value = false;
-        router.push({ name: 'DoneWorkouts' })
+        router.push({ name: 'DetailWorkout', query: { id } });
     }
 }
 
@@ -522,7 +521,7 @@ const handleCancelar = async () => {
     gap: 0.4rem;
     margin-top: 0.35rem;
     color: #888;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 
 .workout-date i {

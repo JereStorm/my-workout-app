@@ -10,10 +10,8 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center text-gray-700">
-            <div class="badge-difficulty" :class="getDifficultyClass(routine.dificultad)">
-                <small class="text-uppercase fw-bold">{{ routine.dificultad }}</small>
-                <span class="ms-1">{{ getDifficultyIcons(routine.dificultad) }}</span>
-            </div>
+            <DifficultyBadge :dificultad="routine.dificultad" />
+
 
             <div class="dropdown-menu-container" @click.stop>
                 <span class="me-1" @click.stop="$emit('toggle-fav', routine)" title="Favorita">
@@ -39,7 +37,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats';
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
+
 
 const props = defineProps({
     routine: Object,
@@ -114,9 +113,11 @@ onUnmounted(() => window.removeEventListener('click', closeMenu));
 .difficulty-text {
     font-size: 14px;
 }
+
 .badge-difficulty {
     font-size: 0.80rem;
 }
+
 .ellipsis {
     overflow: hidden;
     white-space: nowrap;

@@ -81,10 +81,8 @@
 
 
                         <div class="routine-top">
-                            <div class="badge-difficulty" :class="getDifficultyClass(routine.dificultad)">
-                                <small class="text-uppercase fw-bold">{{ routine.dificultad }}</small>
-                                <span class="ms-1">{{ getDifficultyIcons(routine.dificultad) }}</span>
-                            </div>
+                            <DifficultyBadge :dificultad="routine.dificultad" />
+
 
                             <span class="time text-info">
                                 <i class="bi bi-clock"></i>
@@ -125,7 +123,8 @@ import { computed, ref } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate, getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
+import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '@/utils/routineStats'
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 
 
 const router = useRouter()
@@ -181,29 +180,32 @@ const processedRoutines = computed(() => {
 })
 
 /* quick start */
-const lastRoutine = computed(() => {
-    const workouts = profile.value.workouts || []
-    if (!workouts.length) return null
-
-    const last = workouts.at(0)
-    return last.dataRoutine
-})
-
 const lastWorkout = computed(() => {
     const workouts = profile.value.workouts || []
     if (!workouts.length) return null
-    const lastWorkout = workouts.at(0);
-    //console.log('lastWorkout:', lastWorkout)
-    return lastWorkout
+
+    // Buscamos el primer entrenamiento cuyo ID de rutina todavía exista en las rutinas actuales
+    const allRoutines = profile.value.routines || []
+
+    // Encontramos el workout más reciente que tenga una rutina existente
+    const validWorkout = workouts.find(w =>
+        allRoutines.some(r => r.id === w.rutinaId)
+    )
+
+    return validWorkout || null
+})
+
+const lastRoutine = computed(() => {
+    if (!lastWorkout.value) return null
+
+    const allRoutines = profile.value.routines || []
+    return allRoutines.find(r => r.id === lastWorkout.value.rutinaId) || null
 })
 
 const lastRoutineMeta = computed(() => {
     if (!lastRoutine.value) return ''
-
-    //console.log(lastRoutine.value)
     return `Última sesión registrada`
 })
-
 
 function empezarEntreno(id) {
     router.push({
@@ -248,7 +250,7 @@ function empezarEntreno(id) {
     margin-bottom: 20px;
 }
 
-.badge-difficulty{
+.badge-difficulty {
     font-size: .80rem;
 }
 

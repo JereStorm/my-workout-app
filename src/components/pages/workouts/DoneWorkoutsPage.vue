@@ -42,10 +42,7 @@
                                 {{ workout.dataRoutine.nombre }}
                             </h5>
 
-                            <span class="badge difficulty-badge text-uppercase pt-1"
-                                :title="getDifficultyIcons(workout.dataRoutine.dificultad)">
-                                {{ workout.dataRoutine.dificultad }}
-                            </span>
+                            <DifficultyBadge :dificultad="workout.dataRoutine.dificultad" />
                         </div>
 
                         <div class="timeline-date">
@@ -100,7 +97,9 @@ import { computed, ref, watch } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
-import { countSets, estimateDuration, formatDate, getDifficultyIcons, getSummary } from '@/utils/routineStats';
+import { countSets, estimateDuration, formatDate, getSummary } from '@/utils/routineStats';
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
+
 
 /** Acceso al enrutador y a la ruta actual */
 const route = useRoute();

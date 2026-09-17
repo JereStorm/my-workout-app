@@ -23,10 +23,7 @@
                         {{ formatDate(workout.date) }}
                     </div>
 
-                    <span
-                        class="badge rounded-pill text-bg-info bg-opacity-10 text-info border border-info border-opacity-25">
-                        {{ workout.dataRoutine.dificultad }}
-                    </span>
+                    <DifficultyBadge :dificultad="workout.dataRoutine.dificultad" />
 
                 </div>
 
@@ -108,18 +105,9 @@
                     </div>
 
 
-                    <div
-                        class="progress"
-                        role="progressbar"
-                        :aria-valuenow="statsCompliance"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        style="height: 7px;"
-                    >
-                        <div
-                            class="progress-bar bg-info"
-                            :style="{ width: `${statsCompliance}%` }"
-                        ></div>
+                    <div class="progress" role="progressbar" :aria-valuenow="statsCompliance" aria-valuemin="0"
+                        aria-valuemax="100" style="height: 7px;">
+                        <div class="progress-bar bg-info" :style="{ width: `${statsCompliance}%` }"></div>
                     </div>
 
 
@@ -135,11 +123,7 @@
             <!-- DETALLE -->
             <main class="px-3 px-md-4 pb-5 mt-5">
 
-                <section
-                    v-for="(bloque, bi) in workout.dataRoutine.bloques"
-                    :key="bi"
-                    class="mb-4"
-                >
+                <section v-for="(bloque, bi) in workout.dataRoutine.bloques" :key="bi" class="mb-4">
 
                     <!-- TÍTULO BLOQUE -->
                     <div class="border-start border-3 border-info ps-3 mb-3">
@@ -162,11 +146,7 @@
                     <!-- EJERCICIOS -->
                     <div class="d-flex flex-column gap-3">
 
-                        <div
-                            v-for="(ej, ei) in bloque.ejercicios"
-                            :key="ei"
-                            class="exercise-card p-3"
-                        >
+                        <div v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="exercise-card p-3">
 
                             <!-- HEADER EJERCICIO -->
                             <div class="text-center mb-3">
@@ -175,10 +155,7 @@
                                     {{ ej.nombre }}
                                 </div>
 
-                                <div
-                                    v-if="ej?.notas"
-                                    class="small text-notas mt-1"
-                                >
+                                <div v-if="ej?.notas" class="small text-notas mt-1">
                                     <i class="bi bi-info-circle me-1"></i>
                                     {{ ej.notas }}
                                 </div>
@@ -213,20 +190,11 @@
 
                                 </div>
 
-                                <div
-                                    class="progress"
-                                    role="progressbar"
-                                    :aria-valuenow="getExerciseCompliance(bi, ei)"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                    style="height: 5px;"
-                                >
-                                    <div
-                                        class="progress-bar bg-info"
-                                        :style="{
-                                            width: `${getExerciseCompliance(bi, ei)}%`
-                                        }"
-                                    ></div>
+                                <div class="progress" role="progressbar" :aria-valuenow="getExerciseCompliance(bi, ei)"
+                                    aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+                                    <div class="progress-bar bg-info" :style="{
+                                        width: `${getExerciseCompliance(bi, ei)}%`
+                                    }"></div>
                                 </div>
 
                             </div>
@@ -235,11 +203,7 @@
                             <!-- SETS -->
                             <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                                <div
-                                    v-for="si in bloque.series"
-                                    :key="si"
-                                    class="set-pill text-center"
-                                >
+                                <div v-for="si in bloque.series" :key="si" class="set-pill text-center">
 
                                     <small class="text-secondary text-uppercase d-block">
                                         Set {{ si }}
@@ -260,14 +224,11 @@
 
 
                                     <!-- PORCENTAJE -->
-                                    <small
-                                        class="d-block mt-1"
-                                        :class="getSetComplianceClass(
-                                            ej,
-                                            workout.logs[getLogIndex(bi, si - 1)],
-                                            ei
-                                        )"
-                                    >
+                                    <small class="d-block mt-1" :class="getSetComplianceClass(
+                                        ej,
+                                        workout.logs[getLogIndex(bi, si - 1)],
+                                        ei
+                                    )">
                                         {{
                                             getSetCompliance(
                                                 ej,
@@ -328,6 +289,7 @@ import {
 
 import { formatDate } from '@/utils/routineStats';
 import { sumWorkoutVolume } from '@/utils/workoutStats';
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 
 
 const { proxy } = getCurrentInstance();
@@ -651,7 +613,7 @@ watch(isLoading, (nuevoValor) => {
 
 
 <style scoped>
-.card-info{
+.card-info {
     border: 1px solid rgba(255, 255, 255, .05);
 }
 
