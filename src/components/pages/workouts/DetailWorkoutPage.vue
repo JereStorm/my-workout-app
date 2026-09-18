@@ -26,9 +26,7 @@
                     <DifficultyBadge :dificultad="workout.dataRoutine.dificultad" />
 
                 </div>
-
             </header>
-
 
             <!-- ESTADÍSTICAS -->
             <div class="container-fluid px-1 px-md-3 pb-3 mt-4">
@@ -49,7 +47,6 @@
                         </div>
                     </div>
 
-
                     <div class="col-4">
                         <div class="card-info rounded-3 px-2 py-2 text-center h-100">
 
@@ -63,7 +60,6 @@
 
                         </div>
                     </div>
-
 
                     <div class="col-4">
                         <div class="card-info rounded-3 px-2 py-2 text-center h-100">
@@ -81,7 +77,6 @@
 
                         </div>
                     </div>
-
                 </div>
 
 
@@ -110,15 +105,11 @@
                         <div class="progress-bar bg-info" :style="{ width: `${statsCompliance}%` }"></div>
                     </div>
 
-
                     <div class="small text-secondary mt-2">
                         {{ statsComplianceMessage }}
                     </div>
-
                 </div>
-
             </div>
-
 
             <!-- DETALLE -->
             <main class="px-3 px-md-4 pb-5 mt-5">
@@ -137,11 +128,8 @@
                             <span class="text-secondary small">
                                 · {{ bloque.series }} sets
                             </span>
-
                         </div>
-
                     </div>
-
 
                     <!-- EJERCICIOS -->
                     <div class="d-flex flex-column gap-3">
@@ -159,9 +147,7 @@
                                     <i class="bi bi-info-circle me-1"></i>
                                     {{ ej.notas }}
                                 </div>
-
                             </div>
-
 
                             <!-- META -->
                             <div class="text-center mb-3">
@@ -171,9 +157,7 @@
                                     Meta:
                                     {{ formatStimulusTarget(ej.repeticiones, ej.tiempo) }}
                                 </span>
-
                             </div>
-
 
                             <!-- CUMPLIMIENTO DEL EJERCICIO -->
                             <div class="mb-3">
@@ -199,7 +183,6 @@
 
                             </div>
 
-
                             <!-- SETS -->
                             <div class="d-flex justify-content-center flex-wrap gap-2">
 
@@ -208,7 +191,6 @@
                                     <small class="text-secondary text-uppercase d-block">
                                         Set {{ si }}
                                     </small>
-
 
                                     <!-- REAL / META -->
                                     <span class="chip-real mt-1 d-inline-block">
@@ -221,7 +203,6 @@
                                         /
                                         {{ formatExpected(ej) }}
                                     </span>
-
 
                                     <!-- PORCENTAJE -->
                                     <small class="d-block mt-1" :class="getSetComplianceClass(
@@ -245,7 +226,6 @@
                         </div>
 
                     </div>
-
 
                     <hr class="text-secondary opacity-25 mt-4">
 

@@ -47,17 +47,17 @@
 
 
             <!-- ALL ROUTINES -->
-            <section class="w-100 px-3">
+            <section class="w-100 px-md-3">
 
                 <div class="section-label muted">
                     Todas las rutinas
                     <div class="line"></div>
                 </div>
-                <div class="search-box me-auto mb-4 px-2 ms-md-3 ">
+                <div class="search-box mx-auto mb-4 px-2 ">
                     <i class="bi bi-search"></i>
                     <input v-model="search" type="text" placeholder="Buscar rutina..." class="form-control">
                 </div>
-                <div class="controls d-flex gap-2 mb-4 px-2 ms-md-3">
+                <div class="controls d-flex gap-2 mb-4 px-2">
 
                     <button class="btn btn-outline-info btn-sm" :class="{ active: sortByDifficulty }"
                         @click="sortByDifficulty = !sortByDifficulty">
@@ -76,36 +76,38 @@
                 </div>
 
                 <div class="routine-grid px-md-5">
-
-                    <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
-
-
-                        <div class="routine-top">
-                            <DifficultyBadge :dificultad="routine.dificultad" />
+                    <transition-group name="fade-item" tag="ul" class="px-0 d-flex flex-wrap gap-2 justify-content-center">
+                        <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
 
 
-                            <span class="time text-info">
-                                <i class="bi bi-clock"></i>
-                                {{ estimateDuration(routine) }}m
-                            </span>
+                            <div class="routine-top">
+                                <DifficultyBadge :dificultad="routine.dificultad" />
+
+
+                                <span class="time text-info">
+                                    <i class="bi bi-clock"></i>
+                                    {{ estimateDuration(routine) }}m
+                                </span>
+                            </div>
+
+                            <div class="routine-name my-auto w-100">
+                                <span class="favorite-btn">
+                                    <i class="bi"
+                                        :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
+                                </span>
+                                <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
+                            </div>
+                            <div class="d-flex py-1 text-center">
+                                <small class="text-secondary text-align-center truncate-2-lines">
+                                    {{ getSummary(routine) }}
+                                </small>
+                            </div>
+                            <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
+                                <i class="bi bi-play-fill my-auto"></i>
+                                Entrenar
+                            </button>
                         </div>
-
-                        <div class="routine-name my-auto w-100">
-                            <span class="favorite-btn">
-                                <i class="bi" :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
-                            </span>
-                            <div class="mb-1 text-center w-100">{{ routine.nombre }}</div>
-                        </div>
-                        <div class="d-flex py-1 text-center">
-                            <small class="text-secondary text-align-center truncate-2-lines">
-                                {{ getSummary(routine) }}
-                            </small>
-                        </div>
-                        <button class="btn btn-aqua w-100 mt-3 text-capitalize" @click="empezarEntreno(routine.id)">
-                            <i class="bi bi-play-fill my-auto"></i>
-                            Entrenar
-                        </button>
-                    </div>
+                    </transition-group>
                 </div>
                 <!-- CREATE -->
                 <RouterLink to="/dashboard/form-routine" class="routine-card create-card">
@@ -231,7 +233,7 @@ function empezarEntreno(id) {
 }
 
 .routine-content {
-    width: 80%;
+    width: 90%;
 }
 
 .quick-section {
@@ -369,13 +371,13 @@ function empezarEntreno(id) {
 
 .routine-card {
     border-radius: 10px;
-    max-width: 550px;
+    width: 100%;
+    max-width: 450px;
     padding: 22px;
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, .05);
-    transition: .2s;
+    transition: all 0.45s ease-in-out;
 }
 
 .routine-card:hover {
@@ -463,5 +465,16 @@ function empezarEntreno(id) {
         height: 5rem;
 
     }
+}
+
+.fade-item-enter-active,
+.fade-item-leave-active {
+    transition: all 0.3s ease;
+}
+
+.fade-item-enter-from,
+.fade-item-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
 }
 </style>

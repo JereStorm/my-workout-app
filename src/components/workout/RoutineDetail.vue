@@ -135,13 +135,14 @@ export default {
          * Obtiene el nombre actualizado del ejercicio global si tiene ID
          */
         const getNombreEjercicio = (ejercicio) => {
-            if (!ejercicio?.exerciseId) return ejercicio?.nombre || ''
-
-            const ejercicioGlobal = ejerciciosGlobales.value.find(
-                ex => ex.id === ejercicio.exerciseId
-            )
-
-            return ejercicioGlobal ? ejercicioGlobal.nombre : (ejercicio?.nombre || '')
+            // 1. Buscamos si todavía existe en la biblioteca global mediante el ID
+            if (ejercicio?.exerciseId) {
+                const ejercicioGlobal = ejerciciosGlobales.value.find(ex => ex.id === ejercicio.exerciseId);
+                if (ejercicioGlobal) return ejercicioGlobal.nombre;
+            }
+            // 2. Si el ejercicio global fue eliminado de la biblioteca, 
+            // utilizamos el nombre que quedó grabado a modo de snapshot en el propio objeto.
+            return ejercicio?.nombre || ejercicio?.nombreOriginal || 'Ejercicio eliminado';
         }
 
         return {
