@@ -171,7 +171,7 @@ watch(() => route.fullPath, () => {
     height: 100%;
     background-color: #121414;
     padding: 1rem;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 /* Si es mobile: sidebar flota */
