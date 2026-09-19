@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column align-items-center gap-2">
+    <div class="d-flex justify-content-start ms-3 gap-3 align-items-center gap-2">
 
         <!-- Avatar -->
         <div class="position-relative">
@@ -19,7 +19,7 @@
                 {{ nickname || 'Usuario' }}
             </h6>
 
-            <small class=" fw-light text-light">
+            <small class="small fw-light text-light">
                 Nivel {{ level }}
             </small>
         </div>
