@@ -71,7 +71,7 @@ body {
 
 /* Outline Info */
 .btn-outline-info {
-  border-color: #00cfff;
+  border-color: #00d0ff63;
   color: #00cfff;
 }
 
@@ -82,7 +82,7 @@ body {
 
 /* Outline Success */
 .btn-outline-success {
-  border-color: #00ffaa;
+  border-color: #00ffaa93;
   color: #00ffaa;
 }
 
@@ -93,7 +93,7 @@ body {
 
 /* Outline Danger */
 .btn-outline-danger {
-  border-color: #ff1010;
+  border-color: #ff101086;
   color: #ff1010;
 }
 
@@ -365,6 +365,25 @@ form {
   border: 1px solid rgba(156, 39, 176, 0.35);
 }
 
-.text-muted{
+.text-muted {
   color: #94a3b8 !important;
+}
+
+.add-btn {
+  animation: blink 2s infinite;
+  border-color: rgb(0, 255, 242) !important;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    border-bottom-color: aquamarine;
+    box-shadow: 0 2px 0px 0 transparent;
+  }
+
+  50% {
+    border-bottom-color: aqua;
+    box-shadow: 0 2px 8px 2px aqua;
+  }
 }

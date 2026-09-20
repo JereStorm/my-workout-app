@@ -61,7 +61,7 @@
 
                     <button class="btn btn-outline-info btn-sm" :class="{ active: sortByDifficulty }"
                         @click="sortByDifficulty = !sortByDifficulty">
-                        <i class="bi bi-sort-down"></i>
+                        <i class="bi" :class="sortByDifficulty ? 'bi-sort-down' : 'bi-sort-up'"></i>
                         Dificultad
                     </button>
 
@@ -78,7 +78,6 @@
                 <div class="routine-grid px-md-5">
                     <transition-group name="fade-item" tag="ul" class="px-0 d-flex flex-wrap gap-2 justify-content-center">
                         <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
-
 
                             <div class="routine-top">
                                 <DifficultyBadge :dificultad="routine.dificultad" />
@@ -445,6 +444,7 @@ function empezarEntreno(id) {
     text-decoration: none;
     color: #aaa;
     transition: all .3s ease;
+    border-color: rgb(0, 255, 242) !important;
 }
 
 .create-card:hover {

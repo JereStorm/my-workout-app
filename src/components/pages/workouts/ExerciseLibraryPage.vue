@@ -10,10 +10,11 @@
                     <i class="bi bi-plus-lg text-light"></i>
                 </div>
             </div>
+            
             <!-- Buscador y Filtros -->
             <div class="mb-3 mx-5">
                 <div class="section-label muted">
-                    Todas los ejercicios
+                    Todos los ejercicios
                     <div class="line"></div>
                 </div>
                 <div class="search-box mx-auto mb-4 px-2 ">
@@ -21,55 +22,63 @@
                     <input v-model="searchQuery" type="text" placeholder="Buscar ejercicio..." class="form-control">
                 </div>
             </div>
+            
+            <div v-if="isLoading || isLocalLoading" class="loader"></div>
 
-            <!-- Listado de Ejercicios (Cards / Tabla Moderna) -->
-            <div v-if="ejerciciosFiltrados.length > 0" class="row g-3">
-                <transition-group name="fade-item" tag="ul" class="d-flex flex-wrap gap-3 gap-md-4 justify-content-center">
-                    <div v-for="exercise in ejerciciosFiltrados" :key="exercise.id" class="col-12 col-md-6 col-lg-4 col-xl-3">
-                        <div class="card-exercise h-100 px-2 py-1">
-                            <div class="card-body d-flex flex-column justify-content-between">
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-center gap-2">
-                                        <h5 class="fs-6 text-start  text-break mb-0">{{ exercise.nombre }}
-                                        </h5>
-                                        <span
-                                            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle small">
-                                            {{ exercise.categoria || 'Sin categoría' }}
-                                        </span>
+            <!-- Listado Agrupado por Letra (Estilo Diccionario) -->
+            <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-5">
+                <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
+                    
+                    <!-- Separador por letra solicitado -->
+                    <div class="section-label muted fw-bold text-uppercase mb-3">
+                        {{ grupo.letra }}
+                        <div class="line"></div>
+                    </div>
+
+                    <!-- Fila de ejercicios para esta letra -->
+                    <div class="row g-3">
+                        <div v-for="exercise in grupo.ejercicios" :key="exercise.id" class="col-12 col-md-6 col-lg-4 col-xl-3">
+                            <div class="card-exercise h-100 px-2 py-1">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center gap-2">
+                                            <h5 class="fs-6 text-start text-break mb-0">{{ exercise.nombre }}</h5>
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle small">
+                                                {{ exercise.categoria || 'Sin categoría' }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- Botones de Acción -->
-                                <div
-                                    class="d-flex align-items-center justify-content-center gap-2 mt-2 pt-2 border-top border-light">
-                                    <!-- Ver Detalle -->
-                                    <button type="button" class="btn btn-outline-secondary btn-actions"
-                                        title="Ver detalles" @click="showExerciseDetail(exercise.id)">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </button>
+                                    <!-- Botones de Acción -->
+                                    <div class="d-flex align-items-center justify-content-center gap-2 mt-2 pt-2 border-top border-light">
+                                        <!-- Ver Detalle -->
+                                        <button type="button" class="btn btn-outline-secondary btn-actions"
+                                            title="Ver detalles" @click="showExerciseDetail(exercise.id)">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
 
-                                    <!-- Editar (Reutilizando la lógica del modal) -->
-                                    <button type="button" class="btn btn-outline-info btn-actions"
-                                        title="Editar ejercicio" @click="editarEjercicio(exercise)">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </button>
+                                        <!-- Editar -->
+                                        <button type="button" class="btn btn-outline-info btn-actions"
+                                            title="Editar ejercicio" @click="editarEjercicio(exercise)">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
 
-                                    <!-- Eliminar (Con borrado seguro/independiente) -->
-                                    <button type="button" class="btn btn-outline-danger btn-actions"
-                                        title="Eliminar ejercicio" @click="eliminarEjercicio(exercise)">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                        <!-- Eliminar -->
+                                        <button type="button" class="btn btn-outline-danger btn-actions"
+                                            title="Eliminar ejercicio" @click="eliminarEjercicio(exercise)">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                </transition-group>
 
+                </div>
             </div>
 
             <!-- Estado vacío -->
-            <div v-else class="text-center py-5">
+            <div v-if="!isLoading && ejerciciosFiltrados.length == 0" class="text-center py-5">
                 <div class="text-muted mb-3" style="font-size: 2.5rem;">
                     <i class="bi bi-journal-x"></i>
                 </div>
@@ -81,11 +90,13 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance } from 'vue';
+import { ref, computed, getCurrentInstance} from 'vue';
 import { useProfileStore } from '@/stores/profile';
+import { storeToRefs } from 'pinia';
 
 const { proxy } = getCurrentInstance();
 const profileStore = useProfileStore();
+const { isLoading } = storeToRefs(profileStore);
 const searchQuery = ref('');
 
 
@@ -103,6 +114,34 @@ const ejerciciosFiltrados = computed(() => {
         ex.nombre.toLowerCase().includes(query) ||
         (ex.categoria && ex.categoria.toLowerCase().includes(query))
     );
+});
+
+const ejerciciosAgrupadosPorLetra = computed(() => {
+    const filtrados = ejerciciosFiltrados.value;
+    if (!filtrados.length) return [];
+
+    // 1. Ordenar alfabéticamente por nombre
+    const ordenados = [...filtrados].sort((a, b) => 
+        a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+    );
+
+    // 2. Agrupar por la letra inicial
+    const gruposMap = {};
+    ordenados.forEach(ex => {
+        const letra = (ex.nombre.charAt(0) || '#').toUpperCase();
+        if (!gruposMap[letra]) {
+            gruposMap[letra] = [];
+        }
+        gruposMap[letra].push(ex);
+    });
+
+    // 3. Convertir a un array de objetos ordenado por la letra
+    return Object.keys(gruposMap)
+        .sort((a, b) => a.localeCompare(b, 'es'))
+        .map(letra => ({
+            letra,
+            ejercicios: gruposMap[letra]
+        }));
 });
 
 // 1. Crear nuevo ejercicio desde la biblioteca
