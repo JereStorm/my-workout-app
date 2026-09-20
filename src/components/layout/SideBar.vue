@@ -10,7 +10,7 @@
 
                     <li v-for="item in menuItems" :key="item.name" class="nav-item mb-1">
                         <router-link :to="{ name: item.name }"
-                            class="nav-link d-flex flex-column justify-content-start align-items-center text-start text-decoration-none">
+                            class="nav-link d-flex gap-2 gap-md-3 align-items-center text-decoration-none">
                             <i :class="`bi ${item.icon} color-principal`"></i>
                             <span class="">{{ item.label }}</span>
                         </router-link>
@@ -20,7 +20,7 @@
                     <li class="nav-item mt-auto" :class="isMobile ? 'mb-5' : ''">
 
                         <button
-                            class="nav-link nav-link-danger d-flex flex-column justify-content-start align-items-center text-danger mx-auto"
+                            class="nav-link nav-link-danger d-flex gap-2 gap-md-3 justify-content-start align-items-center text-danger mx-auto"
                             @click="logout">
                             <i class="bi bi-box-arrow-right text-danger px-3 py-1"></i>
                             <span class="mb-1">Cerrar Sesión</span>
@@ -38,7 +38,8 @@
 
         <!-- 🔹 Header mobile -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
-            <router-link :to="{ name: 'MyWorkouts' }" class="h2 mb-0 d-flex gap-2 bg-transparent router-link-active border-0">
+            <router-link :to="{ name: 'MyWorkouts' }"
+                class="h2 mb-0 d-flex gap-2 bg-transparent router-link-active border-0">
                 <i class="bi bi-house"></i>
             </router-link>
 
