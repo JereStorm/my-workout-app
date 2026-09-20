@@ -10,9 +10,9 @@
 
                     <li v-for="item in menuItems" :key="item.name" class="nav-item mb-1">
                         <router-link :to="{ name: item.name }"
-                            class="nav-link d-flex gap-2 gap-md-3 align-items-center text-decoration-none">
+                            class="nav-link d-flex gap-3 align-items-center text-decoration-none">
                             <i :class="`bi ${item.icon} color-principal`"></i>
-                            <span class="">{{ item.label }}</span>
+                            <span class="mb-1">{{ item.label }}</span>
                         </router-link>
                     </li>
                     <hr>
@@ -22,7 +22,7 @@
                         <button
                             class="nav-link nav-link-danger d-flex gap-2 gap-md-3 justify-content-start align-items-center text-danger mx-auto"
                             @click="logout">
-                            <i class="bi bi-box-arrow-right text-danger px-3 py-1"></i>
+                            <i class="bi bi-box-arrow-right text-danger px-1 py-1"></i>
                             <span class="mb-1">Cerrar Sesión</span>
                         </button>
                     </li>

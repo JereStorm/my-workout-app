@@ -25,8 +25,8 @@
                 <div class="d-flex align-items-baseline text-start mx-md-5">
                     <label for="orderBy" class="me-2">Orden</label>
                     <select v-model="order" id="orderBy" class="p-2 m-2 rounded bg-dark text-white">
-                        <option value="fechaCreacionDesc">Más Reciente</option>
-                        <option value="fechaCreacionAsc">Más Antigua</option>
+                        <option value="fechaCreacionDesc">Más reciente</option>
+                        <option value="fechaCreacionAsc">Más antigua</option>
                         <option value="asc">De más fácil</option>
                         <option value="desc">De más difícil</option>
                     </select>

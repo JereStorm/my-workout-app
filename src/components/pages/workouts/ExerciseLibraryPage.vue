@@ -4,7 +4,7 @@
         <div class="exercises-container mb-auto">
             <!-- Cabecera -->
             <div
-                class="page-header px-3 py-2 gap-5 mt-md-1 mb-5 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
+                class="page-header px-3 py-2 mt-md-1 mb-5 d-flex justify-content-center align-items-center">
                 <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Ejercicios</h1>
                 <div @click="abrirModalCrear" class="btn btn-outline-info p-3 rounded-circle add-btn">
                     <i class="bi bi-plus-lg text-light"></i>
@@ -26,7 +26,7 @@
             <div v-if="isLoading || isLocalLoading" class="loader"></div>
 
             <!-- Listado Agrupado por Letra (Estilo Diccionario) -->
-            <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-5">
+            <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-3">
                 <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
 
                     <!-- Separador por letra solicitado -->
@@ -38,7 +38,7 @@
                     <!-- Fila de ejercicios para esta letra -->
                     <div class="row g-3">
                         <div v-for="exercise in grupo.ejercicios" :key="exercise.id"
-                            class="col-12 col-md-6 col-lg-4 col-xl-3">
+                            class="col-12 col-md-6 col-lg-4 col-xl-3 px-3">
                             <div class="card-exercise h-100 px-2 py-1">
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div class="d-flex justify-content-between align-items-center gap-2 mt-2">
@@ -217,6 +217,20 @@ const editarEjercicio = async (exercise) => {
     });
 
     if (nuevoNombre && nuevoNombre !== exercise.nombre) {
+        // Verificar si el nuevo nombre ya existe en otro ejercicio de la biblioteca
+        const nombreNormalizado = nuevoNombre.toLowerCase();
+        const existeOtro = ejercicios.value.some(
+            ex => ex.id !== exercise.id && ex.nombre.trim().toLowerCase() === nombreNormalizado
+        );
+
+        if (existeOtro) {
+            proxy.$swal.fire({
+                icon: 'error',
+                title: 'Nombre duplicado',
+                text: 'Ya existe otro ejercicio con ese nombre en tu biblioteca.',
+            });
+            return; // Cortamos la ejecución para que no guarde
+        }
         try {
             await profileStore.updateExercise({
                 ...exercise,
@@ -261,12 +275,10 @@ const eliminarEjercicio = async (exercise) => {
 }
 
 .exercises-container {
-    width: 90%;
+    width: 100%;
     height: 100%;
     max-width: 1200px;
 }
-
-
 
 .search-box {
     position: relative;
@@ -383,6 +395,10 @@ const eliminarEjercicio = async (exercise) => {
         padding-top: 20px;
         padding-left: 240px;
         min-height: 100vh;
+    }
+
+    .exercises-container {
+    width: 90%;
     }
 
     .page-header {

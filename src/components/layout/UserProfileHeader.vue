@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex justify-content-start ms-3 gap-3 align-items-center gap-2">
+    <div class="d-flex justify-content-start mx-3 gap-md-3 align-items-center gap-2">
 
         <!-- Avatar -->
         <div class="position-relative">
