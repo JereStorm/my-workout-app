@@ -10,7 +10,7 @@
                     <i class="bi bi-plus-lg text-light"></i>
                 </div>
             </div>
-            
+
             <!-- Buscador y Filtros -->
             <div class="mb-3 mx-5">
                 <div class="section-label muted">
@@ -22,13 +22,13 @@
                     <input v-model="searchQuery" type="text" placeholder="Buscar ejercicio..." class="form-control">
                 </div>
             </div>
-            
+
             <div v-if="isLoading || isLocalLoading" class="loader"></div>
 
             <!-- Listado Agrupado por Letra (Estilo Diccionario) -->
             <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-5">
                 <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
-                    
+
                     <!-- Separador por letra solicitado -->
                     <div class="section-label muted fw-bold text-uppercase mb-3">
                         {{ grupo.letra }}
@@ -37,20 +37,20 @@
 
                     <!-- Fila de ejercicios para esta letra -->
                     <div class="row g-3">
-                        <div v-for="exercise in grupo.ejercicios" :key="exercise.id" class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <div v-for="exercise in grupo.ejercicios" :key="exercise.id"
+                            class="col-12 col-md-6 col-lg-4 col-xl-3">
                             <div class="card-exercise h-100 px-2 py-1">
                                 <div class="card-body d-flex flex-column justify-content-between">
-                                    <div>
-                                        <div class="d-flex justify-content-between align-items-center gap-2">
-                                            <h5 class="fs-6 text-start text-break mb-0">{{ exercise.nombre }}</h5>
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle small">
-                                                {{ exercise.categoria || 'Sin categoría' }}
-                                            </span>
-                                        </div>
+                                    <div class="d-flex justify-content-between align-items-center gap-2 mt-2">
+                                        <h5 class="fs-6 text-start text-break mb-0">{{ exercise.nombre }}</h5>
+                                        <span
+                                            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle small">
+                                            {{ exercise.categoria || 'Sin categoría' }}
+                                        </span>
                                     </div>
-
+                                    <hr>
                                     <!-- Botones de Acción -->
-                                    <div class="d-flex align-items-center justify-content-center gap-2 mt-2 pt-2 border-top border-light">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
                                         <!-- Ver Detalle -->
                                         <button type="button" class="btn btn-outline-secondary btn-actions"
                                             title="Ver detalles" @click="showExerciseDetail(exercise.id)">
@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance} from 'vue';
+import { ref, computed, getCurrentInstance } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { storeToRefs } from 'pinia';
 
@@ -121,7 +121,7 @@ const ejerciciosAgrupadosPorLetra = computed(() => {
     if (!filtrados.length) return [];
 
     // 1. Ordenar alfabéticamente por nombre
-    const ordenados = [...filtrados].sort((a, b) => 
+    const ordenados = [...filtrados].sort((a, b) =>
         a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
     );
 
@@ -347,6 +347,7 @@ const eliminarEjercicio = async (exercise) => {
     align-items: center;
     justify-content: center;
 }
+
 .btn-actions {
     width: 28px;
     height: 28px;
