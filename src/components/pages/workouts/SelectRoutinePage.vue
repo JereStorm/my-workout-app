@@ -49,7 +49,7 @@
             <!-- ALL ROUTINES -->
             <section class="w-100 px-md-3">
 
-                <div class="section-label muted">
+                <div class="section-label text-info">
                     Todas las rutinas
                     <div class="line"></div>
                 </div>
@@ -76,7 +76,8 @@
                 </div>
 
                 <div class="routine-grid px-md-5">
-                    <transition-group name="fade-item" tag="ul" class="px-0 d-flex flex-wrap gap-2 justify-content-center">
+                    <transition-group name="fade-item" tag="ul"
+                        class="px-0 d-flex flex-wrap gap-2 justify-content-center">
                         <div v-for="routine in processedRoutines" :key="routine.id" class="routine-card">
 
                             <div class="routine-top">
@@ -425,6 +426,8 @@ function empezarEntreno(id) {
     border: 1px solid rgb(59, 235, 235);
     font-weight: 500;
     transition: all .3s ease;
+    animation: blink 2s infinite;
+
 }
 
 .btn-aqua:hover {

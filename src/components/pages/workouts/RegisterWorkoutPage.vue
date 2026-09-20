@@ -197,7 +197,7 @@
                                 Notas del entrenamiento
                             </label>
 
-                            <textarea id="workout-notes" v-model="notes" class="form-control" rows="4"
+                            <textarea id="workout-notes" v-model="notes" class="form-control text-light" rows="4"
                                 placeholder="¿Cómo te sentiste hoy?"></textarea>
                         </div>
 

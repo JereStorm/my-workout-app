@@ -1,42 +1,32 @@
 <template>
     <li class="routine-list-item" @click="$emit('click-card', routine.id)">
 
-        <div class="list-content">
-
-            <!-- icon -->
-            <div class="icon-box">
-                <span class="material-symbols-outlined">fitness_center</span>
-            </div>
-
+        <div class="list-content px-2 px-md-4 py-md-3">
             <!-- info -->
             <div class="info-box">
 
-                <h3 class="routine-name">{{ routine.nombre }}</h3>
+                <div class="d-flex">
+                    <h3 class="routine-name">{{ routine.nombre }}</h3>
+                </div>
 
                 <!-- meta principal -->
                 <div class="meta-info">
                     <span class="difficulty-tag">{{ routine.dificultad }}</span>
-                    <span class="dot">•</span>
                     <span>{{ totalBloques }} bloques</span>
-                    <span class="dot">•</span>
+                    <span class="dot">-</span>
                     <span>{{ totalEjercicios }} ejercicios</span>
                 </div>
 
                 <!-- stats extendidos -->
                 <div class="stats-row">
-
-                    <span class="stat">
-                        <i class="bi bi-layers"></i>
-                        {{ totalSets }} sets
-                    </span>
-
                     <span class="stat">
                         <i class="bi bi-clock"></i>
                         {{ duration }} min
                     </span>
 
-                    <span class="stat volume" :class="volumeClass">
-                        {{ volume }}
+                    <span class="stat">
+                        <i class="bi bi-layers"></i>
+                        {{ totalSets }} sets
                     </span>
 
                     <span v-if="routine.tipo" class="stat tag">
@@ -64,10 +54,11 @@
 
                     <transition name="fade-item">
                         <ul v-if="menuAbierto" class="mini-menu">
-                            <li @click.stop="handleAction('register')"><i class="bi bi-play-fill"></i> Entrenar</li>
-                            <li @click.stop="handleAction('edit')"><i class="bi bi-pencil"></i> Editar</li>
+                            <li @click.stop="handleAction('register')"><i class="bi bi-lightning-charge"></i> Entrenar
+                            </li>
+                            <li @click.stop="handleAction('edit')"><i class="bi bi-pencil-square"></i> Editar</li>
                             <li @click.stop="handleAction('copy')"><i class="bi bi-copy"></i> Duplicar</li>
-                            <li @click.stop="handleAction('delete')" class="text-danger"><i class="bi bi-trash"></i>
+                            <li @click.stop="handleAction('delete')" class="text-danger"><i class="bi bi-trash3"></i>
                                 Borrar</li>
                         </ul>
                     </transition>
@@ -123,7 +114,6 @@ onUnmounted(() => window.removeEventListener('click', closeMenu))
     background: rgba(17, 17, 17, 0.76);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    margin-bottom: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     list-style: none;
@@ -139,23 +129,7 @@ onUnmounted(() => window.removeEventListener('click', closeMenu))
 .list-content {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
-    gap: 16px;
-}
-
-.icon-box {
-    width: 48px;
-    height: 48px;
-    background: rgba(0, 212, 255, 0.15);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #00d4ff;
-}
-
-.material-symbols-outlined {
-    font-size: 24px;
+    gap: 4px;
 }
 
 .info-box {
@@ -196,12 +170,13 @@ onUnmounted(() => window.removeEventListener('click', closeMenu))
 .actions-box {
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex-direction: column-reverse;
+    gap: 4px;
 }
 
 .fav-btn,
 .dots-btn {
-    padding: 8px;
+    padding: 4px;
     color: #94a3b8;
     font-size: 1.2rem;
     transition: color 0.2s;

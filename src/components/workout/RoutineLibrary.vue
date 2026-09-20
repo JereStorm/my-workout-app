@@ -11,7 +11,7 @@
             </div>
 
             <div class="mb-3 mx-5">
-                <div class="section-label muted">
+                <div class="section-label text-info">
                     Todas las rutinas
                     <div class="line"></div>
                 </div>

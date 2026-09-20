@@ -108,7 +108,15 @@
                     <div class="small text-secondary mt-2">
                         {{ statsComplianceMessage }}
                     </div>
+                    <hr>
+                    <!-- NOTA -->
+                    <div v-if="workout.notes">
+                        <div class="small text-secondary mt-2">
+                            " {{ workout.notes }} "
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
             <!-- DETALLE -->

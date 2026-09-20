@@ -2,9 +2,9 @@
 <template>
     <div class="my-exercises">
         <div class="exercises-container mb-auto">
-            <!-- Cabecera -->
+          <!-- HEADER -->
             <div
-                class="page-header px-3 py-2 mt-md-1 mb-5 d-flex justify-content-center align-items-center">
+                class="page-header px-3 py-2 gap-5 mt-md-1 mb-5 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
                 <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Ejercicios</h1>
                 <div @click="abrirModalCrear" class="btn btn-outline-info p-3 rounded-circle add-btn">
                     <i class="bi bi-plus-lg text-light"></i>
@@ -13,7 +13,7 @@
 
             <!-- Buscador y Filtros -->
             <div class="mb-3 mx-5">
-                <div class="section-label muted">
+                <div class="section-label text-info">
                     Todos los ejercicios
                     <div class="line"></div>
                 </div>
@@ -30,7 +30,7 @@
                 <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
 
                     <!-- Separador por letra solicitado -->
-                    <div class="section-label muted fw-bold text-uppercase mb-3">
+                    <div class="section-label glosario fw-semibold h2 text-uppercase mb-3">
                         {{ grupo.letra }}
                         <div class="line"></div>
                     </div>
@@ -326,6 +326,10 @@ const eliminarEjercicio = async (exercise) => {
     height: 1px;
     flex: 1;
     background: rgba(255, 255, 255, .1);
+}
+
+.glosario{
+    font-size: medium;
 }
 
 .card-exercise {

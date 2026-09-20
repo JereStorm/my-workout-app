@@ -24,10 +24,10 @@
 
                 <transition name="fade-item">
                     <ul v-if="menuAbierto" class="mini-menu">
-                        <li @click.stop="handleAction('register')"><i class="bi bi-file-earmark-plus"></i></li>
-                        <li @click.stop="handleAction('edit')"><i class="bi bi-pencil-square"></i></li>
-                        <li @click.stop="handleAction('delete')"><i class="bi bi-trash3"></i></li>
-                        <li @click.stop="handleAction('copy')"><i class="bi bi-copy"></i></li>
+                        <li @click.stop="handleAction('register')"><i class="bi bi-lightning-charge"></i>Entrenar</li>
+                        <li @click.stop="handleAction('edit')"><i class="bi bi-pencil-square"></i>Editar</li>
+                        <li @click.stop="handleAction('delete')"><i class="bi bi-trash3"></i>Eliminar</li>
+                        <li @click.stop="handleAction('copy')"><i class="bi bi-copy"></i>Clonar</li>
                     </ul>
                 </transition>
             </div>
