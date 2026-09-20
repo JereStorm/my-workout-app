@@ -86,27 +86,49 @@ const searchQuery = ref('');
 
 const rawRoutines = computed(() => profileStore.getUserRoutines);
 
+// Función auxiliar para normalizar cualquier formato de fecha a milisegundos (timestamp)
+const toTimestamp = (fecha) => {
+    if (!fecha) return 0;
+    // Si viene como un objeto Timestamp de Firestore con método toDate()
+    if (typeof fecha.toDate === 'function') {
+        return fecha.toDate().getTime();
+    }
+    // Si viene como un objeto plano de Firestore { seconds, nanoseconds }
+    if (typeof fecha === 'object' && 'seconds' in fecha) {
+        return fecha.seconds * 1000 + (fecha.nanoseconds || 0) / 1000000;
+    }
+    // Si viene como string ISO o número
+    return new Date(fecha).getTime() || 0;
+};
+
 const sortedRoutines = computed(() => {
     let filtered = [...rawRoutines.value];
     if (searchQuery.value) {
         filtered = filtered.filter(r => r.nombre.toLowerCase().includes(searchQuery.value.toLowerCase()));
     }
     const niveles = { 'Muy facil': 1, 'Facil': 2, 'Intermedia': 3, 'Dificil': 4, 'Muy dificil': 5 };
+    
     return filtered.sort((a, b) => {
+        // Priorizar favoritas primero (opcional, lo mantuve de tu código)
         if (a.favorita && !b.favorita) return -1;
         if (!a.favorita && b.favorita) return 1;
+
         if (order.value.includes('fechaCreacion')) {
+            const timeA = toTimestamp(a.fechaCreacion);
+            const timeB = toTimestamp(b.fechaCreacion);
+            
             return order.value === 'fechaCreacionDesc'
-                ? new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
-                : new Date(a.fechaCreacion) - new Date(b.fechaCreacion);
+                ? timeB - timeA  // Más reciente primero (mayor timestamp a menor)
+                : timeA - timeB; // Más antigua primero (menor timestamp a mayor)
         }
+
         const na = niveles[a.dificultad] || 0;
         const nb = niveles[b.dificultad] || 0;
         return order.value === 'asc' ? na - nb : nb - na;
     });
 });
 
-// Handlers (se mantienen igual porque los eventos son idénticos)
+// Handlers
 const showRoutine = (id) => router.push({ name: 'DetailRoutine', query: { id } });
 const editarRutina = (r) => router.push({ name: 'FormRoutine', query: { id: r.id } });
 const registrarEntrenamiento = (r) => router.push({ name: 'RegisterWorkout', query: { id: r.id } });
