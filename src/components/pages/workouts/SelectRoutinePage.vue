@@ -252,10 +252,6 @@ function empezarEntreno(id) {
     margin-bottom: 20px;
 }
 
-.badge-difficulty {
-    font-size: .80rem;
-}
-
 .search-box {
     position: relative;
     max-width: 500px;

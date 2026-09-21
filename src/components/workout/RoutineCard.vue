@@ -114,10 +114,6 @@ onUnmounted(() => window.removeEventListener('click', closeMenu));
     font-size: 14px;
 }
 
-.badge-difficulty {
-    font-size: 0.80rem;
-}
-
 .ellipsis {
     overflow: hidden;
     white-space: nowrap;

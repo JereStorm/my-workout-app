@@ -322,14 +322,6 @@ form {
   border-color: rgba(148, 163, 184, 0.35);
 }
 
-/* Badge Dificultad */
-.badge-difficulty {
-  backdrop-filter: blur(6px);
-  border-radius: 999px;
-  font-weight: 600;
-  padding: 4px 10px;
-}
-
 /* MUY FACIL */
 .difficulty-very-easy {
   background: rgba(0, 200, 83, 0.12);
@@ -372,6 +364,10 @@ form {
 .add-btn {
   animation: blink 2s infinite;
   border-color: rgb(0, 255, 242) !important;
+}
+
+.animation-blink {
+  animation: blink 2s infinite;
 }
 
 @keyframes blink {

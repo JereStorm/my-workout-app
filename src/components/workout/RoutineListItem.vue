@@ -1,7 +1,7 @@
 <template>
     <li class="routine-list-item" @click="$emit('click-card', routine.id)">
 
-        <div class="list-content px-2 px-md-4 py-md-3">
+        <div class="list-content px-3 py-2 px-md-4 py-md-3">
             <!-- info -->
             <div class="info-box">
 

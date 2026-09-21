@@ -36,18 +36,18 @@
                     <!-- CARD -->
                     <div class="timeline-card">
 
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
 
-                            <h5 class="fw-bold mb-1">
-                                {{ workout.dataRoutine.nombre }}
-                            </h5>
+                            <div class="timeline-date">
+                                {{ formatDate(workout.date) }}
+                            </div>
 
-                            <DifficultyBadge :dificultad="workout.dataRoutine.dificultad" />
+                            <DifficultyBadge size="sm" :dificultad="workout.dataRoutine.dificultad" />
                         </div>
+                        <h5 class="fw-bold mb-1">
+                            {{ workout.dataRoutine.nombre }}
+                        </h5>
 
-                        <div class="timeline-date">
-                            {{ formatDate(workout.date) }}
-                        </div>
 
                         <div class="timeline-stats">
 
@@ -64,6 +64,7 @@
                             <span class="ms-auto text-info fw-bold">
                                 <i class="bi bi-clock"></i>
                                 {{ estimateDuration(workout.dataRoutine) }}
+                                Min
                             </span>
 
                         </div>
@@ -72,7 +73,7 @@
                             {{ getSummary(workout.dataRoutine) }}
                         </p>
 
-                        <button class="btn btn-sm btn-outline-info mt-2" @click="redirect(workout)">
+                        <button class="btn btn-sm btn-outline-info animation-blink mt-2" @click="redirect(workout)">
                             <small><i class="bi bi-chevron-double-down text-light px-2"></i></small>
                         </button>
 
@@ -141,7 +142,7 @@ const workoutsByMonth = computed(() => {
 .done-page {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 1.5rem 0.3rem;
     margin: auto;
 }
 
@@ -220,7 +221,6 @@ const workoutsByMonth = computed(() => {
 /* CARD */
 .timeline-card {
     border-radius: 12px;
-    padding: 14px 16px;
 }
 
 /* DATE */
@@ -245,14 +245,6 @@ const workoutsByMonth = computed(() => {
     opacity: .7;
 }
 
-/* BADGE */
-.difficulty-badge {
-    background: rgba(0, 255, 255, .15);
-    color: cyan;
-    font-weight: 400;
-    border: 1px solid rgba(0, 255, 255, .2);
-}
-
 /* EMPTY */
 .empty-state {
     text-align: center;
@@ -265,6 +257,8 @@ const workoutsByMonth = computed(() => {
     display: block;
     margin-bottom: 10px;
 }
+
+
 
 @media (min-width: 768px) {
     .done-page {
