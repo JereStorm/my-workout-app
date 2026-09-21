@@ -47,6 +47,22 @@ export const ProfileService = {
         }
 
     },
+    /**
+     * Actualiza el objetivo semanal de entrenamientos del usuario.
+     */
+    async updateWeeklyGoal(uid, weeklyGoal) {
+        const notify = useNotificationStore();
+        try {
+            const docRef = doc(db, COLLECTION_NAME, uid);
+            await setDoc(docRef, {
+                weeklyGoal,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+            notify.show('¡Objetivo semanal actualizado!', 'success');
+        } catch (error) {
+            handleServiceError(error);
+        }
+    },
 
     /**
      * Método de utilidad para crear/inicializar un perfil

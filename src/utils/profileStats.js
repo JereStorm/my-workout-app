@@ -40,3 +40,37 @@ export function getLevelInfo(totalVolume) {
         isMaxLevel: level >= LEVEL_THRESHOLDS.length
     };
 }
+
+export function getWeeklyProgress(workouts, weeklyGoal = 4) {
+    if (!workouts || workouts.length === 0) return { current: 0, goal: weeklyGoal, percentage: 0 };
+
+    const now = new Date();
+    
+    // Obtener el día actual (0 = Domingo, 1 = Lunes, etc.)
+    const dayOfWeek = now.getDay();
+    
+    // Calcular el lunes de esta semana (ajustando domingo como 7)
+    const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + distanceToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    // Calcular el domingo de esta semana al final del día
+    const sunday = new Date(monday);
+    sunday.setDate(sunday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    // Filtrar entrenamientos que estén dentro del rango de esta semana
+    const currentWeekWorkouts = workouts.filter(w => {
+        const workoutDate = new Date(w.date);
+        return workoutDate >= monday && workoutDate <= sunday;
+    });
+
+    const current = currentWeekWorkouts.length;
+    const percentage = Math.min(100, Math.round((current / weeklyGoal) * 100));
+
+    return {
+        current,
+        goal: weeklyGoal,
+        percentage
+    };
+}

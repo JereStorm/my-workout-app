@@ -1,52 +1,62 @@
+<!--profile/ProfilePage.vue-->
 <template>
     <div class="contenedor mt-md-5">
         <!-- Titulo de la page -->
         <h1 class="mb-3 mb-md-5 h5 text-uppercase titulo">Perfil del Atleta</h1>
+
         <!-- Loader -->
         <div v-if="profileStore.isLoading" class="loader">
         </div>
+
         <div v-else>
-            <ProfileHeader :nickname="profile.nickname" :level="stats.level" @update:nickname="guardarNickname" />
+            <ProfileHeader :nickname="profile?.nickname" :level-info="levelInfo" @update:nickname="guardarNickname" />
 
             <ProfileStats :stats="stats" />
+
+            <WeeklyGoalCard :workouts="profile?.workouts" :weekly-goal="profile?.weeklyGoal"
+                @update:goal="actualizarMetaSemanal" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import Notifier from "@/components/common/Notifier.vue"
+import { computed } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import ProfileHeader from '../../profile/ProfileHeader.vue'
 import ProfileStats from '../../profile/ProfileStats.vue'
+import WeeklyGoalCard from '../../profile/WeeklyGoalCard.vue'
+import { getLevelInfo } from '@/utils/profileStats.js' // Ajusta la ruta a tu archivo de utils si es necesario
 
 const profileStore = useProfileStore()
 
 const profile = computed(() => profileStore.profile)
 const stats = computed(() => profileStore.userStats)
 
-const showNotifier = ref(false)
-const notification = ref({ message: '', type: 'success' })
-const isSaving = ref(false)
+// Computamos la info de nivel de forma reactiva basándonos en el volumen total de las stats
+const levelInfo = computed(() => {
+    const totalVolume = stats.value?.totalVolume || 0;
+    return getLevelInfo(totalVolume)
+})
 
 const guardarNickname = async (newNickname) => {
     if (!newNickname) return
 
-    isSaving.value = true
-
     try {
         await profileStore.setNickname(newNickname)
-
-
+        // El store ya maneja su propia notificación/estado de éxito
     } catch (err) {
-        console.error(err)
-        notification.value = {
-            message: 'Error al guardar el nombre',
-            type: 'error'
-        }
-    } finally {
-        isSaving.value = false
+        console.error('Error al guardar el nombre:', err)
+        // El manejo de error también recae o se reporta desde el store
+    }
+}
 
+const actualizarMetaSemanal = async (newGoal) => {
+    try {
+        await profileStore.setWeeklyGoal(newGoal)
+        // Como el store maneja internamente las notificaciones (gracias al notificationStore en el service), 
+        // la alerta de éxito aparecerá automáticamente en pantalla.
+    } catch (err) {
+        console.error('No se pudo actualizar la meta', err)
     }
 }
 </script>

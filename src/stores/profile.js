@@ -15,6 +15,7 @@ export const useProfileStore = defineStore('profile', {
             id: null,
             email: '',
             nickname: '',
+            weeklyGoal: 1,
             routines: [],
             exercises: [],
             workouts: [],
@@ -56,6 +57,7 @@ export const useProfileStore = defineStore('profile', {
         getUserRoutines: (state) => state.profile.routines,
         getWorkouts: (state) => state.profile.workouts,
         getUserExercises: (state) => state.profile.exercises,
+        getWeeklyGoal: (state) => state.profile.weeklyGoal,
     },
 
     actions: {
@@ -94,12 +96,26 @@ export const useProfileStore = defineStore('profile', {
                     id: uid,
                     email: email,
                     nickname: profileData?.nickname || '',
+                    weeklyGoal: profileData?.weeklyGoal || 1,
                     routines: routinesHydrated, // Guardamos las rutinas ya hidratadas
                     workouts: workouts,
                     exercises: exercises
                 };
             } finally {
                 this.isLoading = false;
+            }
+        },
+
+        async setWeeklyGoal(goal) {
+            if (!this.profile.id) return;
+            try {
+                // Sincronizamos con Firebase a través del servicio
+                await ProfileService.updateWeeklyGoal(this.profile.id, goal);
+
+                // Actualizamos el estado local de forma reactiva
+                this.profile.weeklyGoal = goal;
+            } catch (error) {
+                /* El errorHandler del servicio ya notificará si hay error */
             }
         },
 

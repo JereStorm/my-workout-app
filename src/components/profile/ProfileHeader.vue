@@ -1,41 +1,53 @@
+<!-- @/profile/ProfileHeader.vue -->
 <template>
     <div class="text-center mb-4 mx-2">
-
-
         <!-- Avatar -->
         <div class="position-relative d-inline-block mb-3">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrapper shadow-sm">
                 <span class="avatar-initials">{{ initials }}</span>
             </div>
         </div>
 
-        <!-- Estado -->
-        <div class="text-uppercase small text-info opacity-75 mb-3 subtitulo">
-            Usuario Activo
+        <!-- Título / Rango de Calistenia (Usando los utils) -->
+        <div class="text-uppercase small text-info opacity-75 mb-2 subtitulo">
+            "{{ levelInfo.currentTitle }}"
         </div>
 
-        <!-- Nickname Editable -->
-        <input v-model="localNickname" class="form-control nickname-input text-center fw-bold" @blur="emitSave" />
+        <!-- Nickname Editable con Botón de Confirmación -->
+        <div class="input-group input-group-sm w-75 mx-auto mb-1">
+            <input 
+                v-model="localNickname" 
+                class="form-control nickname-input text-center fw-bold bg-transparent text-light border-secondary" 
+                placeholder="Tu apodo"
+                @keyup.enter="confirmSave"
+            />
+            <button 
+                class="btn btn-outline-info" 
+                type="button" 
+                @click="confirmSave"
+                title="Guardar apodo"
+            >
+                <i class="bi bi-check-lg"></i>
+            </button>
+        </div>
 
         <div v-if="error" class="text-danger small mt-1">
             {{ error }}
         </div>
 
-        <!-- Nivel -->
-        <div class="text-light small mt-2">
-            <p>Calistenico • Nivel {{ levelLabel }}</p>
-        </div>
-
     </div>
 </template>
+
 <script setup>
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
     nickname: String,
-    level: Number
+    levelInfo: {
+        type: Object,
+        required: true
+    }
 })
-
 
 const emit = defineEmits(['update:nickname'])
 
@@ -48,17 +60,15 @@ watch(() => props.nickname, v => {
 
 const validate = () => {
     const value = localNickname.value.trim()
-
     if (value.length < 3) {
         error.value = 'Debe tener al menos 3 caracteres'
         return false
     }
-
     error.value = ''
     return true
 }
 
-const emitSave = () => {
+const confirmSave = () => {
     if (localNickname.value === props.nickname) return
     if (!validate()) return
 
@@ -67,7 +77,6 @@ const emitSave = () => {
 
 const initials = computed(() => {
     if (!props.nickname) return 'U'
-
     return props.nickname
         .split(' ')
         .map(word => word[0])
@@ -75,13 +84,7 @@ const initials = computed(() => {
         .join('')
         .toUpperCase()
 })
-
-const levelLabel = computed(() => {
-    const map = ['Novato', 'Aprendiz', 'Intermedio', 'Avanzado', 'Elite']
-    return map[props.level] || 'Novato'
-})
 </script>
-
 
 <style scoped>
 .avatar-wrapper {

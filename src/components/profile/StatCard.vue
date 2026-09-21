@@ -1,3 +1,4 @@
+<!--profile/StatCard.vue-->
 <template>
     <div class="col">
         <div class="card stat-card h-100">

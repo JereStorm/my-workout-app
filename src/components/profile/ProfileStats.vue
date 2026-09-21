@@ -1,36 +1,41 @@
+<!--profile/ProfileStats.vue-->
 <template>
     <div class="row g-3 mb-4 mx-2">
-
         <div class="row g-3 mx-auto">
-            <StatCard icon="bi-fire" label="Volumen Total" :value="stats?.totalVolume || 0" extra="Reps" />
-
-
-            <StatCard icon="bi-grid" label="Sesiones Hechas" :value="stats?.totalWorkouts || 0" extra="Totales" />
-
-            <StatCard icon="bi-fire" label="Tiempo bajo tensión" :value="stats?.currentStreak || 0" extra="Segundos" />
-            <StatCard icon="bi-fire" label="Racha" :value="stats?.currentStreak || 0" extra="Días activos" />
-
+            <StatCard 
+                icon="bi-activity" 
+                label="Volumen Total" 
+                :value="stats?.totalVolume || 0" 
+                extra="Reps / Carga" 
+            />
+            <StatCard 
+                icon="bi-grid" 
+                label="Sesiones Hechas" 
+                :value="stats?.totalWorkouts || 0" 
+                extra="Totales" 
+            />
+            <StatCard 
+                icon="bi-fire" 
+                label="Racha Actual" 
+                :value="stats?.currentStreak || 0" 
+                extra="Días activos" 
+            />
+            <StatCard 
+                icon="bi-trophy" 
+                label="Mejor Racha" 
+                :value="stats?.bestStreak || 0" 
+                extra="Días récord" 
+            />
         </div>
-
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import StatCard from './StatCard.vue'
 
-const props = defineProps({
+defineProps({
     stats: Object
 })
-
-const progressStyle = computed(() => ({
-    background: `
-        conic-gradient(
-            #00ffff ${progress.value * 360}deg,
-            rgba(255,255,255,.08) 0deg
-        )
-    `
-}))
 </script>
 
 
