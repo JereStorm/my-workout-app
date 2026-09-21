@@ -7,6 +7,9 @@ import {
     onAuthStateChanged
 } from "firebase/auth";
 import { useProfileStore } from "./profile";
+import { useExerciseStore } from "./exerciseStore";
+import { useRoutineStore } from "./routineStore";
+import { useWorkoutStore } from "./workoutStore"; // Si ya lo tienes o cuando lo modularices
 
 export const useUserStore = defineStore("user", {
     state: () => ({
@@ -14,30 +17,56 @@ export const useUserStore = defineStore("user", {
     }),
     actions: {
         /**
-         * Inicializa un listener para el estado de autenticación del usuario de Firebase.
-         * Cuando el estado cambia (inicio o cierre de sesión), actualiza el store de usuario
-         * y carga (o crea) el perfil del usuario y sus rutinas desde Firestore.
-         */
-        initAuthListener() {
+           * Inicializa un listener para el estado de autenticación del usuario de Firebase.
+           * Cuando el estado cambia (inicio o cierre de sesión), actualiza el store de usuario
+           * y coordina la carga de datos de los distintos módulos (perfil, ejercicios, rutinas y entrenamientos).
+           */
+      initAuthListener() {
             onAuthStateChanged(auth, async (fbUser) => {
                 const profileStore = useProfileStore();
+                const exerciseStore = useExerciseStore();
+                const routineStore = useRoutineStore();
+                const workoutStore = useWorkoutStore();
+
                 if (fbUser) {
+                    console.log("🔥 [Auth] Usuario detectado en Firebase:", {
+                        uid: fbUser.uid,
+                        email: fbUser.email
+                    });
+
                     // 1. Guardar información básica del usuario en el store de usuario.
                     this.user = { email: fbUser.email, id: fbUser.uid };
 
-                    // 2. Cargar el perfil del usuario desde Firestore o crear uno si no existe.
-                    await profileStore.loadProfile(fbUser.uid, fbUser.email);
+                    // 2. Cargar en paralelo los datos independientes (perfil, ejercicios y entrenamientos)
+                    await Promise.all([
+                        profileStore.loadProfile(fbUser.uid, fbUser.email),
+                        exerciseStore.fetchExercises(fbUser.uid),
+                        workoutStore.fetchWorkouts(fbUser.uid)
+                    ]);
 
-                    // 3. Obtener las rutinas asociadas al usuario.
-                    // await profileStore.getRutinas();
+                    console.log("📦 [Stores Independientes Cargados]:", {
+                        perfil: profileStore.profile,
+                        totalEjercicios: exerciseStore.exercises?.length || 0,
+                        totalEntrenamientos: workoutStore.workouts?.length || 0
+                    });
 
-                    // console.log("Sesión iniciada. Perfil y rutinas cargados.");
-                    console.log("Sesión iniciada. Perfil");
+                    // 3. Cargar e hidratar las rutinas utilizando el catálogo de ejercicios ya obtenido
+                    await routineStore.fetchRoutines(fbUser.uid, exerciseStore.exercises);
+
+                    console.log("📋 [Rutinas Hidratadas Cargadas]:", {
+                        totalRutinas: routineStore.routines?.length || 0,
+                        rutinas: routineStore.routines
+                    });
+
+                    console.log("✅ Sesión iniciada. Perfil, ejercicios, rutinas y entrenamientos cargados modularmente.");
                 } else {
-                    // Al cerrar sesión, limpiar el estado del usuario.
+                    console.log("🚪 [Auth] Sesión cerrada. Reseteando stores...");
+                    // Al cerrar sesión, limpiar el estado del usuario y resetear todos los stores
                     this.user = null;
-                    // Opcional: Reiniciar el store de perfil a su estado inicial.
                     profileStore.$reset();
+                    exerciseStore.$reset();
+                    routineStore.$reset();
+                    workoutStore.$reset();
                 }
             });
         },

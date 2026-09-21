@@ -272,16 +272,13 @@ import { getCurrentInstance } from 'vue';
 import {
     formatStimulusTarget,
     formatStimulusActual,
-    getStimulusVolume
 } from '@/domain/stimulus'
 
 import { formatDate } from '@/utils/routineStats';
 import { sumWorkoutVolume } from '@/utils/workoutStats';
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 
-
 const { proxy } = getCurrentInstance();
-
 
 // router + store
 const route = useRoute();
@@ -289,11 +286,9 @@ const router = useRouter();
 const profileStore = useProfileStore();
 const workoutId = route.query.id;
 
-
 // estado
 const workout = ref(null);
 const { isLoading } = storeToRefs(profileStore);
-
 
 /**
  * Volumen total realizado.
@@ -304,7 +299,6 @@ const statsVolume = computed(() => {
 
     return sumWorkoutVolume(workout.value);
 });
-
 
 /**
  * Obtiene el índice correspondiente al log de una serie.
@@ -322,7 +316,6 @@ const getLogIndex = (bloqueIndex, serieIndex) => {
     return idx + serieIndex;
 };
 
-
 /**
  * Formatea el resultado realizado.
  */
@@ -333,7 +326,6 @@ function formatActual(log, ei) {
         log?.actualSegs?.[ei] ?? 0
     );
 }
-
 
 /**
  * Valor esperado del ejercicio.
@@ -350,7 +342,6 @@ function getExpectedValue(ej) {
     return Number(ej?.repeticiones) || 0;
 }
 
-
 /**
  * Valor realmente realizado en un set.
  */
@@ -362,7 +353,6 @@ function getActualValue(log, ei, ej) {
 
     return Number(log?.actualReps?.[ei]) || 0;
 }
-
 
 /**
  * Meta formateada para mostrar junto al resultado.
@@ -377,7 +367,6 @@ function formatExpected(ej) {
 
     return `${expected}`;
 }
-
 
 /**
  * Cumplimiento de un set individual.

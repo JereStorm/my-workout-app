@@ -1,13 +1,6 @@
+// src/stores/profile.js
 import { defineStore } from 'pinia';
-import { RoutineService } from '@/services/routineService';
-import { WorkoutService } from '@/services/workoutService';
 import { ProfileService } from '@/services/profileService';
-import { ExerciseService } from '@/services/exerciseService';
-import {
-    calculateStreaks,
-    sumWorkoutVolume
-} from '@/utils/workoutStats';
-import { getLevelInfo } from '@/utils/profileStats';
 
 export const useProfileStore = defineStore('profile', {
     state: () => ({
@@ -16,47 +9,13 @@ export const useProfileStore = defineStore('profile', {
             email: '',
             nickname: '',
             weeklyGoal: 1,
-            routines: [],
-            exercises: [],
-            workouts: [],
         },
         isLoading: false,
     }),
 
     getters: {
-        /**
-         * Las estadísticas se calculan automáticamente cada vez que 
-         * el array de workouts cambia. Son reactivas y cacheadas.
-         */
-        userStats: (state) => {
-            const workouts = state.profile.workouts || [];
-
-            // Calculamos volumen total primero
-            const totalVolume = workouts.reduce((sum, w) => sum + sumWorkoutVolume(w), 0);
-
-            // Delegamos toda la lógica de nivel a la utilidad
-            const levelInfo = getLevelInfo(totalVolume);
-
-            // Delegamos rachas
-            const { current, best } = calculateStreaks(workouts);
-
-            return {
-                totalWorkouts: workouts.length,
-                totalVolume,
-                currentStreak: current,
-                bestStreak: best,
-                level: levelInfo.level,
-                levelProgress: levelInfo.progress,
-                nextLevelVolume: levelInfo.nextThreshold,
-                isMaxLevel: levelInfo.isMaxLevel
-            };
-        },
-
-        // Simplificación de getters de acceso directo
+        // Getters exclusivos de perfil e identidad
         getNickname: (state) => state.profile.nickname,
-        getUserRoutines: (state) => state.profile.routines,
-        getWorkouts: (state) => state.profile.workouts,
-        getUserExercises: (state) => state.profile.exercises,
         getWeeklyGoal: (state) => state.profile.weeklyGoal,
     },
 
@@ -64,42 +23,14 @@ export const useProfileStore = defineStore('profile', {
         async loadProfile(uid, email) {
             this.isLoading = true;
             try {
-                // Ejecutamos peticiones en paralelo para mayor velocidad
-                const [exercises, routines, workouts, profileData] = await Promise.all([
-                    ExerciseService.fetchByUserId(uid),
-                    RoutineService.fetchByUserId(uid),
-                    WorkoutService.fetchByUserId(uid),
-                    ProfileService.getProfile(uid)
-                ]);
-
-                // --- HIDRATACIÓN DE RUTINAS ---
-                // Aseguramos que cada ejercicio dentro de cada rutina use el nombre actual del catálogo global
-                const routinesHydrated = routines.map(routine => ({
-                    ...routine,
-                    bloques: (routine.bloques || []).map(bloque => ({
-                        ...bloque,
-                        ejercicios: (bloque.ejercicios || []).map(ej => {
-                            if (ej.exerciseId) {
-                                const ejercicioGlobal = exercises.find(ex => ex.id === ej.exerciseId);
-                                if (ejercicioGlobal) {
-                                    return { ...ej, nombre: ejercicioGlobal.nombre };
-                                }
-                            }
-                            return ej;
-                        })
-                    }))
-                }));
-
-                console.log('Profile loaded:', { uid, email, routines: routinesHydrated, workouts, exercises, profileData });
+                // Solo consultamos los datos específicos del perfil en Firestore
+                const profileData = await ProfileService.getProfile(uid);
 
                 this.profile = {
                     id: uid,
                     email: email,
                     nickname: profileData?.nickname || '',
                     weeklyGoal: profileData?.weeklyGoal || 1,
-                    routines: routinesHydrated, // Guardamos las rutinas ya hidratadas
-                    workouts: workouts,
-                    exercises: exercises
                 };
             } finally {
                 this.isLoading = false;
@@ -109,158 +40,21 @@ export const useProfileStore = defineStore('profile', {
         async setWeeklyGoal(goal) {
             if (!this.profile.id) return;
             try {
-                // Sincronizamos con Firebase a través del servicio
                 await ProfileService.updateWeeklyGoal(this.profile.id, goal);
-
-                // Actualizamos el estado local de forma reactiva
                 this.profile.weeklyGoal = goal;
-            } catch (error) {
-                /* El errorHandler del servicio ya notificará si hay error */
+            } catch (error) { 
+                /* El servicio maneja la notificación */ 
             }
         },
 
-        // --- ACCIONES DE NICKNAME ---
         async setNickname(newNickname) {
             if (!this.profile.id) return;
             try {
                 await ProfileService.updateNickname(this.profile.id, newNickname);
-
                 this.profile.nickname = newNickname;
-
-            } catch (error) { /* El errorHandler ya notificó al usuario */ }
-        },
-
-        // --- ACCIONES DE EJERCICIOS ---
-
-        async createExercise(exerciseData) {
-            if (!this.profile.id) return;
-
-            try {
-                const payload = {
-                    ...exerciseData,
-                    idUser: this.profile.id,
-                    fechaCreacion: new Date().toISOString()
-                };
-
-                const id = await ExerciseService.create(payload);
-
-                this.profile.exercises.push({
-                    id,
-                    ...payload
-                });
-
-                return id;
-            } catch (error) {
-                throw error;
+            } catch (error) { 
+                /* El servicio maneja la notificación */ 
             }
-        },
-
-        async updateExercise(exercise) {
-            try {
-                await ExerciseService.update(exercise.id, exercise);
-
-                const index = this.profile.exercises.findIndex(
-                    e => e.id === exercise.id
-                );
-
-                if (index !== -1) {
-                    this.profile.exercises.splice(index, 1, exercise);
-                }
-            } catch (error) {
-                throw error;
-            }
-        },
-
-        async deleteExercise(exerciseId) {
-            try {
-                await ExerciseService.delete(exerciseId);
-
-                this.profile.exercises =
-                    this.profile.exercises.filter(e => e.id !== exerciseId);
-            } catch (error) {
-                throw error;
-            }
-        },
-
-        // --- ACCIONES DE RUTINAS ---
-        async createRoutine(routineData) {
-            try {
-                const payload = { ...routineData, idUser: this.profile.id, fechaCreacion: new Date().toISOString() };
-                console.log('Creating routine with payload:', payload);
-                const id = await RoutineService.create(payload);
-                this.profile.routines.unshift({ id, ...payload });
-                return id;
-            } catch (error) { throw error; }
-        },
-
-        async updateRoutine(routine) {
-            try {
-                await RoutineService.update(routine.id, routine);
-                const index = this.profile.routines.findIndex(r => r.id === routine.id);
-                if (index !== -1) this.profile.routines.splice(index, 1, routine);
-            } catch (error) { throw error; }
-        },
-
-        async deleteRoutine(routineId) {
-            this.isLoading = true;
-            try {
-                await RoutineService.delete(routineId);
-                this.profile.routines = this.profile.routines.filter(r => r.id !== routineId);
-                this.isLoading = false;
-            } catch (error) {
-                this.isLoading = false;
-                throw error;
-            }
-        },
-
-        async toggleFavorite(routineId, currentValue) {
-            try {
-                const newValue = !currentValue;
-                // Actualizamos localmente para respuesta instantánea
-                const routine = this.profile.routines.find(r => r.id === routineId);
-                if (routine) routine.favorita = newValue;
-                // Luego sincronizamos con Firebase
-                await RoutineService.toggleFavorite(routineId, newValue);
-
-            } catch (error) { throw error; }
-        },
-
-        // --- ACCIONES DE WORKOUTS ---
-        async getDoneWorkout(workoutId) {
-            try {
-                return await WorkoutService.fetchById(workoutId);
-            } catch (error) { throw error; }
-        },
-        async registerWorkout(data) {
-            if (!this.profile.id) return;
-            try {
-                const payload = { ...data, idUser: this.profile.id };
-                const id = await WorkoutService.create(payload);
-
-                // Al insertar aquí, 'userStats' se recalcula solo
-                this.profile.workouts.unshift({ id, ...payload });
-                return id;
-            } catch (error) { throw error; }
-        },
-
-        async deleteWorkout(workoutId) {
-            try {
-                await WorkoutService.delete(workoutId);
-                this.profile.workouts = this.profile.workouts.filter(w => w.id !== workoutId);
-            } catch (error) { throw error; }
-        },
-
-        // --- MÉTODOS LOCALES (Síncronos) ---
-        getRutinaLocal(id) {
-            return this.profile.routines.find(r => r.id === id);
-        },
-
-        getWorkoutLocal(id) {
-            return this.profile.workouts.find(w => w.id === id);
-        },
-
-        getExerciseLocal(id) {
-            return this.profile.exercises.find(e => e.id === id);
-        },
+        }
     }
 });

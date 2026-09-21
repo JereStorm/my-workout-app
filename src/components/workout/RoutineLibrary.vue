@@ -63,12 +63,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useProfileStore } from '@/stores/profile';
+import { ref, computed, getCurrentInstance } from 'vue';
+import { useRoutineStore } from '@/stores/routineStore';
 import { useRouter, RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
-import { getCurrentInstance } from 'vue';
 
 // Importación de ambos componentes
 import RoutineCard from '@/components/workout/RoutineCard.vue';
@@ -76,15 +75,15 @@ import RoutineListItem from '@/components/workout/RoutineListItem.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-const profileStore = useProfileStore();
-const { isLoading } = storeToRefs(profileStore);
+
+// Inicializamos el store modularizado de rutinas
+const routineStore = useRoutineStore();
+const { isLoading, routines: rawRoutines } = storeToRefs(routineStore);
 
 const viewMode = ref('grid'); // Estado para controlar la vista
 const isLocalLoading = ref(false);
 const order = ref('fechaCreacionDesc');
 const searchQuery = ref('');
-
-const rawRoutines = computed(() => profileStore.getUserRoutines);
 
 // Función auxiliar para normalizar cualquier formato de fecha a milisegundos (timestamp)
 const toTimestamp = (fecha) => {
@@ -109,7 +108,7 @@ const sortedRoutines = computed(() => {
     const niveles = { 'Muy facil': 1, 'Facil': 2, 'Intermedia': 3, 'Dificil': 4, 'Muy dificil': 5 };
     
     return filtered.sort((a, b) => {
-        // Priorizar favoritas primero (opcional, lo mantuve de tu código)
+        // Priorizar favoritas primero
         if (a.favorita && !b.favorita) return -1;
         if (!a.favorita && b.favorita) return 1;
 
@@ -118,8 +117,8 @@ const sortedRoutines = computed(() => {
             const timeB = toTimestamp(b.fechaCreacion);
             
             return order.value === 'fechaCreacionDesc'
-                ? timeB - timeA  // Más reciente primero (mayor timestamp a menor)
-                : timeA - timeB; // Más antigua primero (menor timestamp a mayor)
+                ? timeB - timeA  // Más reciente primero
+                : timeA - timeB; // Más antigua primero
         }
 
         const na = niveles[a.dificultad] || 0;
@@ -128,22 +127,27 @@ const sortedRoutines = computed(() => {
     });
 });
 
-// Handlers
+// Handlers adaptados a routineStore
 const showRoutine = (id) => router.push({ name: 'DetailRoutine', query: { id } });
 const editarRutina = (r) => router.push({ name: 'FormRoutine', query: { id: r.id } });
 const registrarEntrenamiento = (r) => router.push({ name: 'RegisterWorkout', query: { id: r.id } });
-const toggleFavorito = (r) => profileStore.toggleFavorite(r.id, r.favorita);
+const toggleFavorito = (r) => routineStore.toggleFavorite(r.id, r.favorita);
+
 const confirmarEliminar = async (r) => {
     const ok = await confirmAction(proxy.$swal, { title: '¿Eliminar rutina?', text: 'No se podrá recuperar' });
-    if (ok) await profileStore.deleteRoutine(r.id);
+    if (ok) await routineStore.deleteRoutine(r.id);
 };
+
 const copiarRutina = async (r) => {
     isLocalLoading.value = true;
+    console.log("rutina a copiar", r)
     try {
         const copia = { ...JSON.parse(JSON.stringify(r)), nombre: `${r.nombre} (copia)` };
         delete copia.id; delete copia.fechaCreacion;
-        await profileStore.createRoutine(copia);
-    } finally { isLocalLoading.value = false; }
+        await routineStore.createRoutine(copia, copia.idUser); // O pasándole el id del usuario según maneje tu createRoutine
+    } finally { 
+        isLocalLoading.value = false; 
+    }
 };
 </script>
 

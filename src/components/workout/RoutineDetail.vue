@@ -2,13 +2,12 @@
     <div class="routine-detail">
 
         <!-- ================= HEADER ================= -->
-
         <header class="routine-header p-4 rounded-4 shadow-lg mb-4">
             <div class="d-flex flex-column gap-2 flex-md-row justify-content-between align-items-center mb-3">
                 <h1 class="routine-title m-0 text-white fw-bold">
-                    {{ rutina.nombre }}
+                    {{ rutina?.nombre }}
                 </h1>
-                <DifficultyBadge :dificultad="rutina.dificultad" />
+                <DifficultyBadge :dificultad="rutina?.dificultad" />
             </div>
 
             <div class="row g-2 mb-3">
@@ -16,7 +15,7 @@
                     <div class="info-card p-2 rounded-3 text-center">
                         <p class="d-block px-3 mx-md-0 small mb-0 text-uppercase">Descanso Series</p>
                         <span class="text-aqua fw-semibold">
-                            <i class="bi bi-stopwatch"></i> {{ formatTiempoDesc(rutina.descansoSeries) }}
+                            <i class="bi bi-stopwatch"></i> {{ formatTiempoDesc(rutina?.descansoSeries) }}
                         </span>
                     </div>
                 </div>
@@ -24,7 +23,7 @@
                     <div class="info-card p-2 rounded-3 text-center">
                         <p class="d-block small mb-0 text-uppercase">Descanso Bloques</p>
                         <span class="text-aqua fw-semibold">
-                            <i class="bi bi-arrow-repeat"></i> {{ formatTiempoDesc(rutina.descansoBloques) }}
+                            <i class="bi bi-arrow-repeat"></i> {{ formatTiempoDesc(rutina?.descansoBloques) }}
                         </span>
                     </div>
                 </div>
@@ -33,88 +32,67 @@
             <div class="global-stats d-flex justify-content-around align-items-center py-2 border-top border-secondary">
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalBlocks }}</div>
-                    <small class="">Bloques</small>
+                    <small>Bloques</small>
                 </div>
                 <div class="v-line"></div>
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalSeries }}</div>
-                    <small class="">Series</small>
+                    <small>Series</small>
                 </div>
                 <div class="v-line"></div>
                 <div class="stat-item text-center">
                     <div class="text-white fw-bold h5 mb-0">{{ totalExercises }}</div>
-                    <small class="">Ejercicios</small>
+                    <small>Ejercicios</small>
                 </div>
             </div>
         </header>
 
-
         <!-- ================= BLOQUES ================= -->
-
         <div class="blocks">
-
             <section v-for="(bloque, bi) in bloques" :key="bi" class="block">
-
                 <!-- header bloque -->
-                <div class="block-header ">
+                <div class="block-header">
                     <h3 class="h5">Bloque {{ bi + 1 }}</h3>
                     <h3 class="h6">{{ bloque.series }} series</h3>
                 </div>
 
-
                 <!-- ejercicios -->
                 <div class="exercise-list">
-
                     <div v-for="(ej, ei) in bloque.ejercicios" :key="ei" class="exercise-card">
-
                         <div class="exercise-main">
-
                             <div class="exercise-text">
-                                <h4 class="h4">{{ getNombreEjercicio(ej) }}</h4>
-
+                                <h4 class="h4">{{ ej.nombre }}</h4>
                             </div>
                             <div class="exercise-metrics">
-
                                 <!-- etiqueta unificada del estímulo -->
                                 <span class="stimulus-chip" :class="`stimulus-${getStimulus(ej)}`">
                                     {{ formatStimulus(ej) }}
                                 </span>
-
                             </div>
-
                         </div>
                         <div v-if="ej.notas" class="block-note">
                             <p class="exercise-note my-auto">
                                 ({{ ej.notas }})
                             </p>
                         </div>
-
                     </div>
-
                 </div>
-
 
                 <!-- nota bloque -->
                 <div v-if="bloque.notas" class="block-note">
                     <span class="note-title">Nota</span>
                     {{ bloque.notas }}
                 </div>
-
             </section>
-
         </div>
 
     </div>
 </template>
 
-
 <script>
-import { computed } from 'vue'
-import { useProfileStore } from '@/stores/profile'
 import { formatStimulusTarget, getStimulusType } from '@/domain/stimulus'
 import { getDifficultyIcons, getDifficultyClass } from '@/utils/routineStats'
-import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
-
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue'
 
 export default {
     props: {
@@ -123,34 +101,9 @@ export default {
             required: true
         }
     },
-    // 1. ¡Acá faltaba registrar el componente!
     components: {
         DifficultyBadge
     },
-    setup(props) {
-        const profileStore = useProfileStore()
-        const ejerciciosGlobales = computed(() => profileStore.getUserExercises)
-
-        /**
-         * Obtiene el nombre actualizado del ejercicio global si tiene ID
-         */
-        const getNombreEjercicio = (ejercicio) => {
-            // 1. Buscamos si todavía existe en la biblioteca global mediante el ID
-            if (ejercicio?.exerciseId) {
-                const ejercicioGlobal = ejerciciosGlobales.value.find(ex => ex.id === ejercicio.exerciseId);
-                if (ejercicioGlobal) return ejercicioGlobal.nombre;
-            }
-            // 2. Si el ejercicio global fue eliminado de la biblioteca, 
-            // utilizamos el nombre que quedó grabado a modo de snapshot en el propio objeto.
-            return ejercicio?.nombre || ejercicio?.nombreOriginal || 'Ejercicio eliminado';
-        }
-
-        return {
-            ejerciciosGlobales,
-            getNombreEjercicio
-        }
-    },
-
     computed: {
         bloques() {
             return Array.isArray(this.rutina?.bloques)

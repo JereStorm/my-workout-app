@@ -22,15 +22,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useProfileStore } from '@/stores/profile'
+import { useWorkoutStore } from '@/stores/workoutStore'
 import ProfileHeader from '../../profile/ProfileHeader.vue'
 import ProfileStats from '../../profile/ProfileStats.vue'
 import WeeklyGoalCard from '../../profile/WeeklyGoalCard.vue'
 import { getLevelInfo } from '@/utils/profileStats.js' // Ajusta la ruta a tu archivo de utils si es necesario
 
-const profileStore = useProfileStore()
+const profileStore = useProfileStore();
+const workoutStore = useWorkoutStore();
 
 const profile = computed(() => profileStore.profile)
-const stats = computed(() => profileStore.userStats)
+const stats = computed(() => workoutStore.userStats)
 
 // Computamos la info de nivel de forma reactiva basándonos en el volumen total de las stats
 const levelInfo = computed(() => {

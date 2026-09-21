@@ -23,7 +23,7 @@
                 </div>
             </div>
 
-            <div v-if="isLoading || isLocalLoading" class="loader"></div>
+            <div v-if="isLoading" class="loader"></div>
 
             <!-- Listado Agrupado por Letra (Estilo Diccionario) -->
             <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-3">
@@ -91,19 +91,19 @@
 
 <script setup>
 import { ref, computed, getCurrentInstance } from 'vue';
-import { useProfileStore } from '@/stores/profile';
+import { useExerciseStore } from '@/stores/exerciseStore';
 import { storeToRefs } from 'pinia';
 
 const { proxy } = getCurrentInstance();
-const profileStore = useProfileStore();
-const { isLoading } = storeToRefs(profileStore);
+const exerciseStore = useExerciseStore();
+const { isLoading } = storeToRefs(exerciseStore);
 const searchQuery = ref('');
 
 
 const busqueda = ref('');
 
 // Obtener ejercicios globales del store
-const ejercicios = computed(() => profileStore.getUserExercises || []);
+const ejercicios = computed(() => exerciseStore.getExercises || []);
 
 // Filtrar por nombre o categoría
 const ejerciciosFiltrados = computed(() => {
@@ -173,7 +173,7 @@ const abrirModalCrear = async () => {
 
     if (formValues) {
         try {
-            await profileStore.addExercise({
+            await exerciseStore.addExercise({
                 nombre: formValues.nombre,
                 categoria: formValues.categoria,
                 fechaCreacion: new Date()
@@ -232,7 +232,7 @@ const editarEjercicio = async (exercise) => {
             return; // Cortamos la ejecución para que no guarde
         }
         try {
-            await profileStore.updateExercise({
+            await exerciseStore.updateExercise({
                 ...exercise,
                 nombre: nuevoNombre
             });
@@ -258,7 +258,7 @@ const eliminarEjercicio = async (exercise) => {
 
     if (result.isConfirmed) {
         try {
-            await profileStore.deleteExercise(exercise.id);
+            await exerciseStore.deleteExercise(exercise.id);
 
         } catch (error) {
             console.error('Error al eliminar:', error);

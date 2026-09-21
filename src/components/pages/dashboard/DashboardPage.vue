@@ -23,7 +23,7 @@ const { profile } = storeToRefs(profileStore); // 🌟 Hacemos `user` reactivo e
 onMounted(() => {
     console.log(profile)
     if (profile) {
-        console.log("Onmounted: profile", profile)
+        console.log("Onmounted dashboard: profile", profile.value)
     }
 });
 </script>

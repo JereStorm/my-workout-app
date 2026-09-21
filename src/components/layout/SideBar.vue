@@ -18,7 +18,6 @@
                     <hr>
 
                     <li class="nav-item mt-auto" :class="isMobile ? 'mb-5' : ''">
-
                         <button
                             class="nav-link nav-link-danger d-flex gap-2 gap-md-3 justify-content-start align-items-center text-danger mx-auto"
                             @click="logout">
@@ -50,34 +49,34 @@
     </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useProfileStore } from '@/stores/profile'
+import { useWorkoutStore } from '@/stores/workoutStore'
 import { useUserStore } from '@/stores/user'
 import { SIDE_MENU_ITEMS } from './sideMenu.config'
 import UserProfileHeader from './UserProfileHeader.vue'
 
-import { useRoute } from 'vue-router'
-import { watch } from 'vue'
-
 const route = useRoute()
-
 const router = useRouter()
-const profileStore = useProfileStore()
-const userStore = useUserStore()
-const { profile } = storeToRefs(profileStore)
-const stats = computed(() => profileStore.userStats)
 
+const profileStore = useProfileStore()
+const workoutStore = useWorkoutStore()
+const userStore = useUserStore()
+
+const { profile } = storeToRefs(profileStore)
+
+// El nivel y las stats ahora se leen desde workoutStore
+const stats = computed(() => workoutStore.userStats)
 
 /* ----------------- State ----------------- */
 const isSidebarVisible = ref(false)
 const isMobile = ref(window.innerWidth < 768)
 
 /* ----------------- Menu config ----------------- */
-const menuItems = SIDE_MENU_ITEMS;
+const menuItems = SIDE_MENU_ITEMS
 
 /* ----------------- Actions ----------------- */
 const toggleSidebar = () => {
@@ -107,16 +106,12 @@ onUnmounted(() => {
     window.removeEventListener('resize', handleResize)
 })
 
-
 watch(() => route.fullPath, () => {
     if (isMobile.value) {
         closeSidebar()
     }
 })
-
-
 </script>
-
 
 <style scoped>
 .nav-link {
