@@ -94,25 +94,23 @@
 
 <script setup>
 
-import { computed, ref, watch } from 'vue';
-import { useProfileStore } from '@/stores/profile';
+import { computed } from 'vue';
+import { useWorkoutStore } from '@/stores/workoutStore';
 import { storeToRefs } from 'pinia';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { countSets, estimateDuration, formatDate, getSummary } from '@/utils/routineStats';
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 
-
-/** Acceso al enrutador y a la ruta actual */
-const route = useRoute();
+/** Acceso al enrutador */
 const router = useRouter();
 
-// instancia el store
-const profileStore = useProfileStore();
+// Instancia el workoutStore en lugar del profileStore
+const workoutStore = useWorkoutStore();
 
-const { isLoading } = storeToRefs(profileStore);
+const { isLoading, workouts: storeWorkouts } = storeToRefs(workoutStore);
 
-// lista de workouts
-const workouts = computed(() => profileStore.profile.workouts || []);
+// Lista de workouts reactiva proveniente del store independiente
+const workouts = computed(() => storeWorkouts.value || []);
 
 function redirect(workout) {
     console.log(workout)

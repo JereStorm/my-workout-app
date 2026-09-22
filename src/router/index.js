@@ -7,7 +7,6 @@ import RegisterPage from "@/components/pages/auth/RegisterPage.vue";
 import UnregistredPage from "@/components/pages/auth/UnregistredPage.vue";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage.vue";
 import ProfilePage from "@/components/pages/profile/ProfilePage.vue";
-import MyWorkoutsPage from "@/components/pages/workouts/MyWorkoutsPage.vue";
 import FormRoutinePage from "@/components/pages/workouts/FormRoutinePage.vue";
 import RegisterWorkoutPage from "@/components/pages/workouts/RegisterWorkoutPage.vue";
 import DoneWorkoutsPage from "@/components/pages/workouts/DoneWorkoutsPage.vue";

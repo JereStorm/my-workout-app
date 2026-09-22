@@ -5,25 +5,19 @@
         <div
             class="page-header mt-5 mt-md-0 gap-3 mb-4 d-flex flex-column justify-content-between align-items-start align-items-md-center">
             <h1 class="h5 mb-0 text-uppercase titulo">Selecciona una rutina</h1>
-
         </div>
 
-        <div v-if="isLoading" class="loader">
-
-        </div>
-        <div v-else class="routine-content">
+        <div class="routine-content">
 
             <!-- QUICK START -->
-            <section v-if="lastRoutine" class="quick-section ">
-
+            <section v-if="lastRoutine" class="quick-section">
                 <div class="section-label">
                     Acceso rápido
                     <div class="line"></div>
                 </div>
 
                 <div class="quick-card">
-
-                    <div class=" d-flex gap-2 flex-column">
+                    <div class="d-flex gap-2 flex-column">
                         <div class="quick-icon mx-auto">
                             <i class="bi bi-clock-history"></i>
                         </div>
@@ -38,27 +32,21 @@
                     <button class="btn btn-aqua btn-start rounded-circle ms-md-3 mt-md-2"
                         @click="empezarEntreno(lastWorkout.rutinaId)">
                         <i class="bi bi-play-fill my-auto"></i>
-
                     </button>
-
                 </div>
-
             </section>
-
 
             <!-- ALL ROUTINES -->
             <section class="w-100 px-md-3">
-
                 <div class="section-label text-info">
                     Todas las rutinas
                     <div class="line"></div>
                 </div>
-                <div class="search-box mx-auto mb-4 px-2 ">
+                <div class="search-box mx-auto mb-4 px-2">
                     <i class="bi bi-search"></i>
                     <input v-model="search" type="text" placeholder="Buscar rutina..." class="form-control">
                 </div>
                 <div class="controls d-flex gap-2 mb-4 px-2">
-
                     <button class="btn btn-outline-info btn-sm" :class="{ active: sortByDifficulty }"
                         @click="sortByDifficulty = !sortByDifficulty">
                         <i class="bi" :class="sortByDifficulty ? 'bi-sort-down' : 'bi-sort-up'"></i>
@@ -70,10 +58,8 @@
                         <i class="bi bi-heart-fill text-danger"></i>
                         Favoritos
                     </button>
-
-
-
                 </div>
+                <div v-if="isLoading" class="loader"></div>
 
                 <div class="routine-grid px-md-5">
                     <transition-group name="fade-item" tag="ul"
@@ -83,7 +69,6 @@
                             <div class="routine-top">
                                 <DifficultyBadge :dificultad="routine.dificultad" />
 
-
                                 <span class="time text-info">
                                     <i class="bi bi-clock"></i>
                                     {{ estimateDuration(routine) }}m
@@ -91,7 +76,7 @@
                             </div>
 
                             <div class="routine-name my-auto w-100">
-                                <span class="favorite-btn">
+                                <span class="favorite-btn" @click.stop="toggleFavorite(routine.id, routine.favorita)">
                                     <i class="bi"
                                         :class="routine.favorita ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
                                 </span>
@@ -109,6 +94,7 @@
                         </div>
                     </transition-group>
                 </div>
+
                 <!-- CREATE -->
                 <RouterLink to="/dashboard/form-routine" class="routine-card create-card">
                     <i class="bi bi-plus-circle"></i>
@@ -116,38 +102,39 @@
                 </RouterLink>
             </section>
         </div>
-
     </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useProfileStore } from '@/stores/profile'
+import { useRoutineStore } from '@/stores/routineStore'
+// Ajusta la ruta a tu store de entrenamientos si tiene otro nombre o ruta
+import { useWorkoutStore } from '@/stores/workoutStore'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { estimateDuration, DIFFICULTY_ORDER, getSummary, formatDate } from '@/utils/routineStats'
-import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
-
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue'
 
 const router = useRouter()
-const profileStore = useProfileStore()
-const { profile } = storeToRefs(profileStore)
-const isLoading = computed(() => profileStore.isLoading)
+
+const routineStore = useRoutineStore()
+const workoutStore = useWorkoutStore()
+
+const { routines, isLoading: routineLoading } = storeToRefs(routineStore)
+// Asumimos que el workoutStore tiene una propiedad `workouts` y un indicador de carga opcional
+const workouts = computed(() => workoutStore.workouts || [])
+
+const isLoading = computed(() => routineLoading.value)
 
 const search = ref('')
-
-const routines = computed(() => profile.value.routines || [])
-
 const sortByDifficulty = ref(false)
 const showFavoritesOnly = ref(false)
-
 
 function getDifficultyWeight(routine) {
     return DIFFICULTY_ORDER[routine.dificultad] ?? 999
 }
 
 const processedRoutines = computed(() => {
-
     let list = [...routines.value]
 
     if (search.value) {
@@ -167,7 +154,6 @@ const processedRoutines = computed(() => {
     }
 
     list.sort((a, b) => {
-
         if (a.favorita && !b.favorita) return -1
         if (!a.favorita && b.favorita) return 1
 
@@ -183,15 +169,11 @@ const processedRoutines = computed(() => {
 
 /* quick start */
 const lastWorkout = computed(() => {
-    const workouts = profile.value.workouts || []
-    if (!workouts.length) return null
+    if (!workouts.value.length) return null
 
-    // Buscamos el primer entrenamiento cuyo ID de rutina todavía exista en las rutinas actuales
-    const allRoutines = profile.value.routines || []
-
-    // Encontramos el workout más reciente que tenga una rutina existente
-    const validWorkout = workouts.find(w =>
-        allRoutines.some(r => r.id === w.rutinaId)
+    // Encontramos el workout más reciente que tenga una rutina existente en el store
+    const validWorkout = workouts.value.find(w =>
+        routines.value.some(r => r.id === w.rutinaId)
     )
 
     return validWorkout || null
@@ -199,15 +181,21 @@ const lastWorkout = computed(() => {
 
 const lastRoutine = computed(() => {
     if (!lastWorkout.value) return null
-
-    const allRoutines = profile.value.routines || []
-    return allRoutines.find(r => r.id === lastWorkout.value.rutinaId) || null
+    return routines.value.find(r => r.id === lastWorkout.value.rutinaId) || null
 })
 
 const lastRoutineMeta = computed(() => {
     if (!lastRoutine.value) return ''
     return `Última sesión registrada`
 })
+
+const toggleFavorite = async (routineId, favoritaActual) => {
+    try {
+        await routineStore.toggleFavorite(routineId, favoritaActual)
+    } catch (error) {
+        console.error("Error al actualizar favorito:", error)
+    }
+}
 
 function empezarEntreno(id) {
     router.push({

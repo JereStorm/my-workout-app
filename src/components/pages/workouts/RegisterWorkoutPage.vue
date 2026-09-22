@@ -238,13 +238,13 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useProfileStore } from '@/stores/profile';
+import { useRoutineStore } from '@/stores/routineStore';
+import { useWorkoutStore } from '@/stores/workoutStore';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
-
-
 
 const { proxy } = getCurrentInstance();
 
@@ -253,12 +253,19 @@ import Timer from '@/components/common/Timer.vue';
 
 const route = useRoute();
 const router = useRouter();
-const profileStore = useProfileStore();
+
+const routineStore = useRoutineStore();
+const workoutStore = useWorkoutStore();
+
 
 const rutinaId = route.query.id;
 const rutina = ref(null);
 const isSaving = ref(false);
-const { isLoading } = storeToRefs(profileStore);
+
+// Obtenemos isLoading combinando ambos stores o priorizando el de rutinas/workouts
+const { isLoading: routineLoading } = storeToRefs(routineStore);
+const { isLoading: workoutLoading } = storeToRefs(workoutStore);
+const isLoading = computed(() => routineLoading.value || workoutLoading.value);
 
 const workoutDate = ref(new Date().toISOString());
 const notes = ref('');
@@ -288,17 +295,13 @@ const formatDate = (iso) => {
 }
 
 onMounted(() => {
-    if (!profileStore.profile.id) {
-        console.log("No hay usuario")
-        return
-    }
-
-    // Construir steps: por cada bloque y cada serie
+    // Si ya no depende de un perfil global, podemos proceder directo con la carga de la rutina
+    construirSiCorresponde();
 });
 
 const construirSiCorresponde = async () => {
     if (!rutinaId) {
-        console.log("No sen encontro la Rutina");
+        console.log("No se encontró la Rutina");
         router.push({ name: 'MyWorkouts' });
         return;
     }
@@ -307,14 +310,20 @@ const construirSiCorresponde = async () => {
     logs.value = [];
 
     let data = null;
-    if (profileStore.getRutinaLocal(rutinaId)) {
-        data = profileStore.getRutinaLocal(rutinaId);
-    } else {
-        data = await profileStore.getRutina(rutinaId);
+    // Buscamos localmente en el routineStore
+    if (typeof routineStore.getRutinaLocal === 'function' && routineStore.getRutinaLocal(rutinaId)) {
+        data = routineStore.getRutinaLocal(rutinaId);
+    } else if (routineStore.routines) {
+        data = routineStore.routines.find(r => r.id === rutinaId);
+    }
+
+    // Si no está local, intentamos buscarla del backend a través del store
+    if (!data && typeof routineStore.getRutina === 'function') {
+        data = await routineStore.getRutina(rutinaId);
     }
 
     if (!data) {
-        console.log("Rutina no encontrada.")
+        console.log("Rutina no encontrada.");
         router.push({ name: 'MyWorkouts' });
         return;
     }
@@ -339,7 +348,7 @@ const construirSiCorresponde = async () => {
 }
 
 watch(isLoading, (nuevoValor) => {
-    if (!nuevoValor) {
+    if (!nuevoValor && !rutina.value) {
         construirSiCorresponde();
     }
 }, { immediate: true });
@@ -385,20 +394,22 @@ const onTimerFinished = () => {
     nextStep();
 };
 
-// manejadores del timer
 const onTimerCanceled = () => {
     isResting.value = false;
 };
 
 const onTimerTick = (secondsLeft) => {
-    // opcional: podrías mostrar segundosLeft en UI o usar para animaciones
+    // opcional
 };
 
 const submit = async () => {
     isSaving.value = true;
     let id = null;
     try {
-        id = await profileStore.registerWorkout({
+        const userStore = useUserStore();
+        const userId = userStore.user?.id; // Siempre disponible de forma global
+        // Registramos el entrenamiento mediante workoutStore
+        id = await workoutStore.registerWorkout({
             rutinaId,
             dataRoutine: {
                 bloques: rutina.value.bloques,
@@ -411,11 +422,10 @@ const submit = async () => {
             steps: steps.value,
             logs: logs.value,
             notes: notes.value
-        });
+        }, userId);
 
     } catch (err) {
         console.error(err);
-
     } finally {
         isSaving.value = false;
         router.push({ name: 'DetailWorkout', query: { id } });
@@ -423,17 +433,15 @@ const submit = async () => {
 }
 
 const handleCancelar = async () => {
-
     const ok = await confirmAction(proxy.$swal, {
         title: '¿Cancelar entrenamiento?',
         text: 'Se perderá el progreso actual'
-    })
+    });
 
-    if (!ok) return
+    if (!ok) return;
 
     router.back();
 }
-
 </script>
 
 <style scoped>

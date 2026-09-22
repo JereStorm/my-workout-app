@@ -264,7 +264,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useProfileStore } from '@/stores/profile';
+import { useWorkoutStore } from '@/stores/workoutStore';
 import { storeToRefs } from 'pinia';
 import { confirmAction } from '@/utils/confirm';
 import { getCurrentInstance } from 'vue';
@@ -283,20 +283,18 @@ const { proxy } = getCurrentInstance();
 // router + store
 const route = useRoute();
 const router = useRouter();
-const profileStore = useProfileStore();
+const workoutStore = useWorkoutStore();
 const workoutId = route.query.id;
 
 // estado
 const workout = ref(null);
-const { isLoading } = storeToRefs(profileStore);
+const { isLoading } = storeToRefs(workoutStore);
 
 /**
  * Volumen total realizado.
  */
 const statsVolume = computed(() => {
-
     if (!workout.value) return 0;
-
     return sumWorkoutVolume(workout.value);
 });
 
@@ -304,9 +302,7 @@ const statsVolume = computed(() => {
  * Obtiene el índice correspondiente al log de una serie.
  */
 const getLogIndex = (bloqueIndex, serieIndex) => {
-
     let idx = 0;
-
     const bloques = workout.value.dataRoutine.bloques;
 
     for (let b = 0; b < bloqueIndex; b++) {
@@ -320,7 +316,6 @@ const getLogIndex = (bloqueIndex, serieIndex) => {
  * Formatea el resultado realizado.
  */
 function formatActual(log, ei) {
-
     return formatStimulusActual(
         log?.actualReps?.[ei] ?? 0,
         log?.actualSegs?.[ei] ?? 0
@@ -334,11 +329,9 @@ function formatActual(log, ei) {
  * De lo contrario se utilizan repeticiones.
  */
 function getExpectedValue(ej) {
-
     if (Number(ej?.tiempo) > 0) {
         return Number(ej.tiempo);
     }
-
     return Number(ej?.repeticiones) || 0;
 }
 
@@ -346,11 +339,9 @@ function getExpectedValue(ej) {
  * Valor realmente realizado en un set.
  */
 function getActualValue(log, ei, ej) {
-
     if (Number(ej?.tiempo) > 0) {
         return Number(log?.actualSegs?.[ei]) || 0;
     }
-
     return Number(log?.actualReps?.[ei]) || 0;
 }
 
@@ -358,7 +349,6 @@ function getActualValue(log, ei, ej) {
  * Meta formateada para mostrar junto al resultado.
  */
 function formatExpected(ej) {
-
     const expected = getExpectedValue(ej);
 
     if (Number(ej?.tiempo) > 0) {
@@ -370,19 +360,9 @@ function formatExpected(ej) {
 
 /**
  * Cumplimiento de un set individual.
- *
- * Ejemplo:
- * Meta: 8
- * Real: 6
- * Resultado: 75%
- *
- * Se limita a 100% para que superar la meta
- * no haga crecer indefinidamente la barra.
  */
 function getSetCompliance(ej, log, ei) {
-
     const expected = getExpectedValue(ej);
-
     if (expected <= 0) return 0;
 
     const actual = getActualValue(log, ei, ej);
@@ -393,25 +373,20 @@ function getSetCompliance(ej, log, ei) {
     );
 }
 
-
 /**
  * Cumplimiento promedio del ejercicio.
  */
 function getExerciseCompliance(bi, ei) {
-
     const bloque = workout.value?.dataRoutine?.bloques?.[bi];
-
     if (!bloque) return 0;
 
     const ej = bloque.ejercicios?.[ei];
-
     if (!ej) return 0;
 
     let totalExpected = 0;
     let totalActual = 0;
 
     for (let si = 0; si < bloque.series; si++) {
-
         const log = workout.value.logs?.[
             getLogIndex(bi, si)
         ];
@@ -433,26 +408,18 @@ function getExerciseCompliance(bi, ei) {
     );
 }
 
-
 /**
  * Cumplimiento global de toda la rutina.
- *
- * Se calcula sobre el total esperado vs el total realizado,
- * por lo que los ejercicios con más volumen tienen mayor peso.
  */
 const statsCompliance = computed(() => {
-
     if (!workout.value) return 0;
 
     let totalExpected = 0;
     let totalActual = 0;
 
     workout.value.dataRoutine.bloques.forEach((bloque, bi) => {
-
         bloque.ejercicios.forEach((ej, ei) => {
-
             for (let si = 0; si < bloque.series; si++) {
-
                 const log = workout.value.logs?.[
                     getLogIndex(bi, si)
                 ];
@@ -465,9 +432,7 @@ const statsCompliance = computed(() => {
                     totalActual += actual;
                 }
             }
-
         });
-
     });
 
     if (totalExpected <= 0) return 0;
@@ -478,58 +443,46 @@ const statsCompliance = computed(() => {
     );
 });
 
-
 /**
  * Mensaje descriptivo del cumplimiento global.
  */
 const statsComplianceMessage = computed(() => {
-
     const percentage = statsCompliance.value;
 
     if (percentage >= 100) {
         return 'Completaste todos los objetivos de la rutina.';
     }
-
     if (percentage >= 90) {
         return 'Excelente cumplimiento de los objetivos.';
     }
-
     if (percentage >= 80) {
         return 'Muy buen cumplimiento. Estuviste cerca de completar todos los objetivos.';
     }
-
     if (percentage >= 70) {
         return 'Buen trabajo. Todavía hay margen para completar más del objetivo.';
     }
-
     return 'Quedaron varios objetivos por debajo de lo esperado.';
 });
-
 
 /**
  * Clase Bootstrap según el cumplimiento del set.
  */
 function getSetComplianceClass(ej, log, ei) {
-
     const percentage = getSetCompliance(ej, log, ei);
 
     if (percentage >= 100) {
         return 'text-success';
     }
-
     if (percentage >= 80) {
         return 'text-warning';
     }
-
     return 'text-danger';
 }
-
 
 /**
  * Elimina el entrenamiento.
  */
 const deleteWorkout = async () => {
-
     const ok = await confirmAction(proxy.$swal, {
         title: '¿Seguro quieres eliminar este entrenamiento?',
         text: 'Se perderán los datos para siempre'
@@ -538,7 +491,7 @@ const deleteWorkout = async () => {
     if (!ok) return;
 
     try {
-        await profileStore.deleteWorkout(workoutId);
+        await workoutStore.deleteWorkout(workoutId);
     } catch (err) {
         console.error('Error al eliminar workout:', err);
     } finally {
@@ -546,45 +499,31 @@ const deleteWorkout = async () => {
     }
 };
 
-
 onMounted(async () => {
-
     if (!workoutId) {
         router.push({ name: 'DoneWorkouts' });
         return;
     }
 
-    if (!profileStore.profile.id) {
-        console.log("OM : No hay usuario");
-        return;
-    }
-
     try {
+        // Intentamos obtener el entrenamiento localmente desde el store
+        let w = workoutStore.getWorkoutLocal ? workoutStore.getWorkoutLocal(workoutId) : null;
 
-        let w = profileStore.getWorkoutLocal(workoutId);
-
-        if (!w) {
-            w = await profileStore.getDoneWorkout(workoutId);
+        if (!w && typeof workoutStore.getDoneWorkout === 'function') {
+            w = await workoutStore.getDoneWorkout(workoutId);
         }
 
         workout.value = w;
-
     } catch (err) {
-
         console.error('Detalle workout:', err);
         router.push({ name: 'DoneWorkouts' });
-
     }
-
 });
 
-
 watch(isLoading, (nuevoValor) => {
-
     if (!nuevoValor && !workout.value) {
-        workout.value = profileStore.getWorkoutLocal(route.query.id);
+        workout.value = workoutStore.getWorkoutLocal ? workoutStore.getWorkoutLocal(route.query.id) : null;
     }
-
 });
 </script>
 

@@ -124,17 +124,6 @@ const filtrarExercises = computed(() => {
     );
 });
 
-// Agregá esto para debuguear en la consola del navegador
-watchEffect(() => {
-    console.log("DEBUG INPUT EXERCISE:", {
-        nombre: props.ejercicio.nombre,
-        exerciseId: props.ejercicio.exerciseId,
-        esExacto: esExacto.value,
-        totalEjerciciosStore: exercises.value.length,
-        mostrarIndicador: Boolean(props.ejercicio.nombre?.trim() && !props.ejercicio.exerciseId && !esExacto.value)
-    });
-});
-
 const seleccionarExercise = (exercise) => {
     props.ejercicio.exerciseId = exercise.id;
     props.ejercicio.nombre = exercise.nombre;

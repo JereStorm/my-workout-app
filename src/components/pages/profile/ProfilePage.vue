@@ -13,7 +13,7 @@
 
             <ProfileStats :stats="stats" />
 
-            <WeeklyGoalCard :workouts="profile?.workouts" :weekly-goal="profile?.weeklyGoal"
+            <WeeklyGoalCard :workouts="workouts" :weekly-goal="profile?.weeklyGoal"
                 @update:goal="actualizarMetaSemanal" />
         </div>
     </div>
@@ -33,6 +33,7 @@ const workoutStore = useWorkoutStore();
 
 const profile = computed(() => profileStore.profile)
 const stats = computed(() => workoutStore.userStats)
+const workouts = computed(() => workoutStore.workouts)
 
 // Computamos la info de nivel de forma reactiva basándonos en el volumen total de las stats
 const levelInfo = computed(() => {
