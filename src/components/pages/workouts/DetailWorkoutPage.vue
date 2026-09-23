@@ -490,11 +490,14 @@ const deleteWorkout = async () => {
 
     if (!ok) return;
 
+    isLoading.value = true;
+
     try {
         await workoutStore.deleteWorkout(workoutId);
     } catch (err) {
         console.error('Error al eliminar workout:', err);
     } finally {
+        isLoading.value = false;
         router.push({ name: 'DoneWorkouts' });
     }
 };

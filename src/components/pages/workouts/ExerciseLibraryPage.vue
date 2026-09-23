@@ -2,7 +2,7 @@
 <template>
     <div class="my-exercises">
         <div class="exercises-container mb-auto">
-          <!-- HEADER -->
+            <!-- HEADER -->
             <div
                 class="page-header px-3 py-2 gap-5 mt-md-1 mb-5 mb-md-5 d-flex justify-content-center gap-5 align-items-center">
                 <h1 class="h5 mb-0 text-uppercase titulo">Biblioteca de Ejercicios</h1>
@@ -27,54 +27,72 @@
 
             <!-- Listado Agrupado por Letra (Estilo Diccionario) -->
             <div v-if="ejerciciosAgrupadosPorLetra.length > 0" class="px-3">
-                <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
+                <transition-group name="fade-item" tag="ul" class="px-0">
+                    <div v-for="grupo in ejerciciosAgrupadosPorLetra" :key="grupo.letra" class="mb-4">
 
-                    <!-- Separador por letra solicitado -->
-                    <div class="section-label glosario fw-semibold h2 text-uppercase mb-3">
-                        {{ grupo.letra }}
-                        <div class="line"></div>
-                    </div>
+                        <!-- Separador por letra solicitado -->
+                        <div class="section-label glosario fw-semibold h2 text-uppercase mb-3">
+                            {{ grupo.letra }}
+                            <div class="line"></div>
+                        </div>
 
-                    <!-- Fila de ejercicios para esta letra -->
-                    <div class="row g-3">
-                        <div v-for="exercise in grupo.ejercicios" :key="exercise.id"
-                            class="col-12 col-md-6 col-lg-4 col-xl-3 px-3">
-                            <div class="card-exercise h-100 px-2 py-1">
-                                <div class="card-body d-flex flex-column justify-content-between">
-                                    <div class="d-flex justify-content-between align-items-center gap-2 mt-2">
-                                        <h5 class="fs-6 text-start text-break mb-0">{{ exercise.nombre }}</h5>
-                                        <span
-                                            class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle small">
-                                            {{ exercise.categoria || 'Sin categoría' }}
-                                        </span>
-                                    </div>
-                                    <hr>
-                                    <!-- Botones de Acción -->
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <!-- Ver Detalle -->
-                                        <button type="button" class="btn btn-outline-secondary btn-actions"
-                                            title="Ver detalles" @click="showExerciseDetail(exercise.id)">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </button>
+                        <!-- Fila de ejercicios para esta letra -->
+                        <div class="row g-3">
+                            <div v-for="exercise in grupo.ejercicios" :key="exercise.id"
+                                class="col-12 col-md-6 col-lg-4 col-xl-3 px-3">
+                                <div class="card-exercise h-100 px-2 py-1">
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <div
+                                            class="d-flex flex-column justify-content-between align-items-start gap-2 mt-2">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <span
+                                                    class="badge  d-flex align-items-center bg-opacity-10  border small"
+                                                    :class="exercise.categoria ? 'bg-info border-info-subtle text-info' : 'bg-secondary text-secondary border-secondary-subtle'">
+                                                    {{ exercise.categoria || 'Sin categoría' }}
+                                                </span>
+                                                <div class="d-flex gap-1">
+                                                    <!-- Editar -->
+                                                    <button type="button" class="btn btn-outline-info btn-actions"
+                                                        title="Editar ejercicio" @click="editarEjercicio(exercise)">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </button>
 
-                                        <!-- Editar -->
-                                        <button type="button" class="btn btn-outline-info btn-actions"
-                                            title="Editar ejercicio" @click="editarEjercicio(exercise)">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </button>
+                                                    <!-- Eliminar -->
+                                                    <button type="button" class="btn btn-outline-danger btn-actions"
+                                                        title="Eliminar ejercicio" @click="eliminarEjercicio(exercise)">
+                                                        <i class="bi bi-trash-fill"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <h5 class="fs-6 text-start text-break mb-0">{{ exercise.nombre }}</h5>
+                                        </div>
+                                        <hr>
+                                        <!-- Informacion del ExerciseStats -->
+                                        <div
+                                            class="d-flex align-items-center justify-content-between text-muted small px-1">
+                                            <div class="d-flex align-items-center gap-1"
+                                                title="Rutinas que usan este ejercicio">
+                                                <i class="bi bi-collection text-info"></i>
+                                                <span>{{ countRoutinesWithExercise(exercise, routineStore.routines)
+                                                }}
+                                                    rutinas</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-1"
+                                                title="Récord máximo de repeticiones (RM)">
+                                                <i class="bi bi-trophy text-warning"></i>
+                                                <span>RM: <b>{{ calculateExerciseMaxReps(exercise,
+                                                    workoutStore.workouts) }}</b> reps</span>
+                                            </div>
+                                        </div>
 
-                                        <!-- Eliminar -->
-                                        <button type="button" class="btn btn-outline-danger btn-actions"
-                                            title="Eliminar ejercicio" @click="eliminarEjercicio(exercise)">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                </div>
+                    </div>
+                </transition-group>
+
             </div>
 
             <!-- Estado vacío -->
@@ -92,10 +110,24 @@
 <script setup>
 import { ref, computed, getCurrentInstance } from 'vue';
 import { useExerciseStore } from '@/stores/exerciseStore';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
+
+import { countRoutinesWithExercise, calculateExerciseMaxReps } from '@/utils/exerciseStats';
+import { useRoutineStore } from '@/stores/routineStore';
+import { useWorkoutStore } from '@/stores/workoutStore';
+
+
+const routineStore = useRoutineStore();
+const workoutStore = useWorkoutStore();
+
+// Ejemplo dentro de un computed para un ejercicio dado:
+const totalRutinas = computed(() => countRoutinesWithExercise(ejercicioActual.value, routineStore.routines));
+const maxRepeticiones = computed(() => calculateExerciseMaxReps(ejercicioActual.value, workoutStore.workouts));
 
 const { proxy } = getCurrentInstance();
 const exerciseStore = useExerciseStore();
+const userStore = useUserStore();
 const { isLoading } = storeToRefs(exerciseStore);
 const searchQuery = ref('');
 
@@ -161,45 +193,51 @@ const abrirModalCrear = async () => {
         showCancelButton: true,
         confirmButtonText: 'Crear',
         cancelButtonText: 'Cancelar',
-        preConfirm: () => {
+        backdrop: true,        // <--- Soluciona el primer warning
+        allowOutsideClick: () => !proxy.$swal.isLoading(), // Evita que cierren el modal haciendo click afuera mientras carga
+        preConfirm: async () => {
             const nombre = document.getElementById('swal-nombre').value.trim();
             const categoria = document.getElementById('swal-categoria').value.trim();
             if (!nombre) {
                 proxy.$swal.showValidationMessage('El nombre es obligatorio');
+                return false;
             }
-            return { nombre, categoria };
+
+            const userId = userStore.user?.id;
+            if (!userId) {
+                proxy.$swal.showValidationMessage('No se encontró el usuario activo.');
+                return false;
+            }
+
+            // Muestra el loader nativo de SweetAlert dentro del modal
+            proxy.$swal.showLoading();
+
+            try {
+                await exerciseStore.createExercise({
+                    nombre,
+                    categoria,
+                    fechaCreacion: new Date()
+                }, userId);
+                return true; // Esto permite que el modal se cierre solo al terminar con éxito
+            } catch (error) {
+                console.error('Error al crear ejercicio:', error);
+                proxy.$swal.showValidationMessage('Error al crear el ejercicio');
+                return false;
+            }
         }
     });
-
-    if (formValues) {
-        try {
-            await exerciseStore.addExercise({
-                nombre: formValues.nombre,
-                categoria: formValues.categoria,
-                fechaCreacion: new Date()
-            });
-
-        } catch (error) {
-            console.error('Error al crear ejercicio:', error);
-
-        }
-    }
 };
 
-// 2. Ver Detalle (Sección 3 opcional / Modal informativo rápido)
-const showExerciseDetail = (id) => router.push({ name: 'DetailExercise', query: { id } });
-
-
-// 3. Editar ejercicio (Reutilizando la lógica del modal de SweetAlert2)
+// 3. Editar ejercicio
 const editarEjercicio = async (exercise) => {
-    const { value: nuevoNombre } = await proxy.$swal.fire({
+    await proxy.$swal.fire({
         title: 'Editar Ejercicio',
         html: `
             <div class="text-start">
                 <label class="form-label small text-muted mb-1">Nombre del ejercicio</label>
                 <input id="swal-input-nombre" class="form-control text-info bg-transparent border-bottom" value="${exercise.nombre}" autocomplete="off">
-                <p class="small text-muted mt-2 mb-0">
-                    * Modificar este ejercicio actualizará su nombre en la biblioteca global.
+                <p class="small text-muted mt-2 mb-0" id="feedback-span">
+                    * Modificar este ejercicio actualizará su nombre en todas las rutinas involucradas.
                 </p>
             </div>
         `,
@@ -207,64 +245,73 @@ const editarEjercicio = async (exercise) => {
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
-        preConfirm: () => {
-            const inputVal = document.getElementById('swal-input-nombre').value.trim();
-            if (!inputVal) {
+        allowOutsideClick: () => !proxy.$swal.isLoading(),
+        preConfirm: async () => {
+            const nuevoNombre = document.getElementById('swal-input-nombre').value.trim();
+            if (!nuevoNombre) {
                 proxy.$swal.showValidationMessage('El nombre no puede estar vacío');
+                return false;
             }
-            return inputVal;
+
+            if (nuevoNombre === exercise.nombre) {
+                return true; // Si no cambió nada, cierra nomás
+            }
+
+            const nombreNormalizado = nuevoNombre.toLowerCase();
+            const existeOtro = ejercicios.value.some(
+                ex => ex.id !== exercise.id && ex.nombre.trim().toLowerCase() === nombreNormalizado
+            );
+
+            if (existeOtro) {
+                const feedbackElem = document.getElementById("feedback-span");
+                feedbackElem.className = "small text-danger mt-2 mb-0";
+                feedbackElem.innerHTML = "El ejercicio '" + nuevoNombre + "' ya existe. Cambia a un nombre diferente.";
+                return false;
+            }
+
+            // Activamos el loader
+            proxy.$swal.showLoading();
+
+            try {
+                await exerciseStore.updateExercise({
+                    ...exercise,
+                    nombre: nuevoNombre
+                });
+                return true;
+            } catch (error) {
+                console.error('Error al actualizar:', error);
+                proxy.$swal.showValidationMessage('Error al actualizar el ejercicio');
+                return false;
+            }
         }
     });
-
-    if (nuevoNombre && nuevoNombre !== exercise.nombre) {
-        // Verificar si el nuevo nombre ya existe en otro ejercicio de la biblioteca
-        const nombreNormalizado = nuevoNombre.toLowerCase();
-        const existeOtro = ejercicios.value.some(
-            ex => ex.id !== exercise.id && ex.nombre.trim().toLowerCase() === nombreNormalizado
-        );
-
-        if (existeOtro) {
-            proxy.$swal.fire({
-                icon: 'error',
-                title: 'Nombre duplicado',
-                text: 'Ya existe otro ejercicio con ese nombre en tu biblioteca.',
-            });
-            return; // Cortamos la ejecución para que no guarde
-        }
-        try {
-            await exerciseStore.updateExercise({
-                ...exercise,
-                nombre: nuevoNombre
-            });
-
-
-        } catch (error) {
-            console.error('Error al actualizar:', error);
-        }
-    }
 };
 
-// 4. Eliminar ejercicio (Con la tranquilidad del enfoque Snapshot)
+// 4. Eliminar ejercicio
 const eliminarEjercicio = async (exercise) => {
-    const result = await proxy.$swal.fire({
+    await proxy.$swal.fire({
         title: '¿Eliminar ejercicio?',
         html: `¿Estás seguro de eliminar <b>${exercise.nombre}</b> de tu biblioteca global?<br><br><span class="text-muted small">Tus rutinas e historiales pasados no se verán afectados.</span>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#dc3545'
-    });
+        confirmButtonColor: '#dc3545',
+        allowOutsideClick: () => !proxy.$swal.isLoading(),
+        preConfirm: async () => {
+            // Activamos el loader
+            proxy.$swal.showLoading();
 
-    if (result.isConfirmed) {
-        try {
-            await exerciseStore.deleteExercise(exercise.id);
-
-        } catch (error) {
-            console.error('Error al eliminar:', error);
-
+            try {
+                await exerciseStore.deleteExercise(exercise.id);
+                return true;
+            } catch (error) {
+                console.error('Error al eliminar:', error);
+                proxy.$swal.showValidationMessage('Error al eliminar el ejercicio');
+                return false;
+            }
         }
-    }
+    });
 };
 </script>
 <style scoped>
@@ -328,7 +375,7 @@ const eliminarEjercicio = async (exercise) => {
     background: rgba(255, 255, 255, .1);
 }
 
-.glosario{
+.glosario {
     font-size: medium;
 }
 
@@ -338,6 +385,7 @@ const eliminarEjercicio = async (exercise) => {
     display: flex;
     justify-content: center;
     cursor: pointer;
+    background-color: #101010;
     border: 1px solid rgba(211, 211, 211, 0.144);
     border-radius: 8px;
     width: 100%;
@@ -402,7 +450,7 @@ const eliminarEjercicio = async (exercise) => {
     }
 
     .exercises-container {
-    width: 90%;
+        width: 90%;
     }
 
     .page-header {

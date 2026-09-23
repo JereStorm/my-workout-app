@@ -260,8 +260,8 @@ const workoutsByMonth = computed(() => {
 
 @media (min-width: 768px) {
     .done-page {
-        padding-left: 240px;
-        padding-right: 0;
+        padding-left: 260px;
+        padding-right: 20;
     }
 
     .page-header {
