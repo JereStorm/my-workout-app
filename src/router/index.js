@@ -6,6 +6,7 @@ import LoginPage from "@/components/pages/auth/LoginPage.vue";
 import RegisterPage from "@/components/pages/auth/RegisterPage.vue";
 import UnregistredPage from "@/components/pages/auth/UnregistredPage.vue";
 import DashboardPage from "@/components/pages/dashboard/DashboardPage.vue";
+import HomePage from "@/components/pages/dashboard/HomePage.vue";
 import ProfilePage from "@/components/pages/profile/ProfilePage.vue";
 import FormRoutinePage from "@/components/pages/workouts/FormRoutinePage.vue";
 import RegisterWorkoutPage from "@/components/pages/workouts/RegisterWorkoutPage.vue";
@@ -27,7 +28,8 @@ const routes = [
         name: 'Dashboard',
         component: DashboardPage,
         children: [
-            { path: '', name: 'DashboardRedirect', redirect: { name: 'MyWorkouts' } },
+            { path: '', name: 'DashboardRedirect', redirect: { name: 'HomePage' } },
+            { path: 'home', name: 'HomePage', component: HomePage },
             { path: 'my-workouts', name: 'MyWorkouts', component: RoutineLibrary },
             { path: 'my-workouts/detail', name: 'DetailRoutine', component: RoutineDetailPage },
             { path: 'my-exercises', name: 'MyExercises', component: ExerciseLibraryPage },

@@ -42,7 +42,7 @@ export function countRoutinesWithExercise(exercise, routines) {
 
 /**
  * Calcula el RM (Repetición Máxima) en repeticiones brutas a partir del historial de entrenamientos.
- * Revisa los registros (logs) donde se hayan guardado repeticiones reales.
+ * Revisa los registros (steps y logs) sincronizados por índice.
  * @param {Object} exercise - El ejercicio a evaluar.
  * @param {Array} workouts - El listado histórico de entrenamientos del store.
  * @returns {number} El récord máximo de repeticiones en una sola serie para este ejercicio.
@@ -51,21 +51,30 @@ export function calculateExerciseMaxReps(exercise, workouts) {
     if (!exercise || !workouts || !workouts.length) return 0;
 
     const exerciseId = exercise.id;
-    const exerciseName = exercise.nombre?.trim().toLowerCase();
+    const exerciseName = exercise.nombre?.trim().toLowerCase().replace(/\s+/g, ' ');
     let maxReps = 0;
 
     for (const workout of workouts) {
-        if (!workout.logs || !workout.logs.length) continue;
+        if (!workout.steps || !Array.isArray(workout.steps)) continue;
 
-        for (const log of workout.logs) {
-            // Verificamos si el log pertenece a este ejercicio
-            const matchesId = log.exerciseId === exerciseId || log.id === exerciseId;
-            const matchesName = log.nombre && exerciseName && log.nombre.trim().toLowerCase() === exerciseName;
+        // Recorremos los steps del workout
+        workout.steps.locForEach ? null : workout.steps.forEach((step, index) => {
+            if (!step.ejercicios || !Array.isArray(step.ejercicios)) return;
 
-            if (matchesId || matchesName) {
-                // Evaluamos el array de repeticiones reales hechas en las series (ej: actualReps: [10, 8, 7])
-                if (log.actualReps && Array.isArray(log.actualReps)) {
-                    for (const reps of log.actualReps) {
+            // Verificamos si este step incluye el ejercicio que buscamos
+            const perteneceAlEjercicio = step.ejercicios.some(ej => {
+                const matchesId = ej.exerciseId === exerciseId || ej.id === exerciseId;
+                const ejName = ej.nombre?.trim().toLowerCase().replace(/\s+/g, ' ');
+                const matchesName = ejName && exerciseName && ejName === exerciseName;
+                return matchesId || matchesName;
+            });
+
+            if (perteneceAlEjercicio) {
+                // Buscamos las repeticiones reales en su log correspondiente usando el índice del step
+                const logCorrespondiente = workout.logs && workout.logs[index];
+                
+                if (logCorrespondiente && logCorrespondiente.actualReps && Array.isArray(logCorrespondiente.actualReps)) {
+                    for (const reps of logCorrespondiente.actualReps) {
                         const numReps = Number(reps) || 0;
                         if (numReps > maxReps) {
                             maxReps = numReps;
@@ -73,7 +82,7 @@ export function calculateExerciseMaxReps(exercise, workouts) {
                     }
                 }
             }
-        }
+        });
     }
 
     return maxReps;

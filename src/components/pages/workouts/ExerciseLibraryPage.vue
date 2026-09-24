@@ -45,9 +45,8 @@
                                         <div
                                             class="d-flex flex-column justify-content-between align-items-start gap-2 mt-2">
                                             <div class="d-flex w-100 justify-content-between">
-                                                <span
-                                                    class="badge  d-flex align-items-center bg-opacity-10  border small"
-                                                    :class="exercise.categoria ? 'bg-info border-info-subtle text-info' : 'bg-secondary text-secondary border-secondary-subtle'">
+                                                <span class="badge d-flex align-items-center bg-opacity-10 small"
+                                                    :class="exercise.categoria ? 'bg-info  text-info' : 'bg-secondary text-secondary'">
                                                     {{ exercise.categoria || 'Sin categoría' }}
                                                 </span>
                                                 <div class="d-flex gap-1">
@@ -74,13 +73,13 @@
                                                 title="Rutinas que usan este ejercicio">
                                                 <i class="bi bi-collection text-info"></i>
                                                 <span>{{ countRoutinesWithExercise(exercise, routineStore.routines)
-                                                }}
+                                                    }}
                                                     rutinas</span>
                                             </div>
                                             <div class="d-flex align-items-center gap-1"
                                                 title="Récord máximo de repeticiones (RM)">
-                                                <i class="bi bi-trophy text-warning"></i>
-                                                <span>RM: <b>{{ calculateExerciseMaxReps(exercise,
+                                                <i class="bi bi-trophy text-info"></i>
+                                                <span>PR: <b>{{ calculateExerciseMaxReps(exercise,
                                                     workoutStore.workouts) }}</b> reps</span>
                                             </div>
                                         </div>
@@ -230,17 +229,70 @@ const abrirModalCrear = async () => {
 
 // 3. Editar ejercicio
 const editarEjercicio = async (exercise) => {
+    // Obtenemos las categorías únicas existentes para alimentar el autocompletado
+    const categoriasUnicas = [...new Set(ejercicios.value.map(ex => ex.categoria).filter(Boolean))].sort();
+
     await proxy.$swal.fire({
         title: 'Editar Ejercicio',
         html: `
-            <div class="text-start">
+            <div class="text-start position-relative">
                 <label class="form-label small text-muted mb-1">Nombre del ejercicio</label>
-                <input id="swal-input-nombre" class="form-control text-info bg-transparent border-bottom" value="${exercise.nombre}" autocomplete="off">
-                <p class="small text-muted mt-2 mb-0" id="feedback-span">
-                    * Modificar este ejercicio actualizará su nombre en todas las rutinas involucradas.
+                <input id="swal-input-nombre" class="form-control mb-3" value="${exercise.nombre}" autocomplete="off">
+                
+                <label class="form-label small text-muted mb-1">Categoría</label>
+                <div class="position-relative">
+                    <input id="swal-input-categoria" class="form-control" placeholder="Ej: Espalda / Fuerza" value="${exercise.categoria || ''}" autocomplete="off">
+                    <div id="swal-categoria-suggestions" class="dropdown-menu w-100 shadow-sm border-0 mt-1" style="max-height: 150px; overflow-y: auto; display: none; position: absolute; z-index: 1050;"></div>
+                </div>
+
+                <p class="small text-muted mt-3 mb-0" id="feedback-span">
+                    * Modificar este ejercicio actualizará su nombre y categoría en la biblioteca.
                 </p>
             </div>
         `,
+        didOpen: () => {
+            const inputCat = document.getElementById('swal-input-categoria');
+            const suggestionsBox = document.getElementById('swal-categoria-suggestions');
+
+            // Lógica de autocompletado similar a InputExercise
+            inputCat.addEventListener('input', () => {
+                const query = inputCat.value.trim().toLowerCase();
+                if (!query) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+
+                const filtradas = categoriasUnicas.filter(cat =>
+                    cat.toLowerCase().includes(query) && cat.toLowerCase() !== inputCat.value.trim().toLowerCase()
+                );
+
+                if (filtradas.length > 0) {
+                    suggestionsBox.innerHTML = filtradas.map(cat => `
+                        <button type="button" class="dropdown-item py-2 px-3 text-start" data-categoria="${cat}">
+                            ${cat}
+                        </button>
+                    `).join('');
+                    suggestionsBox.style.display = 'block';
+
+                    // Manejar click en la sugerencia
+                    suggestionsBox.querySelectorAll('.dropdown-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            inputCat.value = item.getAttribute('data-categoria');
+                            suggestionsBox.style.display = 'none';
+                        });
+                    });
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+
+            // Ocultar sugerencias al hacer click fuera
+            document.addEventListener('click', (e) => {
+                if (e.target !== inputCat && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+        },
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
@@ -248,25 +300,33 @@ const editarEjercicio = async (exercise) => {
         allowOutsideClick: () => !proxy.$swal.isLoading(),
         preConfirm: async () => {
             const nuevoNombre = document.getElementById('swal-input-nombre').value.trim();
+            const nuevaCategoria = document.getElementById('swal-input-categoria').value.trim();
+
             if (!nuevoNombre) {
                 proxy.$swal.showValidationMessage('El nombre no puede estar vacío');
                 return false;
             }
 
-            if (nuevoNombre === exercise.nombre) {
+            const nombreHaCambiado = nuevoNombre !== exercise.nombre;
+            const categoriaHaCambiado = nuevaCategoria !== (exercise.categoria || '');
+
+            if (!nombreHaCambiado && !categoriaHaCambiado) {
                 return true; // Si no cambió nada, cierra nomás
             }
 
-            const nombreNormalizado = nuevoNombre.toLowerCase();
-            const existeOtro = ejercicios.value.some(
-                ex => ex.id !== exercise.id && ex.nombre.trim().toLowerCase() === nombreNormalizado
-            );
+            // Validar nombre duplicado solo si cambió el nombre
+            if (nombreHaCambiado) {
+                const nombreNormalizado = nuevoNombre.toLowerCase();
+                const existeOtro = ejercicios.value.some(
+                    ex => ex.id !== exercise.id && ex.nombre.trim().toLowerCase() === nombreNormalizado
+                );
 
-            if (existeOtro) {
-                const feedbackElem = document.getElementById("feedback-span");
-                feedbackElem.className = "small text-danger mt-2 mb-0";
-                feedbackElem.innerHTML = "El ejercicio '" + nuevoNombre + "' ya existe. Cambia a un nombre diferente.";
-                return false;
+                if (existeOtro) {
+                    const feedbackElem = document.getElementById("feedback-span");
+                    feedbackElem.className = "small text-danger mt-3 mb-0";
+                    feedbackElem.innerHTML = "El ejercicio '" + nuevoNombre + "' ya existe. Cambia a un nombre diferente.";
+                    return false;
+                }
             }
 
             // Activamos el loader
@@ -275,7 +335,8 @@ const editarEjercicio = async (exercise) => {
             try {
                 await exerciseStore.updateExercise({
                     ...exercise,
-                    nombre: nuevoNombre
+                    nombre: nuevoNombre,
+                    categoria: nuevaCategoria
                 });
                 return true;
             } catch (error) {

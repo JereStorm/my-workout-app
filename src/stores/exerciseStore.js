@@ -23,14 +23,30 @@ export const useExerciseStore = defineStore('exercise', {
                 this.isLoading = false;
             }
         },
-
         async createExercise(exerciseData, userId) {
             try {
+                // 1. Limpiamos y normalizamos el nombre ingresado (sin importar espacios extra ni mayúsculas)
+                const nombreLimpio = exerciseData.nombre ? exerciseData.nombre.trim().replace(/\s+/g, ' ') : '';
+                const nombreLower = nombreLimpio.toLowerCase();
+
+                // 2. Buscamos si ya existe un ejercicio con el mismo nombre en el state local
+                const existente = this.exercises.find(
+                    ex => ex.nombre.trim().toLowerCase() === nombreLower
+                );
+
+                // 3. Si ya existe, no lo creamos de nuevo: retornamos su ID directamente
+                if (existente) {
+                    return existente.id;
+                }
+
+                // 4. Si no existe, procedemos con la creación normal asegurando el nombre limpio
                 const payload = {
                     ...exerciseData,
+                    nombre: nombreLimpio,
                     idUser: userId,
                     fechaCreacion: new Date().toISOString()
                 };
+
                 const id = await ExerciseService.create(payload);
                 this.exercises.push({ id, ...payload });
                 return id;

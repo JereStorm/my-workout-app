@@ -37,7 +37,7 @@
 
         <!-- 🔹 Header mobile -->
         <header v-if="isMobile" class="heather p-2 w-100 nav-mobile">
-            <router-link :to="{ name: 'MyWorkouts' }"
+            <router-link :to="{ name: 'HomePage' }"
                 class="h2 mb-0 d-flex gap-2 bg-transparent router-link-active border-0">
                 <i class="bi bi-house"></i>
             </router-link>

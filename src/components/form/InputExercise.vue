@@ -1,18 +1,17 @@
 <template>
-    <div class="w-100 mb-5 px-3 px-md-2">
+    <div class="w-100 mb-4 px-3 px-md-2">
         <label :for="'ejercicio-' + indexBloque + '-' + ejercicioIndex" class="form-label mb-0">
             Ejercicio
         </label>
 
         <div class="d-flex align-items-center gap-2">
             <div class="position-relative flex-grow-1">
-                <input type="text" v-model="ejercicio.nombre" @input="onInputNombre" @focus="isFocused = true"
-                    @blur="handleBlur" spellcheck="false" autocomplete="off" required
-                    :class="['form-control', inputClass(ejercicio.nombre)]"
+                <input type="text" v-model="ejercicio.nombre" @input="onInputNombre" spellcheck="false"
+                    autocomplete="off" required :class="['form-control', inputClass(ejercicio.nombre)]"
                     :id="'ejercicio-' + indexBloque + '-' + ejercicioIndex" />
 
-                <!-- Autocomplete list: Solo se muestra si está escribiendo, hay sugerencias, NO tiene ID y TIENE el foco -->
-                <div v-if="isFocused && ejercicio.nombre.trim() && filtrarExercises.length && !ejercicio.exerciseId"
+                <!-- Autocomplete list -->
+                <div v-if="ejercicio.nombre.trim() && filtrarExercises.length && !ejercicio.exerciseId"
                     class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000;">
                     <div class="list-group-item bg-body-secondary small fw-semibold">
                         Ejercicios guardados
@@ -25,12 +24,11 @@
                     </button>
                 </div>
 
-                <!-- Nuevo ejercicio indicador: Se muestra si hay texto, no tiene ID, no es exacto Y YA NO TIENE EL FOCO -->
-                <div v-if="!isFocused && ejercicio.nombre.trim() && !ejercicio.exerciseId && !esExacto"
-                    class="list-group position-absolute w-100 shadow-sm">
+                <!-- Nuevo ejercicio indicador -->
+                <div v-else-if="ejercicio.nombre.trim() && !ejercicio.exerciseId && !esExacto"
+                    class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000;">
                     <div class="list-group-item small py-0 border-info bg-transparent text-info">
-                        <span class="d-flex gap-2"><i class="bi bi-info-circle"></i>Se creará un nuevo ejercicio al
-                            guardar</span>
+                        <span class="d-flex gap-2"><i class="bi bi-info-circle"></i>Se creará un nuevo ejercicio al guardar</span>
                     </div>
                 </div>
             </div>
@@ -45,7 +43,7 @@
 </template>
 
 <script setup>
-import { computed, ref, getCurrentInstance, watchEffect, watch } from 'vue';
+import { computed, getCurrentInstance, ref } from 'vue';
 import { useExerciseStore } from '@/stores/exerciseStore';
 
 const props = defineProps({
@@ -59,66 +57,25 @@ const { proxy } = getCurrentInstance();
 const exerciseStore = useExerciseStore();
 const exercises = computed(() => exerciseStore.getExercises);
 
-// Estado para controlar el foco del input
-const isFocused = ref(false);
-
-const handleBlur = () => {
-    setTimeout(() => {
-        isFocused.value = false;
-        
-        if (!props.ejercicio.nombre) return;
-
-        // 1. Limpiamos espacios sobrantes al salir
-        const nombreLimpio = props.ejercicio.nombre.trim().replace(/\s+/g, ' ');
-        props.ejercicio.nombre = nombreLimpio;
-
-        // 2. Buscamos si ya existe uno igual ignorando mayúsculas/minúsculas
-        const queryLower = nombreLimpio.toLowerCase();
-        const existente = exercises.value.find(
-            ex => ex.nombre.trim().toLowerCase() === queryLower
-        );
-
-        if (existente) {
-            // Si ya existe con otro formato de letras, lo vinculamos automáticamente para evitar duplicados
-            props.ejercicio.exerciseId = existente.id;
-            props.ejercicio.nombre = existente.nombre; // Opcional: lo unificamos con el formato oficial guardado
-        }
-    }, 200);
-};
-
-// Determinamos de forma limpia si el nombre actual coincide exactamente con un ejercicio ya guardado
-const esExacto = computed(() => {
-    const query = props.ejercicio.nombre?.trim().toLowerCase();
-    if (!query || exercises.value.length === 0) return false;
-
-    return exercises.value.some(
-        exercise => exercise.nombre.trim().toLowerCase() === query
-    );
-});
-
-// Watch simple solo para autovincular el ID si por casualidad coincide al cargar los datos
-watch(
-    [exercises],
-    ([newExercises]) => {
-        const nombreActual = props.ejercicio.nombre?.trim().toLowerCase();
-        if (!nombreActual || props.ejercicio.exerciseId) return;
-
-        if (newExercises.length > 0) {
-            const encontrado = newExercises.find(
-                ex => ex.nombre.trim().toLowerCase() === nombreActual
-            );
-            if (encontrado) {
-                props.ejercicio.exerciseId = encontrado.id;
-            }
-        }
-    },
-    { immediate: true }
-);
+const esExacto = ref(false);
 
 const filtrarExercises = computed(() => {
-    const query = props.ejercicio.nombre?.trim().toLowerCase();
-    if (!query || esExacto.value) return [];
+    const query = props.ejercicio.nombre?.trim().toLowerCase() || '';
+    if (!query) {
+        esExacto.value = false;
+        return [];
+    }
 
+    const coincideExacto = exercises.value.some(
+        exercise => exercise.nombre.trim().toLowerCase() === query
+    );
+
+    if (coincideExacto) {
+        esExacto.value = true;
+        return [];
+    }
+
+    esExacto.value = false;
     return exercises.value.filter(exercise =>
         exercise.nombre.toLowerCase().includes(query)
     );
@@ -162,6 +119,8 @@ const abrirModalEdicion = async () => {
         showCancelButton: true,
         confirmButtonText: 'Guardar cambios',
         cancelButtonText: 'Cancelar',
+        backdrop: true,
+        allowOutsideClick: false,
         preConfirm: () => {
             const inputVal = document.getElementById('swal-input-nombre').value.trim();
             if (!inputVal) {
@@ -182,12 +141,10 @@ const abrirModalEdicion = async () => {
                 props.ejercicio.exerciseId = ejercicioExistente.id;
                 props.ejercicio.nombre = ejercicioExistente.nombre;
             } else {
-                // CORREGIDO: Usamos el exerciseStore modularizado en lugar de profileStore
                 await exerciseStore.updateExercise({
                     ...ejercicioActual,
                     nombre: nuevoNombre
                 });
-
                 props.ejercicio.nombre = nuevoNombre;
             }
 
