@@ -1,29 +1,37 @@
 <template>
-    <div class="d-flex justify-content-start mx-3 gap-md-3 align-items-center gap-2">
+    <div class="d-flex justify-content-center mx-3">
 
-        <!-- Avatar -->
-        <div class="position-relative">
-            <div class="avatar-ring d-flex align-items-center justify-content-center">
-                <!-- Imagen o fallback -->
-                <img v-if="photoURL" :src="photoURL" alt="User profile" class="avatar-img" />
+        <router-link :to="{ name: 'HomePage' }"
+            class="h2 mb-0 ms-1 d-flex align-items-center gap-2 bg-transparent router-link-active border-0">
+            <i class="bi bi-house"></i>
+        </router-link>
+        <div class="vr-line mx-auto"></div>
+        <div class="d-flex justify-content-start me-1 gap-md-3 align-items-center gap-2">
+            <!-- Avatar -->
+            <div class="position-relative d-flex justify-content-between">
 
-                <span v-else class="avatar-initials">
-                    {{ initials }}
-                </span>
+                <div class="avatar-ring d-flex align-items-center justify-content-center">
+                    <!-- Imagen o fallback -->
+                    <img v-if="photoURL" :src="photoURL" alt="User profile" class="avatar-img" />
+
+                    <span v-else class="avatar-initials">
+                        {{ initials }}
+                    </span>
+                </div>
             </div>
+
+            <!-- User info -->
+            <div class="text-center overflow-hidden">
+                <h6 class="mb-0 fw-bold text-white text-truncate" :title="nickname" style="max-width: 140px">
+                    {{ nickname || 'Usuario' }}
+                </h6>
+
+                <small class="small fw-light text-light">
+                    Nivel {{ level }}
+                </small>
+            </div>
+
         </div>
-
-        <!-- User info -->
-        <div class="text-center overflow-hidden">
-            <h6 class="mb-0 fw-bold text-white text-truncate" :title="nickname" style="max-width: 140px">
-                {{ nickname || 'Usuario' }}
-            </h6>
-
-            <small class="small fw-light text-light">
-                Nivel {{ level }}
-            </small>
-        </div>
-
     </div>
 </template>
 
@@ -85,5 +93,25 @@ const initials = computed(() => {
     align-items: center;
     justify-content: center;
     user-select: none;
+}
+
+.router-link-active {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.192);
+    text-shadow: 0 0 5px #00ffff;
+    transform: translateY(-2px);
+}
+
+.router-link-active i {
+    color: #00ffff;
+}
+
+.vr-line {
+    width: 1px;
+    background-color: #e6e5de7c;
+    /* O el color que uses en tu app */
+    height: 100%;
+    /* O una altura fija como 24px */
 }
 </style>

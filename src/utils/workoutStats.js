@@ -7,6 +7,10 @@ export function sumWorkoutVolume(workout) {
     }, 0)
 }
 
+export function sumWorkoutVolumePerWeek(workouts) {
+
+}
+
 export function countWorkoutBlocks(workout) {
     return workout.logs?.length || 0
 }
