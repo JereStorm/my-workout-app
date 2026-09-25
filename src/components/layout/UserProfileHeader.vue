@@ -1,11 +1,6 @@
 <template>
     <div class="d-flex justify-content-center mx-3">
 
-        <router-link :to="{ name: 'HomePage' }"
-            class="h2 mb-0 ms-1 d-flex align-items-center gap-2 bg-transparent router-link-active border-0">
-            <i class="bi bi-house"></i>
-        </router-link>
-        <div class="vr-line mx-auto"></div>
         <div class="d-flex justify-content-start me-1 gap-md-3 align-items-center gap-2">
             <!-- Avatar -->
             <div class="position-relative d-flex justify-content-between">
@@ -105,13 +100,5 @@ const initials = computed(() => {
 
 .router-link-active i {
     color: #00ffff;
-}
-
-.vr-line {
-    width: 1px;
-    background-color: #e6e5de7c;
-    /* O el color que uses en tu app */
-    height: 100%;
-    /* O una altura fija como 24px */
 }
 </style>

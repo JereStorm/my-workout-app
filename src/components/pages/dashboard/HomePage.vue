@@ -1,6 +1,6 @@
 <!-- @/views/HomePage.vue -->
 <template>
-    <div class="home-page container-fluid px-3 px-md-4">
+    <div class="home-page">
         <div class="d-flex flex-column w-100 gap-4 mx-auto pb-5" style="max-width: 1200px;">
 
             <!-- ==================== 1. HEADER & GREETING HERO ==================== -->
@@ -97,8 +97,7 @@
                                     </div>
                                 </div>
                                 <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                                        <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
-
+                                    <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
                                 </span>
                             </div>
 
@@ -108,7 +107,7 @@
                                 <div class="d-flex flex-column flex-md-row align-items-center gap-1">
                                     <i class="bi bi-clock text-info"></i>
                                     <span class="text-light">{{ estimateDuration(lastCreatedRoutine)
-                                        }}</span>
+                                    }} Min.</span>
                                 </div>
                                 <div class="d-none d-sm-block vr text-secondary"></div>
                                 <div class="d-flex flex-column flex-md-row align-items-center gap-1">
