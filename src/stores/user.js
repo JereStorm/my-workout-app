@@ -46,8 +46,8 @@ export const useUserStore = defineStore("user", {
 
                     console.log("📦 [Stores Independientes Cargados]:", {
                         perfil: profileStore.profile,
-                        totalEjercicios: exerciseStore.exercises?.length || 0,
-                        totalEntrenamientos: workoutStore.workouts?.length || 0
+                        ejercicios: exerciseStore.exercises,
+                        entrenamientos: workoutStore.workouts
                     });
 
                     // 3. Cargar e hidratar las rutinas utilizando el catálogo de ejercicios ya obtenido

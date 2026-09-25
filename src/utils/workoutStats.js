@@ -1,18 +1,50 @@
-export function sumWorkoutVolume(workout) {
-    if (!workout.logs) return 0
+export const sumWorkoutVolume = (workout) => {
+    let volume = 0;
+    if (!workout.blocks || !Array.isArray(workout.blocks)) return 0;
 
-    return workout.logs.reduce((total, log) => {
-        if (!log.actualReps) return total
-        return total + log.actualReps.reduce((a, b) => a + b, 0)
-    }, 0)
-}
+    workout.blocks.forEach(block => {
+        if (!block.setLogs || !Array.isArray(block.setLogs)) return;
+        block.setLogs.forEach(set => {
+            if (!set.completedReps || !Array.isArray(set.completedReps)) return;
+            volume += set.completedReps.reduce((acc, curr) => acc + (Number(curr) || 0), 0);
+        });
+    });
+
+    return volume;
+};
 
 export function sumWorkoutVolumePerWeek(workouts) {
+    if (!workouts || !Array.isArray(workouts)) return {}
 
+    return workouts.reduce((acc, workout) => {
+        if (!workout.date) return acc
+
+        const date = new Date(workout.date)
+        if (isNaN(date.getTime())) return acc
+
+        // Cálculo estándar de la semana ISO (Año + Número de Semana, ej: "2026-W39")
+        const targetDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+        const dayNum = targetDate.getUTCDay() || 7
+        targetDate.setUTCDate(targetDate.getUTCDate() + 4 - dayNum)
+        const yearStart = new Date(Date.UTC(targetDate.getUTCFullYear(), 0, 1))
+        const weekNo = Math.ceil(((targetDate - yearStart) / 86400000 + 1) / 7)
+        
+        const weekKey = `${targetDate.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`
+
+        // Calculamos el volumen del entrenamiento actual
+        const workoutVolume = sumWorkoutVolume(workout)
+
+        // Acumulamos en la semana correspondiente
+        if (!acc[weekKey]) {
+            acc[weekKey] = 0
+        }
+        acc[weekKey] += workoutVolume
+
+        return acc
+    }, {})
 }
-
 export function countWorkoutBlocks(workout) {
-    return workout.logs?.length || 0
+    return workout.blocks?.length || 0;
 }
 
 

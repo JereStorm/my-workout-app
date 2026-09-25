@@ -1,29 +1,29 @@
 <!-- @/views/HomePage.vue -->
 <template>
-    <div class="home-page">
-        <div class="d-flex flex-column w-full gap-4">
+    <div class="home-page container-fluid px-3 px-md-4">
+        <div class="d-flex flex-column w-100 gap-4 mx-auto pb-5" style="max-width: 1200px;">
 
             <!-- ==================== 1. HEADER & GREETING HERO ==================== -->
             <div class="card bg-cards border-0 rounded-4 p-4 p-lg-5 shadow-sm">
                 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
                     <div class="d-flex flex-column gap-1">
-                        <h1 class="h1 text-light mb-1">
-                            ¡Buen día <p class="text-info">{{ userName }}!</p>
+                        <h1 class="h2 h1-md text-light mb-1">
+                            ¡Buen día <span class="text-info">{{ userName }}</span>!
                         </h1>
                         <p class="text-muted mb-0">
                             ¿Listo para entrenar?
-                        <p class="text-info fw-semibold">Atrevete a superar tus
-                            limites</p>
+                            <span class="text-info fw-semibold d-block d-sm-inline">Atrevete a superar tus
+                                limites</span>
                         </p>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
                         <router-link :to="{ name: 'SelectRoutine' }"
-                            class="btn btn-info px-3 py-2 fw-semibold text-dark d-flex align-items-center gap-2 shadow-sm">
+                            class="btn btn-info px-3 py-2 fw-semibold text-dark d-flex align-items-center justify-content-center gap-2 shadow-sm flex-grow-1 flex-sm-grow-0">
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
                         </router-link>
                         <router-link to="/calendario"
-                            class="btn btn-outline-secondary px-3 py-3 text-light d-flex align-items-center gap-2">
+                            class="btn btn-outline-secondary px-3 py-2 text-light d-flex align-items-center justify-content-center gap-2">
                             <i class="bi bi-calendar-event"></i>
                             <span class="d-none d-sm-inline">Calendario</span>
                         </router-link>
@@ -35,21 +35,21 @@
             <div class="row g-3">
                 <!-- Volumen Semanal -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-4 shadow-sm h-100">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Volumen Semanal</span>
                             <i class="bi bi-weight text-info fs-5"></i>
                         </div>
                         <div class="d-flex align-baseline gap-2">
-                            <span class="fs-2 fw-bold text-light">{{ weeklyVolume }}</span>
-                            <span class="text-muted small">ton</span>
+                            <span class="fs-2 fw-bold text-info">{{ weeklyVolume }}</span>
+                            <span class="text-muted small">Reps</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Racha Actual -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-4 shadow-sm h-100">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Racha Actual</span>
                             <i class="bi bi-fire text-info fs-5"></i>
@@ -63,7 +63,7 @@
 
                 <!-- Bajo Tensión (TUT) -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-4 shadow-sm h-100">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Bajo Tensión (TUT)</span>
                             <i class="bi bi-stopwatch text-info fs-5"></i>
@@ -83,7 +83,7 @@
                 <div class="col-12 col-lg-8 d-flex flex-column gap-4">
 
                     <!-- ==================== 3. RESUMEN DE LA ÚLTIMA RUTINA CREADA ==================== -->
-                    <div class="card bg-cards border-0 rounded-4 p-4 shadow-sm">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm">
                         <div v-if="lastCreatedRoutine">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                                 <div class="d-flex align-items-center gap-3">
@@ -93,52 +93,71 @@
                                     <div>
                                         <span class="small text-uppercase text-muted d-block">Última Rutina
                                             Creada</span>
-                                        <h2 class="h5 fw-bold text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
+                                        <h2 class="h5 text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
                                     </div>
                                 </div>
                                 <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                    {{ lastCreatedRoutine.nivel || 'Personalizada' }}
+                                                        <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
+
                                 </span>
                             </div>
 
-                            <!-- Detalles rápidos -->
+                            <!-- Detalles rápidos (Adaptados para pantallas chicas con flex-wrap) -->
                             <div
-                                class="d-flex align-items-center gap-4 p-3 rounded-3 bg-dark bg-opacity-50 mb-3 text-muted small">
-                                <div class="d-flex align-items-center gap-2">
+                                class="d-flex flex-wrap align-items-center justify-content-around gap-2 p-3 rounded-3 bg-dark bg-opacity-50 mb-3 text-muted small">
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
                                     <i class="bi bi-clock text-info"></i>
-                                    <span class="fw-semibold text-light">~60 min</span>
+                                    <span class="text-light">{{ estimateDuration(lastCreatedRoutine)
+                                        }}</span>
                                 </div>
-                                <div class="vr text-secondary"></div>
-                                <div class="d-flex align-items-center gap-2">
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
                                     <i class="bi bi-arrow-repeat text-info"></i>
-                                    <span class="fw-semibold text-light">{{ lastCreatedRoutine.ejercicios?.length || 0
-                                        }} Ejercicios</span>
+                                    <span class="text-light">{{ countEjercicios(lastCreatedRoutine) }}
+                                        Ej.</span>
+                                </div>
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-arrow-up text-info"></i>
+                                    <span class="text-light">{{ countBloques(lastCreatedRoutine) }}
+                                        Bloques</span>
+                                </div>
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-arrow-up-right text-info"></i>
+                                    <span class="text-light">{{ countSets(lastCreatedRoutine) }}
+                                        Series</span>
                                 </div>
                             </div>
 
-                            <!-- Lista de ejercicios de la rutina -->
-                            <div class="d-flex flex-column gap-2 mb-3">
-                                <div v-for="(ex, index) in lastCreatedRoutine.bloques.ejercicios" :key="ex.id || index"
-                                    class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-dark bg-opacity-25">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="badge bg-dark bg-opacity-25 text-info rounded-circle p-2"
-                                            style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                            {{ index + 1 }}
+                            <!-- Lista de ejercicios de la rutina agrupados por bloques -->
+                            <div class="d-flex flex-column gap-3 mb-3">
+                                <template v-for="(bloque, bloqueIndex) in lastCreatedRoutine.bloques"
+                                    :key="bloqueIndex">
+                                    <div v-for="(ex, exIndex) in bloque.ejercicios" :key="ex.exerciseId || exIndex"
+                                        class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-dark bg-opacity-25 gap-2">
+                                        <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                            <span
+                                                class="badge bg-dark bg-opacity-25 text-info rounded-circle p-2 flex-shrink-0"
+                                                style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                                {{ bloqueIndex + 1 }}.{{ exIndex + 1 }}
+                                            </span>
+                                            <span class=" text-light text-truncate">{{ ex.nombre ||
+                                                'Ejercicio sin nombre' }}</span>
+                                        </div>
+                                        <span class="text-muted font-monospace small flex-shrink-0">
+                                            {{ bloque.series || 3 }} × {{ ex.repeticiones || '10' }}
                                         </span>
-                                        <span class="fw-semibold text-light">{{ ex.nombre || 'Ejercicio sin nombre'
-                                            }}</span>
                                     </div>
-                                    <span class="text-muted font-monospace small">
-                                        {{ ex.series || 3 }} × {{ ex.repeticiones || '10' }}
-                                    </span>
-                                </div>
+                                </template>
                             </div>
 
-                            <div class="d-flex justify-content-end">
-                                <router-link :to="{ name: 'SelectRoutine' }"
-                                    class="btn btn-info btn-sm px-4 py-2 text-dark fw-semibold">
+                            <div class="d-flex justify-content-center">
+                                <div @click="entrenarRutina(lastCreatedRoutine.id)"
+                                    class="btn btn-info btn-sm px-4 py-2 text-dark fw-semibold w-100 w-sm-auto text-center"
+                                    style="cursor: pointer;">
                                     Entrenar esta rutina
-                                </router-link>
+                                </div>
                             </div>
                         </div>
 
@@ -157,13 +176,13 @@
                 <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
                     <!-- ==================== 4. SECCIÓN DE CONSISTENCIA SEMANAL ==================== -->
-                    <div class="card bg-cards border-0 rounded-4 p-4 shadow-sm">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-calendar-week text-info"></i>
                                 <h3 class="h6 fw-semibold text-light mb-0">Consistencia Semanal</h3>
                             </div>
-                            <span class="text-info fw-bold small">2/5 Días</span>
+                            <span class="text-info fw-bold small">{{ completedDaysCount }}/7 Días</span>
                         </div>
 
                         <!-- Grilla de días (L a D) -->
@@ -176,7 +195,7 @@
                                         <div :class="[
                                             'rounded-circle d-flex align-items-center justify-content-center',
                                             day.completed ? 'bg-info text-dark fw-bold' : 'bg-dark bg-opacity-25 text-muted'
-                                        ]" style="width: 28px; height: 28px; font-size: 12px;">
+                                        ]" style="width: 26px; height: 26px; font-size: 11px;">
                                             <i :class="day.completed ? 'bi bi-check' : 'bi bi-dash'"></i>
                                         </div>
                                     </div>
@@ -190,51 +209,129 @@
     </div>
 </template>
 
+
+
 <script setup>
 import { computed } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 import { useRoutineStore } from '@/stores/routineStore';
 import { useWorkoutStore } from '@/stores/workoutStore';
+import { getWeeklyProgress } from '@/utils/profileStats.js'
+import { countEjercicios, countBloques, countSets, estimateDuration } from '@/utils/routineStats';
+import { sumWorkoutVolumePerWeek } from '@/utils/workoutStats';
+import { useRouter } from 'vue-router';
 
 const profileStore = useProfileStore();
 const routineStore = useRoutineStore();
 const workoutStore = useWorkoutStore();
+const router = useRouter()
+
+const progress = computed(() => getWeeklyProgress(workoutStore.workouts, profileStore.profile.weeklyGoal))
 
 // Datos del usuario
 const userName = computed(() => profileStore.profile?.nickname || 'Atleta');
 
-// Estadísticas simuladas o conectadas a tus stores (puedes adaptarlas a tus utils de stats si ya los tienes)
-const weeklyVolume = computed(() => '18.5');
-const currentStreak = computed(() => '18');
-const totalTUT = computed(() => '3h 45m');
+function entrenarRutina(id) {
+    router.push({
+        name: 'RegisterWorkout',
+        query: { id }
+    })
+}
+
+// Función auxiliar para obtener la clave de la semana actual en formato ISO (ej: "2026-W39")
+const getCurrentISOWeekKey = () => {
+    const targetDate = new Date();
+    // Normalizar a UTC para coincidir con la lógica de tu helper de stats
+    const utcDate = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()));
+    const dayNum = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil(((utcDate - yearStart) / 86400000 + 1) / 7);
+    return `${utcDate.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+};
+
+// Volumen Semanal Actual (Computado y reactivo)
+const weeklyVolume = computed(() => {
+    const volumesByWeek = sumWorkoutVolumePerWeek(workoutStore.workouts);
+    const currentWeekKey = getCurrentISOWeekKey();
+
+    // Retorna el total de repeticiones de la semana actual, o 0 si no hay registros
+    return volumesByWeek[currentWeekKey] || 0;
+});
+
+const currentStreak = computed(() => '4');
+const totalTUT = computed(() => '45m 30s');
 
 // Obtener la última rutina creada del routineStore
 const lastCreatedRoutine = computed(() => {
     const routines = routineStore.routines || [];
     if (routines.length === 0) return null;
-    // Retorna la última (asumiendo que están ordenadas o tomamos la última del array)
     return routines[routines.length - 1];
 });
 
-const lastRoutineName = null;
+// Función auxiliar para obtener el inicio y fin de la semana actual (Lunes a Domingo)
+const getCurrentWeekDaysStatus = () => {
+    const now = new Date();
+    const currentDayOfWeek = now.getDay(); // 0 (Dom) a 6 (Sáb)
 
-// Consistencia semanal de ejemplo (Lunes a Domingo)
-const weekDays = [
-    { label: 'L', completed: true },
-    { label: 'M', completed: true },
-    { label: 'X', completed: false },
-    { label: 'J', completed: false },
-    { label: 'V', completed: false },
-    { label: 'S', completed: false },
-    { label: 'D', completed: false },
-];
+    // Ajustar para que el lunes sea el primer día (Lunes = 0, Domingo = 6)
+    const distanceToMonday = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
+
+    const monday = new Date(now);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(now.getDate() + distanceToMonday);
+
+    // Array con las etiquetas de los días
+    const daysLabels = [
+        { label: 'L', offset: 0 },
+        { label: 'M', offset: 1 },
+        { label: 'X', offset: 2 },
+        { label: 'J', offset: 3 },
+        { label: 'V', offset: 4 },
+        { label: 'S', offset: 5 },
+        { label: 'D', offset: 6 },
+    ];
+
+    const workouts = workoutStore.workouts || [];
+
+    return daysLabels.map(d => {
+        const targetDate = new Date(monday);
+        targetDate.setDate(monday.getDate() + d.offset);
+
+        // Formato YYYY-MM-DD para comparar de forma segura con la fecha del entrenamiento
+        const targetString = targetDate.toISOString().split('T')[0];
+
+        // Verificar si hay algún entrenamiento en este día exacto
+        const hasWorkout = workouts.some(w => {
+            if (!w.date) return false;
+            const workoutDateString = new Date(w.date).toISOString().split('T')[0];
+            return workoutDateString === targetString;
+        });
+
+        // Opcional: considerar si el día ya pasó o es el actual para saber si cuenta como "completado"
+        return {
+            label: d.label,
+            completed: hasWorkout,
+            date: targetString
+        };
+    });
+};
+
+// Propiedad computada para los días de la semana
+const weekDays = computed(() => getCurrentWeekDaysStatus());
+
+// Contador dinámico de días completados en la semana
+const completedDaysCount = computed(() => {
+    return weekDays.value.filter(d => d.completed).length;
+});
 </script>
-
 <style scoped>
 .home-page {
-    padding-top: 100px;
+    padding-top: 50px;
+    padding-left: 0px;
     display: flex;
     justify-content: center;
+    min-height: 100vh;
 }
 
 .hover-bg:hover {
@@ -248,9 +345,9 @@ const weekDays = [
 
 @media (min-width: 768px) {
     .home-page {
-        padding-top: 20px;
+        padding-top: 40px;
         padding-left: 240px;
-        min-height: 100vh;
+        /* Margen para sidebar en escritorio */
     }
 }
 </style>

@@ -55,7 +55,9 @@
                             </div>
 
                             <div class="fs-5 fw-bold mt-1">
-                                {{ workout.logs.length }}
+                                <div class="fs-5 fw-bold mt-1">
+                                    {{ totalSeriesCount }}
+                                </div>
                             </div>
 
                         </div>
@@ -194,39 +196,16 @@
                             <!-- SETS -->
                             <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                                <div v-for="si in bloque.series" :key="si" class="set-pill text-center">
-
+                                <div v-for="(setLog, si) in bloque.setLogs" :key="si" class="set-pill text-center">
                                     <small class="text-secondary text-uppercase d-block">
-                                        Set {{ si }}
+                                        Set {{ si + 1 }}
                                     </small>
-
-                                    <!-- REAL / META -->
                                     <span class="chip-real mt-1 d-inline-block">
-                                        {{
-                                            formatActual(
-                                                workout.logs[getLogIndex(bi, si - 1)],
-                                                ei
-                                            )
-                                        }}
-                                        /
-                                        {{ formatExpected(ej) }}
+                                        {{ formatActual(setLog, ei) }} / {{ formatExpected(ej) }}
                                     </span>
-
-                                    <!-- PORCENTAJE -->
-                                    <small class="d-block mt-1" :class="getSetComplianceClass(
-                                        ej,
-                                        workout.logs[getLogIndex(bi, si - 1)],
-                                        ei
-                                    )">
-                                        {{
-                                            getSetCompliance(
-                                                ej,
-                                                workout.logs[getLogIndex(bi, si - 1)],
-                                                ei
-                                            )
-                                        }}%
+                                    <small class="d-block mt-1" :class="getSetComplianceClass(ej, setLog, ei)">
+                                        {{ getSetCompliance(ej, setLog, ei) }}%
                                     </small>
-
                                 </div>
 
                             </div>
@@ -290,6 +269,10 @@ const workoutId = route.query.id;
 const workout = ref(null);
 const { isLoading } = storeToRefs(workoutStore);
 
+const totalSeriesCount = computed(() => {
+    if (!workout.value?.blocks) return 0;
+    return workout.value.blocks.reduce((acc, block) => acc + (block.setLogs?.length || 0), 0);
+});
 /**
  * Volumen total realizado.
  */
@@ -299,26 +282,12 @@ const statsVolume = computed(() => {
 });
 
 /**
- * Obtiene el índice correspondiente al log de una serie.
- */
-const getLogIndex = (bloqueIndex, serieIndex) => {
-    let idx = 0;
-    const bloques = workout.value.dataRoutine.bloques;
-
-    for (let b = 0; b < bloqueIndex; b++) {
-        idx += bloques[b].series;
-    }
-
-    return idx + serieIndex;
-};
-
-/**
  * Formatea el resultado realizado.
  */
-function formatActual(log, ei) {
+function formatActual(setLog, ei) {
     return formatStimulusActual(
-        log?.actualReps?.[ei] ?? 0,
-        log?.actualSegs?.[ei] ?? 0
+        setLog?.completedReps?.[ei] ?? 0,
+        setLog?.completedSegs?.[ei] ?? 0
     );
 }
 
@@ -338,11 +307,11 @@ function getExpectedValue(ej) {
 /**
  * Valor realmente realizado en un set.
  */
-function getActualValue(log, ei, ej) {
+function getActualValue(setLog, ei, ej) {
     if (Number(ej?.tiempo) > 0) {
-        return Number(log?.actualSegs?.[ei]) || 0;
+        return Number(setLog?.completedSegs?.[ei]) || 0;
     }
-    return Number(log?.actualReps?.[ei]) || 0;
+    return Number(setLog?.completedReps?.[ei]) || 0;
 }
 
 /**
@@ -377,28 +346,26 @@ function getSetCompliance(ej, log, ei) {
  * Cumplimiento promedio del ejercicio.
  */
 function getExerciseCompliance(bi, ei) {
-    const bloque = workout.value?.dataRoutine?.bloques?.[bi];
+    const bloque = workout.value?.blocks?.[bi]; // Nota: Asegúrate de usar blocks en lugar de dataRoutine.bloques para el registro, o mantén dataRoutine si la estructura de la plantilla de rutina está separada, pero los logs están en workout.blocks
     if (!bloque) return 0;
 
-    const ej = bloque.ejercicios?.[ei];
+    // Ojo: Dependiendo de dónde guardes los ejercicios del template, 
+    // si están en workout.blocks[bi].ejercicios o workout.dataRoutine.bloques[bi].ejercicios:
+    const ej = workout.value.dataRoutine.bloques[bi]?.ejercicios?.[ei];
     if (!ej) return 0;
 
     let totalExpected = 0;
     let totalActual = 0;
 
-    for (let si = 0; si < bloque.series; si++) {
-        const log = workout.value.logs?.[
-            getLogIndex(bi, si)
-        ];
-
+    bloque.setLogs?.forEach(setLog => {
         const expected = getExpectedValue(ej);
-        const actual = getActualValue(log, ei, ej);
+        const actual = getActualValue(setLog, ei, ej);
 
         if (expected > 0) {
             totalExpected += expected;
             totalActual += actual;
         }
-    }
+    });
 
     if (totalExpected <= 0) return 0;
 
@@ -412,26 +379,24 @@ function getExerciseCompliance(bi, ei) {
  * Cumplimiento global de toda la rutina.
  */
 const statsCompliance = computed(() => {
-    if (!workout.value) return 0;
+    if (!workout.value?.blocks) return 0;
 
     let totalExpected = 0;
     let totalActual = 0;
 
-    workout.value.dataRoutine.bloques.forEach((bloque, bi) => {
-        bloque.ejercicios.forEach((ej, ei) => {
-            for (let si = 0; si < bloque.series; si++) {
-                const log = workout.value.logs?.[
-                    getLogIndex(bi, si)
-                ];
-
+    workout.value.blocks.forEach((bloque, bi) => {
+        const ejercicios = workout.value.dataRoutine?.bloques?.[bi]?.ejercicios || [];
+        
+        bloque.setLogs?.forEach(setLog => {
+            ejercicios.forEach((ej, ei) => {
                 const expected = getExpectedValue(ej);
-                const actual = getActualValue(log, ei, ej);
+                const actual = getActualValue(setLog, ei, ej);
 
                 if (expected > 0) {
                     totalExpected += expected;
                     totalActual += actual;
                 }
-            }
+            });
         });
     });
 

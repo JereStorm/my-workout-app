@@ -101,30 +101,14 @@
                                     <div class="exercise-inputs">
 
                                         <!-- REPS -->
-                                        <div class="input-group-workout">
-
-                                            <label :for="`ej-${step}-${eIndex}-reps`">
-                                                Reps
-                                            </label>
-
-                                            <input type="number" :id="`ej-${step}-${eIndex}-reps`"
-                                                v-model.number="logs[step].actualReps[eIndex]" min="0"
-                                                class="form-control input-cant" />
-
-                                        </div>
+                                        <input type="number" :id="`ej-${step}-${eIndex}-reps`"
+                                            v-model.number="logs[current.bloqueIndex].setLogs[current.serie].completedReps[eIndex]"
+                                            min="0" class="form-control input-cant" />
 
                                         <!-- SEGS -->
-                                        <div v-if="logs[step].actualSegs[eIndex] !== 0" class="input-group-workout">
-
-                                            <label :for="`ej-${step}-${eIndex}-segs`">
-                                                Seg
-                                            </label>
-
-                                            <input type="number" :id="`ej-${step}-${eIndex}-segs`"
-                                                v-model.number="logs[step].actualSegs[eIndex]" min="0"
-                                                class="form-control input-cant" />
-
-                                        </div>
+                                        <input type="number" :id="`ej-${step}-${eIndex}-segs`"
+                                            v-model.number="logs[current.bloqueIndex].setLogs[current.serie].completedSeconds[eIndex]"
+                                            min="0" class="form-control input-cant" />
 
                                     </div>
 
@@ -330,6 +314,9 @@ const construirSiCorresponde = async () => {
 
     rutina.value = { ...data };
 
+    // Nueva estructura basada en bloques optimizados
+    steps.value = [];
+
     data.bloques.forEach((bloque, bi) => {
         for (let si = 0; si < bloque.series; si++) {
             steps.value.push({
@@ -339,12 +326,29 @@ const construirSiCorresponde = async () => {
                 stepLabel: `Bloque ${bi + 1}`,
                 ejercicios: bloque.ejercicios.map(e => ({ ...e }))
             });
-            logs.value.push({
-                actualReps: bloque.ejercicios.map(e => e.repeticiones),
-                actualSegs: bloque.ejercicios.map(e => e.tiempo),
-            });
         }
     });
+
+    // Inicializamos los bloques y sus setLogs correspondientes
+    logs.value = data.bloques.map((bloque, bi) => ({
+        blockIndex: bi,
+        notes: bloque.notas || "",
+        sets: bloque.series,
+        exercises: bloque.ejercicios.map(e => ({
+            exerciseId: e.id || e.exerciseId, // Ajusta según venga tu objeto de ejercicio
+            name: e.nombre,
+            targetReps: e.repeticiones || 0,
+            targetSeconds: e.tiempo || 0,
+            targetEffort: e.esfuerzo || 0,
+            notes: e.notas || ""
+        })),
+        setLogs: Array.from({ length: bloque.series }, (_, si) => ({
+            setNumber: si + 1,
+            completedReps: bloque.ejercicios.map(e => e.repeticiones || 0),
+            completedSeconds: bloque.ejercicios.map(e => e.tiempo || 0),
+            completedAt: null // Opcional: puedes llenarlo al finalizar cada serie
+        }))
+    }));
 }
 
 watch(isLoading, (nuevoValor) => {
@@ -402,35 +406,80 @@ const onTimerTick = (secondsLeft) => {
     // opcional
 };
 
+// --- FUNCIONES AUXILIARES (Lógica de Negocio) ---
+
+/**
+ * Calcula el volumen total de repeticiones sumando todos los setLogs de los bloques.
+ */
+ const calcularVolumenTotal = (blocks) => {
+    let totalVolume = 0;
+    
+    blocks.forEach(block => {
+        if (!block.setLogs || !Array.isArray(block.setLogs)) return;
+        
+        block.setLogs.forEach(set => {
+            if (!set.completedReps || !Array.isArray(set.completedReps)) return;
+            
+            const setSum = set.completedReps.reduce((acc, curr) => acc + (Number(curr) || 0), 0);
+            totalVolume += setSum;
+        });
+    });
+
+    return totalVolume;
+};
+
+/**
+ * Prepara el payload completo listo para ser enviado al store.
+ */
+const construirPayloadEntrenamiento = ({ rutinaId, rutinaNombre, workoutDate, notes, logs, totalDurationSeconds }) => {
+    return {
+        rutinaId,
+        routineName: rutinaNombre,
+        date: workoutDate,
+        notes: notes,
+        metrics: {
+            totalDurationSeconds: totalDurationSeconds || 0,
+            totalVolumeReps: calcularVolumenTotal(logs)
+        },
+        blocks: logs // Estructura jerárquica limpia: blocks -> exercises -> setLogs
+    };
+};
+
+
+// --- MÉTODO SUBMIT MODULARIZADO ---
+
 const submit = async () => {
     isSaving.value = true;
     let id = null;
+
     try {
         const userStore = useUserStore();
-        const userId = userStore.user?.id; // Siempre disponible de forma global
-        // Registramos el entrenamiento mediante workoutStore
-        id = await workoutStore.registerWorkout({
+        const userId = userStore.user?.id; 
+
+        // Obtenemos la duración del timer global si lo tienes registrado en el componente
+        const duracionTotal = window.workoutDurationSeconds || 0;
+
+        // Construimos el objeto utilizando nuestra función auxiliar profesional
+        const payload = construirPayloadEntrenamiento({
             rutinaId,
-            dataRoutine: {
-                bloques: rutina.value.bloques,
-                descansoBloques: rutina.value.descansoBloques,
-                descansoSeries: rutina.value.descansoSeries,
-                dificultad: rutina.value.dificultad,
-                nombre: rutina.value.nombre,
-            },
-            date: workoutDate.value,
-            steps: steps.value,
+            rutinaNombre: rutina.value.nombre,
+            workoutDate: workoutDate.value,
+            notes: notes.value,
             logs: logs.value,
-            notes: notes.value
-        }, userId);
+            totalDurationSeconds: duracionTotal
+        });
+        payload.dataRoutine = {...rutina}
+
+        // Registramos el entrenamiento mediante el store
+        id = await workoutStore.registerWorkout(payload, userId);
 
     } catch (err) {
-        console.error(err);
+        console.error("Error crítico al registrar el entrenamiento:", err);
     } finally {
         isSaving.value = false;
         router.push({ name: 'DetailWorkout', query: { id } });
     }
-}
+};
 
 const handleCancelar = async () => {
     const ok = await confirmAction(proxy.$swal, {
