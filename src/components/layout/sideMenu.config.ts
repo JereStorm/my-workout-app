@@ -7,14 +7,10 @@ export const SIDE_MENU_ITEMS = [
     {
         name: 'MyWorkouts',
         label: 'Rutinas',
-        icon: 'bi-list-check'
+        icon: 'bi bi-journal-bookmark'
     },
 
-    {
-        name: 'MyExercises',
-        label: 'Ejercicios',
-        icon: 'bi-grid-3x3-gap'
-    }, {
+{
         name: 'SelectRoutine',
         label: 'Entrenar',
         icon: 'bi-lightning-charge'
@@ -24,6 +20,11 @@ export const SIDE_MENU_ITEMS = [
         label: 'Historial',
         icon: 'bi-clock-history'
     },
+        {
+        name: 'MyExercises',
+        label: 'Ejercicios',
+        icon: 'bi-grid-3x3-gap'
+    }, 
     {
         name: 'MyProfile',
         label: 'Mi Perfil',

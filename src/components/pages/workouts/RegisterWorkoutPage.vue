@@ -431,12 +431,14 @@ const onTimerTick = (secondsLeft) => {
 /**
  * Prepara el payload completo listo para ser enviado al store.
  */
-const construirPayloadEntrenamiento = ({ rutinaId, rutinaNombre, workoutDate, notes, logs, totalDurationSeconds }) => {
+const construirPayloadEntrenamiento = ({ rutinaId, rutinaNombre, workoutDate, notes, logs, totalDurationSeconds, dataRoutine }) => {
     return {
         rutinaId,
         routineName: rutinaNombre,
         date: workoutDate,
         notes: notes,
+        // GUARDAMOS EL SNAPSHOT HISTÓRICO DE LA RUTINA
+        dataRoutine: dataRoutine ? JSON.parse(JSON.stringify(dataRoutine)) : null,
         metrics: {
             totalDurationSeconds: totalDurationSeconds || 0,
             totalVolumeReps: calcularVolumenTotal(logs)
@@ -456,20 +458,20 @@ const submit = async () => {
         const userStore = useUserStore();
         const userId = userStore.user?.id; 
 
-        // Obtenemos la duración del timer global si lo tienes registrado en el componente
+        // Obtenemos la duración del timer global si lo tienes registrado
         const duracionTotal = window.workoutDurationSeconds || 0;
 
-        // Construimos el objeto utilizando nuestra función auxiliar profesional
+        // Construimos el objeto pasando el snapshot de la rutina actual
         const payload = construirPayloadEntrenamiento({
             rutinaId,
             rutinaNombre: rutina.value.nombre,
             workoutDate: workoutDate.value,
             notes: notes.value,
             logs: logs.value,
-            totalDurationSeconds: duracionTotal
+            totalDurationSeconds: duracionTotal,
+            dataRoutine: rutina.value // <--- ¡Acá le pasamos la rutina entera!
         });
-        payload.dataRoutine = {...rutina}
-
+        
         // Registramos el entrenamiento mediante el store
         id = await workoutStore.registerWorkout(payload, userId);
 

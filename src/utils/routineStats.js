@@ -57,12 +57,12 @@ export function volumeLevel(routine) {
     return 'Alto'
 }
 
-export function getSummary(routine) {
+export function getSummary(routine, cantLines = 3) {
     const bloques = routine.bloques
     const totalSeries = bloques.reduce((acc, b) => acc + b.series, 0)
     const ejercicios = bloques.flatMap(b => b.ejercicios.map(e => e.nombre))
-    const destacados = ejercicios.slice(0, 3).join(', ')
-    return ` ${destacados}${ejercicios.length > 3 ? '...' : ''}`
+    const destacados = ejercicios.slice(0, cantLines).join(', ')
+    return `${destacados}${ejercicios.length > cantLines ? '...' : ''}`
 }
 
 export function formatDate(iso) {

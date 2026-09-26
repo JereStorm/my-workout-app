@@ -5,7 +5,7 @@
             <h6>{{ totalSeries }} Series</h6>
         </div>
 
-        <div class="text-center font-weight-medium my-2">
+        <div class="text-center my-2">
             <h3 class="ellipsis" :title="routine.nombre">{{ routine.nombre }}</h3>
         </div>
 

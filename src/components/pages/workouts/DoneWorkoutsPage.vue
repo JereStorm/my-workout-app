@@ -42,35 +42,39 @@
                                 {{ formatDate(workout.date) }}
                             </div>
 
-                            <DifficultyBadge size="sm" :dificultad="workout.dataRoutine.dificultad" />
+                            <!-- Nota: Si la dificultad ya no viene en el workout guardado, 
+                                 podés manejar un fallback o sacarlo si ya no aplica -->
+                            <DifficultyBadge v-if="workout.difficulty" size="sm" :dificultad="workout.difficulty" />
                         </div>
+
                         <h5 class="fw-bold mb-1">
-                            {{ workout.dataRoutine.nombre }}
+                            {{workout.routineName || workout.dataRoutine?.nombre || 'Entrenamiento libre' }}
                         </h5>
 
 
                         <div class="timeline-stats">
 
                             <span>
-                                <i class="bi bi-layers"></i>
-                                {{ workout.dataRoutine.bloques.length }} bloques
+                                <i class="bi bi-layers text-info"></i>
+                                {{ workout.blocks ? workout.blocks.length : 0 }} bloques
                             </span>
 
                             <span>
-                                <i class="bi bi-bar-chart"></i>
-                                {{ countSets(workout.dataRoutine) }} series
+                                <i class="bi bi-bar-chart text-info"></i>
+                                {{ countSetsNew(workout.blocks) }} series
                             </span>
 
-                            <span class="ms-auto text-info fw-bold">
-                                <i class="bi bi-clock"></i>
-                                {{ estimateDuration(workout.dataRoutine) }}
+                            <span class="ms-auto fw-bold">
+                                <!-- Si ya tenés metrics.totalDurationSeconds, podés mostrarlo en minutos -->
+                                {{ Math.round((workout.metrics?.totalDurationSeconds || 0) / 60) }}
                                 Min
+                                <i class="bi bi-clock text-info"></i>
                             </span>
 
                         </div>
 
-                        <p class="timeline-summary">
-                            {{ getSummary(workout.dataRoutine) }}
+                        <p class="timeline-summary truncate-2-lines">
+                            {{ getSummaryNew(workout.blocks) }}
                         </p>
 
                         <button class="btn btn-sm btn-outline-info animation-blink mt-2" @click="redirect(workout)">
@@ -94,17 +98,17 @@
 
 <script setup>
 
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useWorkoutStore } from '@/stores/workoutStore';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
-import { countSets, estimateDuration, formatDate, getSummary } from '@/utils/routineStats';
+import { formatDate } from '@/utils/routineStats'; // Asegurate de ajustar las utils si cambiaron
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 
 /** Acceso al enrutador */
 const router = useRouter();
 
-// Instancia el workoutStore en lugar del profileStore
+// Instancia el workoutStore
 const workoutStore = useWorkoutStore();
 
 const { isLoading, workouts: storeWorkouts } = storeToRefs(workoutStore);
@@ -112,15 +116,39 @@ const { isLoading, workouts: storeWorkouts } = storeToRefs(workoutStore);
 // Lista de workouts reactiva proveniente del store independiente
 const workouts = computed(() => storeWorkouts.value || []);
 
+onMounted(() => {
+    console.log(workouts.value);
+})
+
 function redirect(workout) {
-    console.log(workout)
+    console.log(workout);
     router.push({ name: 'DetailWorkout', query: { id: workout.id } });
+}
+
+// Helpers adaptados al nuevo modelo basados en "blocks"
+function countSetsNew(blocks = []) {
+    if (!blocks) return 0;
+    return blocks.reduce((acc, block) => acc + (block.setLogs ? block.setLogs.length : 0), 0);
+}
+
+function getSummaryNew(blocks = []) {
+    if (!blocks || blocks.length === 0) return 'Sin ejercicios registrados';
+    const exercisesNames = [];
+    blocks.forEach(block => {
+        if (block.exercises) {
+            block.exercises.forEach(ex => {
+                if (ex.name) exercisesNames.push(ex.name);
+            });
+        }
+    });
+    return exercisesNames.length > 0 ? exercisesNames.join(', ') : 'Entrenamiento completado';
 }
 
 const workoutsByMonth = computed(() => {
     const groups = {}
 
     workouts.value.forEach(w => {
+        if (!w.date) return;
         const d = new Date(w.date)
         const key = d.toLocaleDateString('es-AR', {
             month: 'long',
@@ -256,7 +284,12 @@ const workoutsByMonth = computed(() => {
     margin-bottom: 10px;
 }
 
-
+.truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
 @media (min-width: 768px) {
     .done-page {

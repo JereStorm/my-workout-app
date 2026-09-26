@@ -129,14 +129,16 @@
                     <!-- TÍTULO BLOQUE -->
                     <div class="border-start border-3 border-info ps-3 mb-3">
 
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
 
                             <span class="text-uppercase small text-secondary fw-semibold">
-                                Bloque {{ bi + 1 }}
+                               <span class="text-info">
+                                    {{ bi + 1 }}
+                                </span> Bloque 
                             </span>
 
                             <span class="text-secondary small">
-                                · {{ bloque.series }} sets
+                                <span class="text-info">{{ bloque.series }}</span> sets
                             </span>
                         </div>
                     </div>
@@ -154,8 +156,10 @@
                                 </div>
 
                                 <div v-if="ej?.notas" class="small text-notas mt-1">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    {{ ej.notas }}
+                                    <small>
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        {{ ej.notas }}
+                                    </small>
                                 </div>
                             </div>
 
@@ -196,12 +200,13 @@
                             <!-- SETS -->
                             <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                                <div v-for="(setLog, si) in bloque.setLogs" :key="si" class="set-pill text-center">
+                                <div v-for="(setLog, si) in workout.blocks?.[bi]?.setLogs" :key="si"
+                                    class="set-pill text-center">
                                     <small class="text-secondary text-uppercase d-block">
                                         Set {{ si + 1 }}
                                     </small>
                                     <span class="chip-real mt-1 d-inline-block">
-                                        {{ formatActual(setLog, ei) }} / {{ formatExpected(ej) }}
+                                        {{ formatActual(setLog, ei) }}
                                     </span>
                                     <small class="d-block mt-1" :class="getSetComplianceClass(ej, setLog, ei)">
                                         {{ getSetCompliance(ej, setLog, ei) }}%
@@ -209,7 +214,6 @@
                                 </div>
 
                             </div>
-
                         </div>
 
                     </div>
@@ -239,7 +243,6 @@
 
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -251,7 +254,7 @@ import { getCurrentInstance } from 'vue';
 import {
     formatStimulusTarget,
     formatStimulusActual,
-} from '@/domain/stimulus'
+} from '@/domain/stimulus';
 
 import { formatDate } from '@/utils/routineStats';
 import { sumWorkoutVolume } from '@/utils/workoutStats';
@@ -273,6 +276,7 @@ const totalSeriesCount = computed(() => {
     if (!workout.value?.blocks) return 0;
     return workout.value.blocks.reduce((acc, block) => acc + (block.setLogs?.length || 0), 0);
 });
+
 /**
  * Volumen total realizado.
  */
@@ -282,51 +286,75 @@ const statsVolume = computed(() => {
 });
 
 /**
- * Formatea el resultado realizado.
+ * Obtiene el bloque correspondiente de la plantilla guardada (dataRoutine).
+ * Esto nos asegura obtener la definición estricta del ejercicio (repeticiones/tiempo objetivo).
+ */
+function getTemplateBlock(bi) {
+    return workout.value?.dataRoutine?.bloques?.[bi] || workout.value?.dataRoutine?.[bi] || null;
+}
+
+/**
+ * Formatea el resultado realizado de forma robusta (soporta híbridos, reps o segundos).
  */
 function formatActual(setLog, ei) {
-    return formatStimulusActual(
-        setLog?.completedReps?.[ei] ?? 0,
-        setLog?.completedSegs?.[ei] ?? 0
-    );
+    const actualReps = Number(setLog?.completedReps?.[ei]) || 0;
+    const actualSegs = Number(setLog?.completedSeconds?.[ei] ?? setLog?.completedSegs?.[ei]) || 0;
+
+    if (actualReps > 0 && actualSegs > 0) {
+        return `${actualReps} reps × ${actualSegs}s`;
+    }
+    if (actualSegs > 0) {
+        return `${actualSegs}s`;
+    }
+    return `${actualReps} reps`;
 }
 
 /**
- * Valor esperado del ejercicio.
- *
- * Si el ejercicio trabaja por tiempo se utilizan segundos.
- * De lo contrario se utilizan repeticiones.
+ * Obtiene el valor objetivo total (soporta híbridos reps + segundos o individuales)
  */
 function getExpectedValue(ej) {
-    if (Number(ej?.tiempo) > 0) {
-        return Number(ej.tiempo);
+    const reps = Number(ej?.targetReps ?? ej?.repeticiones) || 0;
+    const segs = Number(ej?.targetSeconds ?? ej?.tiempo) || 0;
+
+    // Si tiene ambas, las sumamos para la métrica de cumplimiento global del ejercicio,
+    // o podés priorizar según tu criterio de negocio. Acá sumamos la carga total de trabajo.
+    if (reps > 0 && segs > 0) {
+        return reps + segs;
     }
-    return Number(ej?.repeticiones) || 0;
+    return segs > 0 ? segs : reps;
 }
 
 /**
- * Valor realmente realizado en un set.
+ * Obtiene el valor real ejecutado en un set
  */
 function getActualValue(setLog, ei, ej) {
-    if (Number(ej?.tiempo) > 0) {
-        return Number(setLog?.completedSegs?.[ei]) || 0;
+    const hasReps = Number(ej?.targetReps ?? ej?.repeticiones) > 0;
+    const hasSegs = Number(ej?.targetSeconds ?? ej?.tiempo) > 0;
+
+    const actualReps = Number(setLog?.completedReps?.[ei]) || 0;
+    const actualSegs = Number(setLog?.completedSeconds?.[ei] ?? setLog?.completedSegs?.[ei]) || 0;
+
+    if (hasReps && hasSegs) {
+        return actualReps + actualSegs;
     }
-    return Number(setLog?.completedReps?.[ei]) || 0;
+    return hasSegs ? actualSegs : actualReps;
 }
 
 /**
- * Meta formateada para mostrar junto al resultado.
+ * Meta formateada para mostrar junto al resultado (ej: "3 reps × 3s")
  */
 function formatExpected(ej) {
-    const expected = getExpectedValue(ej);
+    const reps = Number(ej?.targetReps ?? ej?.repeticiones) || 0;
+    const segs = Number(ej?.targetSeconds ?? ej?.tiempo) || 0;
 
-    if (Number(ej?.tiempo) > 0) {
-        return `${expected}s`;
+    if (reps > 0 && segs > 0) {
+        return `${reps} reps × ${segs}s`;
     }
-
-    return `${expected}`;
+    if (segs > 0) {
+        return `${segs}s`;
+    }
+    return `${reps} reps`;
 }
-
 /**
  * Cumplimiento de un set individual.
  */
@@ -346,18 +374,17 @@ function getSetCompliance(ej, log, ei) {
  * Cumplimiento promedio del ejercicio.
  */
 function getExerciseCompliance(bi, ei) {
-    const bloque = workout.value?.blocks?.[bi]; // Nota: Asegúrate de usar blocks en lugar de dataRoutine.bloques para el registro, o mantén dataRoutine si la estructura de la plantilla de rutina está separada, pero los logs están en workout.blocks
-    if (!bloque) return 0;
+    const bloqueReal = workout.value?.blocks?.[bi];
+    if (!bloqueReal) return 0;
 
-    // Ojo: Dependiendo de dónde guardes los ejercicios del template, 
-    // si están en workout.blocks[bi].ejercicios o workout.dataRoutine.bloques[bi].ejercicios:
-    const ej = workout.value.dataRoutine.bloques[bi]?.ejercicios?.[ei];
+    const templateBlock = getTemplateBlock(bi);
+    const ej = templateBlock?.ejercicios?.[ei];
     if (!ej) return 0;
 
     let totalExpected = 0;
     let totalActual = 0;
 
-    bloque.setLogs?.forEach(setLog => {
+    bloqueReal.setLogs?.forEach(setLog => {
         const expected = getExpectedValue(ej);
         const actual = getActualValue(setLog, ei, ej);
 
@@ -384,10 +411,11 @@ const statsCompliance = computed(() => {
     let totalExpected = 0;
     let totalActual = 0;
 
-    workout.value.blocks.forEach((bloque, bi) => {
-        const ejercicios = workout.value.dataRoutine?.bloques?.[bi]?.ejercicios || [];
-        
-        bloque.setLogs?.forEach(setLog => {
+    workout.value.blocks.forEach((bloqueReal, bi) => {
+        const templateBlock = getTemplateBlock(bi);
+        const ejercicios = templateBlock?.ejercicios || [];
+
+        bloqueReal.setLogs?.forEach(setLog => {
             ejercicios.forEach((ej, ei) => {
                 const expected = getExpectedValue(ej);
                 const actual = getActualValue(setLog, ei, ej);
@@ -523,7 +551,7 @@ watch(isLoading, (nuevoValor) => {
     font-size: 0.9rem;
     padding: 2px 8px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, .05);
+    background: rgba(188, 56, 56, 0.05);
     border: 1px solid rgba(255, 255, 255, .08);
     color: #aaa;
 }

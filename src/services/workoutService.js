@@ -1,6 +1,6 @@
 import { db } from '../firebaseConfig';
 import {
-    collection, query, where, getDocs, addDoc, deleteDoc, doc, orderBy, serverTimestamp
+    collection, query, where, getDocs ,getDoc, addDoc, deleteDoc, doc, orderBy, serverTimestamp
 } from 'firebase/firestore';
 import { handleServiceError } from '@/utils/errorHandler';
 import { useNotificationStore } from '@/stores/notificationStore';
@@ -46,6 +46,7 @@ export const WorkoutService = {
     async create(payload) {
         try {
             const notify = useNotificationStore();
+            console.log("Create workout",payload)
             const data = {
                 ...payload,
             };

@@ -1,13 +1,13 @@
 <!-- @/views/HomePage.vue -->
 <template>
-    <div class="home-page">
-        <div class="d-flex flex-column w-100 gap-4 mx-auto pb-5" style="max-width: 1200px;">
+    <div class="home-page mx-auto">
+        <div class="d-flex flex-column w-100 gap-4 mx-auto pb-5">
 
             <!-- ==================== 1. HEADER & GREETING HERO ==================== -->
             <div class="card bg-cards border-0 rounded-4 p-4 p-lg-5 shadow-sm">
                 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
                     <div class="d-flex flex-column gap-1">
-                        <h1 class="h2 h1-md text-light mb-1">
+                        <h1 class="h2 h1-md text-light mb-1 ">
                             ¡Buen día <span class="text-info">{{ userName }}</span>!
                         </h1>
                         <p class="text-muted mb-0">
@@ -22,23 +22,18 @@
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
                         </router-link>
-                        <router-link to="/calendario"
-                            class="btn btn-outline-secondary px-3 py-2 text-light d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-calendar-event"></i>
-                            <span class="d-none d-sm-inline">Calendario</span>
-                        </router-link>
                     </div>
                 </div>
             </div>
 
             <!-- ==================== 2. KEY METRICS (3 TOP CARDS) ==================== -->
-            <div class="row g-3">
+            <div class="row justify-content-between g-3">
                 <!-- Volumen Semanal -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm ">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Volumen Semanal</span>
-                            <i class="bi bi-weight text-info fs-5"></i>
+                            <i class="bi bi-bi-graph-up-arrow text-info fs-5"></i>
                         </div>
                         <div class="d-flex align-baseline gap-2">
                             <span class="fs-2 fw-bold text-info">{{ weeklyVolume }}</span>
@@ -49,7 +44,7 @@
 
                 <!-- Racha Actual -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm ">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Racha Actual</span>
                             <i class="bi bi-fire text-info fs-5"></i>
@@ -61,117 +56,7 @@
                     </div>
                 </div>
 
-                <!-- Bajo Tensión (TUT) -->
-                <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm h-100">
-                        <div class="d-flex align-items-center justify-content-between text-muted mb-2">
-                            <span class="small text-uppercase fw-semibold tracking-wider">Bajo Tensión (TUT)</span>
-                            <i class="bi bi-stopwatch text-info fs-5"></i>
-                        </div>
-                        <div class="d-flex align-baseline gap-2">
-                            <span class="fs-2 fw-bold text-light">{{ totalTUT }}</span>
-                            <span class="text-muted small">/ 4h</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ==================== MAIN CONTENT 2-COLUMN LAYOUT ==================== -->
-            <div class="row g-4 align-items-start">
-
-                <!-- LEFT COLUMN (Rutina Reciente / Última Creada) -->
-                <div class="col-12 col-lg-8 d-flex flex-column gap-4">
-
-                    <!-- ==================== 3. RESUMEN DE LA ÚLTIMA RUTINA CREADA ==================== -->
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm">
-                        <div v-if="lastCreatedRoutine">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="p-2 rounded-3 bg-dark bg-opacity-10 text-info">
-                                        <i class="bi bi-fitness fs-4"></i>
-                                    </div>
-                                    <div>
-                                        <span class="small text-uppercase text-muted d-block">Última Rutina
-                                            Creada</span>
-                                        <h2 class="h5 text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
-                                    </div>
-                                </div>
-                                <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                    <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
-                                </span>
-                            </div>
-
-                            <!-- Detalles rápidos (Adaptados para pantallas chicas con flex-wrap) -->
-                            <div
-                                class="d-flex flex-wrap align-items-center justify-content-around gap-2 p-3 rounded-3 bg-dark bg-opacity-50 mb-3 text-muted small">
-                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
-                                    <i class="bi bi-clock text-info"></i>
-                                    <span class="text-light">{{ estimateDuration(lastCreatedRoutine)
-                                    }} Min.</span>
-                                </div>
-                                <div class="d-none d-sm-block vr text-secondary"></div>
-                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
-                                    <i class="bi bi-arrow-repeat text-info"></i>
-                                    <span class="text-light">{{ countEjercicios(lastCreatedRoutine) }}
-                                        Ej.</span>
-                                </div>
-                                <div class="d-none d-sm-block vr text-secondary"></div>
-                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
-                                    <i class="bi bi-arrow-up text-info"></i>
-                                    <span class="text-light">{{ countBloques(lastCreatedRoutine) }}
-                                        Bloques</span>
-                                </div>
-                                <div class="d-none d-sm-block vr text-secondary"></div>
-                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
-                                    <i class="bi bi-arrow-up-right text-info"></i>
-                                    <span class="text-light">{{ countSets(lastCreatedRoutine) }}
-                                        Series</span>
-                                </div>
-                            </div>
-
-                            <!-- Lista de ejercicios de la rutina agrupados por bloques -->
-                            <div class="d-flex flex-column gap-3 mb-3">
-                                <template v-for="(bloque, bloqueIndex) in lastCreatedRoutine.bloques"
-                                    :key="bloqueIndex">
-                                    <div v-for="(ex, exIndex) in bloque.ejercicios" :key="ex.exerciseId || exIndex"
-                                        class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-dark bg-opacity-25 gap-2">
-                                        <div class="d-flex align-items-center gap-3 overflow-hidden">
-                                            <span
-                                                class="badge bg-dark bg-opacity-25 text-info rounded-circle p-2 flex-shrink-0"
-                                                style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                                {{ bloqueIndex + 1 }}.{{ exIndex + 1 }}
-                                            </span>
-                                            <span class=" text-light text-truncate">{{ ex.nombre ||
-                                                'Ejercicio sin nombre' }}</span>
-                                        </div>
-                                        <span class="text-muted font-monospace small flex-shrink-0">
-                                            {{ bloque.series || 3 }} × {{ ex.repeticiones || '10' }}
-                                        </span>
-                                    </div>
-                                </template>
-                            </div>
-
-                            <div class="d-flex justify-content-center">
-                                <div @click="entrenarRutina(lastCreatedRoutine.id)"
-                                    class="btn btn-info btn-sm px-4 py-2 text-dark fw-semibold w-100 w-sm-auto text-center"
-                                    style="cursor: pointer;">
-                                    Entrenar esta rutina
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Estado vacío si no hay rutinas -->
-                        <div v-else class="text-center py-4 text-muted">
-                            <i class="bi bi-journal-plus fs-2 text-info mb-2 d-block"></i>
-                            <p class="mb-2">Aún no has creado ninguna rutina.</p>
-                            <router-link to="/rutinas" class="btn btn-outline-info btn-sm">Crear mi primera
-                                rutina</router-link>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- RIGHT COLUMN (Consistencia Semanal & Accesos Directos) -->
+                <!-- 3 RIGHT COLUMN (Consistencia Semanal & Accesos Directos) -->
                 <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
                     <!-- ==================== 4. SECCIÓN DE CONSISTENCIA SEMANAL ==================== -->
@@ -204,6 +89,80 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ==================== MAIN CONTENT 2-COLUMN LAYOUT ==================== -->
+            <div class="row align-items-start w-100">
+
+                <!-- LEFT COLUMN (Rutina Reciente / Última Creada) -->
+                <div class="col-12 col-lg-8 d-flex flex-column align-items-center gap-4 w-100 mx-3">
+
+                    <!-- ==================== 3. RESUMEN DE LA ÚLTIMA RUTINA CREADA ==================== -->
+                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm">
+                        <div v-if="lastCreatedRoutine">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                                <div class="mx-auto d-flex flex-column justify-content-center align-items-center gap-3">
+                                        <span class="small text-uppercase text-muted d-block">Última Rutina
+                                            Creada</span>
+                                        <h2 class="h5 text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
+                                </div>
+                                <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
+                            </div>
+
+                            <!-- Detalles rápidos (Adaptados para pantallas chicas con flex-wrap) -->
+                            <div
+                                class="d-flex flex-wrap align-items-center justify-content-around gap-2 p-3 rounded-3 bg-dark bg-opacity-50 mb-3 text-muted small">
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-clock text-info"></i>
+                                    <span class="text-light">{{ estimateDuration(lastCreatedRoutine)
+                                        }} Min.</span>
+                                </div>
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-arrow-repeat text-info"></i>
+                                    <span class="text-light">{{ countEjercicios(lastCreatedRoutine) }}
+                                        Ej.</span>
+                                </div>
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-arrow-up text-info"></i>
+                                    <span class="text-light">{{ countBloques(lastCreatedRoutine) }}
+                                        Bloques</span>
+                                </div>
+                                <div class="d-none d-sm-block vr text-secondary"></div>
+                                <div class="d-flex flex-column flex-md-row align-items-center gap-1">
+                                    <i class="bi bi-arrow-up-right text-info"></i>
+                                    <span class="text-light">{{ countSets(lastCreatedRoutine) }}
+                                        Series</span>
+                                </div>
+                            </div>
+
+                           <div class="d-flex py-1 text-center mb-3">
+                                <p class="text-secondary text-align-center px-5">
+                                    ({{getSummary(lastCreatedRoutine, 5)}})
+                                </p>
+                            </div>
+
+                            <div class="d-flex justify-content-center">
+                                <div @click="entrenarRutina(lastCreatedRoutine.id)"
+                                    class="btn btn-info btn-sm px-4 py-2 text-dark fw-semibold w-100 w-sm-auto text-center"
+                                    style="cursor: pointer;">
+                                    Entrenar esta rutina
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado vacío si no hay rutinas -->
+                        <div v-else class="text-center py-4 text-muted">
+                            <i class="bi bi-journal-plus fs-2 text-info mb-2 d-block"></i>
+                            <p class="mb-2">Aún no has creado ninguna rutina.</p>
+                            <router-link to="/rutinas" class="btn btn-outline-info btn-sm">Crear mi primera
+                                rutina</router-link>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     </div>
 </template>
@@ -216,8 +175,9 @@ import { useProfileStore } from '@/stores/profile';
 import { useRoutineStore } from '@/stores/routineStore';
 import { useWorkoutStore } from '@/stores/workoutStore';
 import { getWeeklyProgress } from '@/utils/profileStats.js'
-import { countEjercicios, countBloques, countSets, estimateDuration } from '@/utils/routineStats';
+import { countEjercicios, countBloques, countSets, getSummary, estimateDuration } from '@/utils/routineStats';
 import { sumWorkoutVolumePerWeek } from '@/utils/workoutStats';
+import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 import { useRouter } from 'vue-router';
 
 const profileStore = useProfileStore();
@@ -331,6 +291,8 @@ const completedDaysCount = computed(() => {
     display: flex;
     justify-content: center;
     min-height: 100vh;
+    width: 100%;
+    max-width: 1000px;
 }
 
 .hover-bg:hover {
