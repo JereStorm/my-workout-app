@@ -66,7 +66,7 @@
 
                             <span class="ms-auto fw-bold">
                                 <!-- Si ya tenés metrics.totalDurationSeconds, podés mostrarlo en minutos -->
-                                {{ Math.round((workout.metrics?.totalDurationSeconds || 0) / 60) }}
+                                {{estimateDuration(workout.dataRoutine)}}
                                 Min
                                 <i class="bi bi-clock text-info"></i>
                             </span>
@@ -104,6 +104,7 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { formatDate } from '@/utils/routineStats'; // Asegurate de ajustar las utils si cambiaron
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
+import { estimateDuration } from '../../../utils/routineStats';
 
 /** Acceso al enrutador */
 const router = useRouter();

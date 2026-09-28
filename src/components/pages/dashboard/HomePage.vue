@@ -301,7 +301,7 @@ const completedDaysCount = computed(() => {
 }
 
 .bg-cards {
-    background-color: #101010;
+    background-color: rgba(26, 26, 26, 0.447)
 }
 
 @media (min-width: 768px) {

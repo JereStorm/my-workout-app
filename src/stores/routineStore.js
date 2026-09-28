@@ -61,8 +61,7 @@ export const useRoutineStore = defineStore('routine', {
             try {
                 // 1. Primero aseguramos que todos los ejercicios nuevos existan y tengan ID
                 await this._asegurarEjercicios(routineData);
-
-                const payload = { ...routineData, idUser: userId, fechaCreacion: new Date().toISOString() };
+                const payload = { ...routineData, idUser: userId, fechaCreacion: new Date().toISOString(), estimateDuration: estimateDuration(routineData) };
                 const id = await RoutineService.create(payload);
                 this.routines.unshift({ id, ...payload });
                 return id;

@@ -105,8 +105,9 @@
                                             v-model.number="logs[current.bloqueIndex].setLogs[current.serie].completedReps[eIndex]"
                                             min="0" class="form-control input-cant" />
 
-                                        <!-- SEGS -->
-                                        <input type="number" :id="`ej-${step}-${eIndex}-segs`"
+                                        <!-- SEGS (Solo se muestra si el ejercicio requiere segundos/tiempo > 0) -->
+                                        <input v-if="Number(ej.targetSeconds || ej.tiempo || 0) > 0" type="number"
+                                            :id="`ej-${step}-${eIndex}-segs`"
                                             v-model.number="logs[current.bloqueIndex].setLogs[current.serie].completedSeconds[eIndex]"
                                             min="0" class="form-control input-cant" />
 
@@ -411,15 +412,15 @@ const onTimerTick = (secondsLeft) => {
 /**
  * Calcula el volumen total de repeticiones sumando todos los setLogs de los bloques.
  */
- const calcularVolumenTotal = (blocks) => {
+const calcularVolumenTotal = (blocks) => {
     let totalVolume = 0;
-    
+
     blocks.forEach(block => {
         if (!block.setLogs || !Array.isArray(block.setLogs)) return;
-        
+
         block.setLogs.forEach(set => {
             if (!set.completedReps || !Array.isArray(set.completedReps)) return;
-            
+
             const setSum = set.completedReps.reduce((acc, curr) => acc + (Number(curr) || 0), 0);
             totalVolume += setSum;
         });
@@ -456,10 +457,10 @@ const submit = async () => {
 
     try {
         const userStore = useUserStore();
-        const userId = userStore.user?.id; 
+        const userId = userStore.user?.id;
 
-        // Obtenemos la duración del timer global si lo tienes registrado
-        const duracionTotal = window.workoutDurationSeconds || 0;
+        //TODO: Feature a futuro obtener el total de la sesion
+        const duracionTotal = 0;
 
         // Construimos el objeto pasando el snapshot de la rutina actual
         const payload = construirPayloadEntrenamiento({
@@ -471,7 +472,7 @@ const submit = async () => {
             totalDurationSeconds: duracionTotal,
             dataRoutine: rutina.value // <--- ¡Acá le pasamos la rutina entera!
         });
-        
+
         // Registramos el entrenamiento mediante el store
         id = await workoutStore.registerWorkout(payload, userId);
 

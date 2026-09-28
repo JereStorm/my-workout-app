@@ -68,7 +68,7 @@
                                         <hr>
                                         <!-- Informacion del ExerciseStats -->
                                         <div
-                                            class="d-flex align-items-center justify-content-between text-muted small px-1">
+                                            class="d-flex align-items-center flex-wrap gap-1 justify-content-between text-muted small px-1">
                                             <div class="d-flex align-items-center gap-1"
                                                 title="Rutinas que usan este ejercicio">
                                                 <i class="bi bi-collection text-info"></i>
