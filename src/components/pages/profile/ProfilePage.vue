@@ -9,7 +9,7 @@
         </div>
 
         <div v-else>
-            <ProfileHeader :nickname="profile?.nickname" :level-info="levelInfo" @update:nickname="guardarNickname" />
+            <ProfileHeader :nickname="profile?.nickname" :email="userEmail" :level-info="levelInfo" @update:nickname="guardarNickname" />
 
             <ProfileStats :stats="stats" />
 
@@ -23,17 +23,21 @@
 import { computed } from 'vue'
 import { useProfileStore } from '@/stores/profile'
 import { useWorkoutStore } from '@/stores/workoutStore'
+import { useUserStore } from '@/stores/user'
 import ProfileHeader from '../../profile/ProfileHeader.vue'
 import ProfileStats from '../../profile/ProfileStats.vue'
 import WeeklyGoalCard from '../../profile/WeeklyGoalCard.vue'
 import { getLevelInfo } from '@/utils/profileStats.js' // Ajusta la ruta a tu archivo de utils si es necesario
 
 const profileStore = useProfileStore();
+const userStore = useUserStore();
 const workoutStore = useWorkoutStore();
 
 const profile = computed(() => profileStore.profile)
 const stats = computed(() => workoutStore.userStats)
 const workouts = computed(() => workoutStore.workouts)
+const userEmail = computed(() => userStore.user.email)
+
 
 // Computamos la info de nivel de forma reactiva basándonos en el volumen total de las stats
 const levelInfo = computed(() => {

@@ -31,6 +31,10 @@
             </button>
         </div>
 
+        
+            <p class="fs-6 text-muted">{{ localEmail }}</p>
+        
+
         <div v-if="error" class="text-danger small mt-1">
             {{ error }}
         </div>
@@ -43,6 +47,7 @@ import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
     nickname: String,
+    email: String,
     levelInfo: {
         type: Object,
         required: true
@@ -52,6 +57,7 @@ const props = defineProps({
 const emit = defineEmits(['update:nickname'])
 
 const localNickname = ref(props.nickname || '')
+const localEmail = ref(props.email || '')
 const error = ref('')
 
 watch(() => props.nickname, v => {

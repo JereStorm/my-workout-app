@@ -18,7 +18,7 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-center justify-content-md-end w-100 gap-2 flex-wrap">
                         <router-link :to="{ name: 'SelectRoutine' }"
-                            class="btn btn-outline-info px-2 d-flex align-items-center gap-1 py-1 add-btn">
+                            class="btn btn-info px-2 d-flex align-items-center gap-1 py-1 add-btn">
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
                         </router-link>
