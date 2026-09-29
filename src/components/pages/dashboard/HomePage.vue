@@ -18,7 +18,7 @@
                     </div>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <router-link :to="{ name: 'SelectRoutine' }"
-                            class="btn btn-info px-3 py-2 fw-semibold text-dark d-flex align-items-center justify-content-center gap-2 shadow-sm flex-grow-1 flex-sm-grow-0">
+                            class="btn btn-outline-info px-2 d-flex align-items-center py-1 add-btn">
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
                         </router-link>
@@ -33,7 +33,7 @@
                     <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm ">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
                             <span class="small text-uppercase fw-semibold tracking-wider">Volumen Semanal</span>
-                            <i class="bi bi-bi-graph-up-arrow text-info fs-5"></i>
+                            <i class="bi bi-graph-up-arrow text-info fs-5"></i>
                         </div>
                         <div class="d-flex align-baseline gap-2">
                             <span class="fs-2 fw-bold text-info">{{ weeklyVolume }}</span>
@@ -144,7 +144,7 @@
 
                             <div class="d-flex justify-content-center">
                                 <div @click="entrenarRutina(lastCreatedRoutine.id)"
-                                    class="btn btn-info btn-sm px-4 py-2 text-dark fw-semibold w-100 w-sm-auto text-center"
+                                    class="btn btn-outline-info btn-sm px-4 py-2 w-100 w-sm-auto text-center add-btn"
                                     style="cursor: pointer;">
                                     Entrenar esta rutina
                                 </div>
