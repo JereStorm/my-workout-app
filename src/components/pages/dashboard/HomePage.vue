@@ -4,23 +4,28 @@
         <div class="d-flex flex-column w-100 gap-4 mx-auto pb-5">
 
             <!-- ==================== 1. HEADER & GREETING HERO ==================== -->
-            <div class="card bg-cards border-0 rounded-4 p-4 p-lg-5 shadow-sm">
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
-                    <div class="d-flex flex-column gap-1">
-                        <h1 class="h2 h1-md text-light mb-1 ">
+            <div class="card bg-cards border-0 rounded-4 px-2 px-md-4 py-4 shadow-sm">
+                <div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center justify-content-between gap-4">
+                    <div class="d-flex w-100 flex-column gap-1">
+                        <h1 class="h2 h1-md text-md-start text-light mb-1 ">
                             ¡Buen día <span class="text-info">{{ userName }}</span>!
                         </h1>
-                        <p class="text-muted mb-0">
+                        <p class="text-muted text-center mb-0">
                             ¿Listo para entrenar?
                             <span class="text-info fw-semibold d-block d-sm-inline">Atrevete a superar tus
                                 limites</span>
                         </p>
                     </div>
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-end w-100 gap-2 flex-wrap">
                         <router-link :to="{ name: 'SelectRoutine' }"
-                            class="btn btn-outline-info px-2 d-flex align-items-center py-1 add-btn">
+                            class="btn btn-outline-info px-2 d-flex align-items-center gap-1 py-1 add-btn">
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
+                        </router-link>
+                            <router-link :to="{ name: 'FormRoutine' }"
+                            class="btn btn-outline-info px-2 d-flex align-items-center gap-2 py-1 add-btn">
+                            <i class="bi bi-plus-circle fs-5"></i>
+                            <span>Crear Rutina</span>
                         </router-link>
                     </div>
                 </div>
