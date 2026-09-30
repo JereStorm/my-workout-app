@@ -141,7 +141,7 @@
                             <div class="d-flex justify-content-center">
                                 <div @click="entrenarRutina(lastCreatedRoutine.id)"
                                     class="btn btn-outline-info text-white btn-sm px-4 py-2 w-100 w-sm-auto text-center add-btn">
-                                    Entrenar esta rutina
+                                   <i class="bi bi-lightning-charge text-info"></i> Entrenar esta rutina
                                 </div>
                             </div>
                         </div>
