@@ -151,6 +151,10 @@ const processedRoutines = computed(() => {
         list.sort((a, b) =>
             getDifficultyWeight(a) - getDifficultyWeight(b)
         )
+    }else{
+               list.sort((a, b) =>
+            getDifficultyWeight(a) + getDifficultyWeight(b)
+        )
     }
 
     list.sort((a, b) => {

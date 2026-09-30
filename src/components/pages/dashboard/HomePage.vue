@@ -5,7 +5,8 @@
 
             <!-- ==================== 1. HEADER & GREETING HERO ==================== -->
             <div class="card bg-cards border-0 rounded-4 px-2 px-md-4 py-4 shadow-sm">
-                <div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center justify-content-between gap-4">
+                <div
+                    class="d-flex flex-column flex-md-row flex-wrap align-items-md-center justify-content-between gap-4">
                     <div class="d-flex w-100 flex-column gap-1">
                         <h1 class="h2 h1-md text-md-start text-light mb-1 ">
                             ¡Buen día <span class="text-info">{{ userName }}</span>!
@@ -16,13 +17,14 @@
                                 limites</span>
                         </p>
                     </div>
-                    <div class="d-flex align-items-center justify-content-center justify-content-md-end w-100 gap-2 flex-wrap">
+                    <div
+                        class="d-flex align-items-center justify-content-center justify-content-md-end w-100 gap-2 flex-wrap">
                         <router-link :to="{ name: 'SelectRoutine' }"
                             class="btn btn-info px-2 d-flex align-items-center gap-1 py-1 add-btn">
                             <i class="bi bi-play-fill fs-5"></i>
                             <span>Empezar Sesión</span>
                         </router-link>
-                            <router-link :to="{ name: 'FormRoutine' }"
+                        <router-link :to="{ name: 'FormRoutine' }"
                             class="btn btn-outline-info px-2 d-flex align-items-center gap-2 py-1 add-btn">
                             <i class="bi bi-plus-circle fs-5"></i>
                             <span>Crear Rutina</span>
@@ -35,13 +37,29 @@
             <div class="row justify-content-between g-3">
                 <!-- Volumen Semanal -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm ">
+                    <div class="card bg-cards border rounded-4 p-3 p-lg-4 tron-metric-card">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
-                            <span class="small text-uppercase fw-semibold tracking-wider">Volumen Semanal</span>
-                            <i class="bi bi-graph-up-arrow text-info fs-5"></i>
+                            <span class="small text-uppercase fw-semibold tracking-wider tron-label">Volumen
+                                Semanal</span>
+                            <i class="bi bi-graph-up-arrow text-info fs-5 tron-icon"></i>
                         </div>
                         <div class="d-flex align-baseline gap-2">
-                            <span class="fs-2 fw-bold text-info">{{ weeklyVolume }}</span>
+                            <span class="fs-2 fw-bold text-info tron-number">+{{ weeklyVolume }}</span>
+                            <span class="text-muted small">Reps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volumen Total -->
+                <div class="col-12 col-sm-4">
+                    <div class="card bg-cards border rounded-4 p-3 p-lg-4 tron-metric-card">
+                        <div class="d-flex align-items-center justify-content-between text-muted mb-2">
+                            <span class="small text-uppercase fw-semibold tracking-wider tron-label">Volumen
+                                Total</span>
+                            <i class="bi bi-sort-up-alt text-info fs-5 tron-icon"></i>
+                        </div>
+                        <div class="d-flex align-baseline gap-2">
+                            <span class="fs-2 fw-bold text-info tron-number">{{ stats?.totalVolume || 0 }}</span>
                             <span class="text-muted small">Reps</span>
                         </div>
                     </div>
@@ -49,20 +67,20 @@
 
                 <!-- Racha Actual -->
                 <div class="col-12 col-sm-4">
-                    <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm ">
+                    <div class="card bg-cards border rounded-4 p-3 p-lg-4 tron-metric-card">
                         <div class="d-flex align-items-center justify-content-between text-muted mb-2">
-                            <span class="small text-uppercase fw-semibold tracking-wider">Racha Actual</span>
-                            <i class="bi bi-fire text-info fs-5"></i>
+                            <span class="small text-uppercase fw-semibold tracking-wider tron-label">Racha Actual</span>
+                            <i class="bi bi-fire text-info fs-5 tron-icon"></i>
                         </div>
                         <div class="d-flex align-baseline gap-2">
-                            <span class="fs-2 fw-bold text-info">{{ currentStreak }}</span>
+                            <span class="fs-2 fw-bold text-info tron-number">{{ completedDaysCount }}</span>
                             <span class="text-muted small">días</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 3 RIGHT COLUMN (Consistencia Semanal & Accesos Directos) -->
-                <div class="col-12 col-lg-4 d-flex flex-column gap-4">
+                <div class="col-12 d-flex flex-column gap-4">
 
                     <!-- ==================== 4. SECCIÓN DE CONSISTENCIA SEMANAL ==================== -->
                     <div class="card bg-cards border-0 rounded-4 p-3 p-lg-4 shadow-sm">
@@ -71,7 +89,6 @@
                                 <i class="bi bi-calendar-week text-info"></i>
                                 <h3 class="h6 fw-semibold text-light mb-0">Consistencia Semanal</h3>
                             </div>
-                            <span class="text-info fw-bold small">{{ completedDaysCount }}/7 Días</span>
                         </div>
 
                         <!-- Grilla de días (L a D) -->
@@ -106,9 +123,9 @@
                         <div v-if="lastCreatedRoutine">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                                 <div class="mx-auto d-flex flex-column justify-content-center align-items-center gap-3">
-                                        <span class="small text-uppercase text-muted d-block">Última Rutina
-                                            Creada</span>
-                                        <h2 class="h5 text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
+                                    <span class="small text-uppercase text-muted d-block">Última Rutina
+                                        Creada</span>
+                                    <h2 class="h5 text-light mb-0">{{ lastCreatedRoutine.nombre }}</h2>
                                 </div>
                                 <DifficultyBadge :dificultad="lastCreatedRoutine.dificultad" />
                             </div>
@@ -141,16 +158,15 @@
                                 </div>
                             </div>
 
-                           <div class="d-flex py-1 text-center mb-3">
+                            <div class="d-flex py-1 text-center mb-3">
                                 <p class="text-secondary text-align-center px-5">
-                                    ({{getSummary(lastCreatedRoutine, 5)}})
+                                    ({{ getSummary(lastCreatedRoutine, 5) }})
                                 </p>
                             </div>
 
                             <div class="d-flex justify-content-center">
                                 <div @click="entrenarRutina(lastCreatedRoutine.id)"
-                                    class="btn btn-outline-info btn-sm px-4 py-2 w-100 w-sm-auto text-center add-btn"
-                                    style="cursor: pointer;">
+                                    class="btn btn-outline-info text-white btn-sm px-4 py-2 w-100 w-sm-auto text-center add-btn">
                                     Entrenar esta rutina
                                 </div>
                             </div>
@@ -181,14 +197,17 @@ import { useRoutineStore } from '@/stores/routineStore';
 import { useWorkoutStore } from '@/stores/workoutStore';
 import { getWeeklyProgress } from '@/utils/profileStats.js'
 import { countEjercicios, countBloques, countSets, getSummary, estimateDuration } from '@/utils/routineStats';
-import { sumWorkoutVolumePerWeek } from '@/utils/workoutStats';
+import { sumWorkoutVolumePerWeek, calculateStreaks } from '@/utils/workoutStats';
 import DifficultyBadge from '@/components/workout/DifficultyBadge.vue';
 import { useRouter } from 'vue-router';
+import StatCard from '../../profile/StatCard.vue';
 
 const profileStore = useProfileStore();
 const routineStore = useRoutineStore();
 const workoutStore = useWorkoutStore();
 const router = useRouter()
+
+const stats = computed(() => workoutStore.userStats)
 
 const progress = computed(() => getWeeklyProgress(workoutStore.workouts, profileStore.profile.weeklyGoal))
 
@@ -223,7 +242,7 @@ const weeklyVolume = computed(() => {
     return volumesByWeek[currentWeekKey] || 0;
 });
 
-const currentStreak = computed(() => '4');
+const currentStreak = stats?.currentStreak || 0;
 const totalTUT = computed(() => '45m 30s');
 
 // Obtener la última rutina creada del routineStore
@@ -307,6 +326,54 @@ const completedDaysCount = computed(() => {
 
 .bg-cards {
     background-color: rgba(26, 26, 26, 0.447)
+}
+
+/* Estilo Tron / Delicado & Neón */
+.tron-metric-card {
+    background-color: rgba(16, 20, 24, 0.7);
+    border-color: rgba(0, 240, 255, 0.15) !important;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.02), 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Línea de energía superior muy fina (estilo circuito) */
+.tron-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.6), transparent);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+/* Efecto hover limpio tipo interfaz cibernética */
+.tron-metric-card:hover {
+    border-color: rgba(0, 240, 255, 0.6) !important;
+    box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.08), 0 0 25px rgba(0, 240, 255, 0.2);
+    background-color: rgba(22, 28, 35, 0.85);
+}
+
+.tron-metric-card:hover::before {
+    opacity: 1;
+}
+
+/* Brillo sutil en los números y el icono al hacer hover */
+.tron-metric-card:hover .tron-number {
+    text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+}
+
+.tron-metric-card:hover .tron-icon {
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.6));
+}
+
+.tron-number,
+.tron-icon {
+    transition: all 0.3s ease;
 }
 
 @media (min-width: 768px) {
