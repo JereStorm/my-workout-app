@@ -4,6 +4,7 @@ import { RoutineService } from '@/services/routineService';
 import { hydrateRoutines } from '@/utils/routinesHydratation';
 import { useExerciseStore } from '@/stores/exerciseStore';
 import { useUserStore } from '@/stores/user';
+import { estimateDuration } from '@/utils/routineStats'
 
 
 export const useRoutineStore = defineStore('routine', {
@@ -61,7 +62,7 @@ export const useRoutineStore = defineStore('routine', {
             try {
                 // 1. Primero aseguramos que todos los ejercicios nuevos existan y tengan ID
                 await this._asegurarEjercicios(routineData);
-                const payload = { ...routineData, idUser: userId, fechaCreacion: new Date().toISOString(), estimateDuration: estimateDuration(routineData) };
+                const payload = { ...routineData, idUser: userId, fechaCreacion: new Date().toISOString(), duracionEstimada: estimateDuration(routineData) };
                 const id = await RoutineService.create(payload);
                 this.routines.unshift({ id, ...payload });
                 return id;
@@ -73,6 +74,8 @@ export const useRoutineStore = defineStore('routine', {
         async updateRoutine(routine) {
             try {
                 await this._asegurarEjercicios(routine);
+
+                routine.duracionEstimada = estimateDuration(routine);
 
                 await RoutineService.update(routine.id, routine);
                 const index = this.routines.findIndex(r => r.id === routine.id);
